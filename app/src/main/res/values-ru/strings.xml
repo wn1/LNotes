@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LNotes+</string>
+    <string name="action_add_notes">+</string>
+    <string name="action_find_notes">Поиск</string>
+    <string name="action_find_notes_title">Поиск</string>
+    <string name="action_no">Нет</string>
+    <string name="action_settings">Настройки</string>
+    <string name="action_yes">Да</string>
+    <string name="exit_without_save_confirm">Выйти без сохранения?</string>
+    <string name="menu_delete">Удалить...</string>
+    <string name="menu_move">Переместить...</string>
+    <string name="menu_note_editor_save">Ок</string>
+    <string name="menu_set_done">Указать готовность...</string>
+    <string name="delete_confirm">Удалить заметку?</string>
+    <string name="set_done">Готово</string>
+    <string name="set_in_work">В работе</string>
+    <string name="cancel">Отмена</string>
+    <string name="finding_label">Поиск: %s</string>
+    <string name="finding_label_count">Найдено: %s</string>
+    <string name="action_ok">Ок</string>
+    <string name="action_restore">Восстановить</string>
+    <string name="add_category">Добавить папку...</string>
+    <string name="category_all">Все</string>
+    <string name="category_unknown">Не выбрано</string>
+    <string name="menu_rename">Переименовать...</string>
+    <string name="delete_folder_confirm">Удалить папку \"%s\"?</string>
+    <string name="delete_folder_confirm_message">При удалении папки будут удалены все заметки в ней</string>
+    <string name="error_with_id">Ошибка. Обратитесь к разработчику. ID ошибки: %s</string>
+    <string name="error_lnotesync_not_found">Приложение LNotesSync не установлено</string>
+    <string name="restore_db_confirm">Восстановить заметки из разервной копии?", "Внимание! Восстановление из резервной копии удалит существующие данные!</string>
+    <string name="copy_data_message">Копирование...</string>
+    <string name="action_backup">Резервное копирование...</string>
+    <string name="copy_base_from_old_lnotes">Обновление базы данных LNotes</string>
+    <string name="action_about">О проекте...</string>
+    <string name="about_message">Лёгкие заметки в моём кармане. \n\n(C) Владимир Кудашов 2015-2017</string>
+    <string name="action_backup_confirm_title">Копировать все заметки?</string>
+    <string name="copy">Копировать</string>
+    <string name="need_update_lnotesync">Нужно обновить LNotesSync</string>
+    <string name="navigation_drawer_close">Закрыть панель папок</string>
+    <string name="navigation_drawer_open">Открыть панель папок</string>
+</resources>
