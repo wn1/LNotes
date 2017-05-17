@@ -217,7 +217,7 @@ public class QDVNotesActivity extends ActionBarActivity
         private ListView mNotesList;
         private QDVMyBaseOpenHelper dbHelper;
         private Cursor mCursor;
-        private Long idFolderToAdding;
+        private Long idFolderToAdding = (long) action_categories_not_selected_id;
         private static long curren_position = 1;
 
         public static PlaceholderFragment newInstance(long sectionNumber) {
@@ -250,7 +250,7 @@ public class QDVNotesActivity extends ActionBarActivity
 
             String[] paramStr = new String[]{String.valueOf(idSection)};
             if (idSection==-1){
-                filterString = "folder_id IS NULL OR folder_id < 0";
+                filterString = "folder_id IS NULL OR folder_id < 0 OR folder_id = 0";
                 paramStr = null;
             }
             if (idSection==-2){
@@ -278,7 +278,7 @@ public class QDVNotesActivity extends ActionBarActivity
                 }
             }
 
-            idFolderToAdding =  idSection>0 ? idSection :0;
+            idFolderToAdding =  idSection>0 ? idSection : action_categories_not_selected_id;
             if (dbHelper!=null){
                 SQLiteDatabase db = dbHelper.getReadableDatabase();
                 if (db != null){
@@ -319,7 +319,7 @@ public class QDVNotesActivity extends ActionBarActivity
                     if (cursor != null && !mCursor.isAfterLast() && !cursor.isNull(1)) {
                         args.putString(QDVNoteEditorFragment.siEditedText, cursor.getString(1));
                         args.putLong(QDVNoteEditorFragment.siEditorNoteId, cursor.getLong(0));
-                        args.putLong(QDVNoteEditorFragment.siFolderIdToAdding, idFolderToAdding!=null ? idFolderToAdding : 0 );
+                        args.putLong(QDVNoteEditorFragment.siFolderIdToAdding, idFolderToAdding!=null ? idFolderToAdding : action_categories_not_selected_id );
                         Fragment fragment = new QDVNoteEditorFragment();
                         fragment.setArguments(args);
                         QDVNoteEditorFragment.setEditorActiveFlag(true);
@@ -494,7 +494,7 @@ public class QDVNotesActivity extends ActionBarActivity
         public boolean onOptionsItemSelected(MenuItem item) {
             if (item.getItemId() == R.id.action_add_note) {
                 Bundle args = new Bundle();
-                args.putLong(QDVNoteEditorFragment.siFolderIdToAdding, idFolderToAdding!=null ? idFolderToAdding : 0 );
+                args.putLong(QDVNoteEditorFragment.siFolderIdToAdding, idFolderToAdding!=null ? idFolderToAdding : action_categories_not_selected_id );
                 args.putLong(QDVNoteEditorFragment.siEditorNoteId, -1);
                 Fragment fragment = new QDVNoteEditorFragment();
                 fragment.setArguments(args);

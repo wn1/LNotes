@@ -39,7 +39,7 @@ public class QDVNoteEditorFragment extends Fragment {
     private View mEditorView;
     private EditText mEditTextView;
     private Long mNoteId;
-    private Long mFolderIdToAdding;
+    private Long mFolderIdToAdding = (long) QDVNotesActivity.action_categories_not_selected_id;
 
     public static String siEditedText =  "editedText";
     public static String siFolderIdToAdding =  "folderId";
@@ -84,7 +84,7 @@ public class QDVNoteEditorFragment extends Fragment {
 
         String textContent = bundle!=null ? bundle.getString(siEditedText) : null;
         mNoteId = bundle!=null ? bundle.getLong(siEditorNoteId) : null;
-        mFolderIdToAdding = bundle!=null ? bundle.getLong(siFolderIdToAdding) : 0;
+        mFolderIdToAdding = bundle!=null ? bundle.getLong(siFolderIdToAdding) : QDVNotesActivity.action_categories_not_selected_id;
 
         mEditTextView.setText(textContent);
 
