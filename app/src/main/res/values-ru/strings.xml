@@ -24,6 +24,7 @@
     <string name="category_all">Все</string>
     <string name="category_unknown">Не выбрано</string>
     <string name="menu_rename">Переименовать...</string>
+    <string name="rename_folder_title">Переименовать</string>
     <string name="delete_folder_confirm">Удалить папку \"%s\"?</string>
     <string name="delete_folder_confirm_message">При удалении папки будут удалены все заметки в ней</string>
     <string name="error_with_id">Ошибка. Обратитесь к разработчику. ID ошибки: %s</string>

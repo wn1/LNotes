@@ -150,11 +150,25 @@ public class QDVNavigationDrawerFragment extends Fragment {
                                                                 .setNegativeButton(R.string.action_no, null).show();
                                                     }
                                                     else if (i == 1) {
-                                                        // TODO make rename
-//                                                        db.execSQL("UPDATE notes SET isReady = " + (i == 0 ? "1" : "0") +
-//                                                                (i == 0 ? ", isready_date = DATETIME('now')" : ", isready_date = NULL") +
-//                                                                " WHERE id = " + String.valueOf(longPressedId));
-//                                                        reloadData();
+                                                        final EditText editText = new EditText(getContext());
+                                                        editText.setText(categoriesLabel);
+                                                        new AlertDialog.Builder(getActivity()).setTitle(R.string.rename_folder_title).setCancelable(true)
+                                                                .setView(editText).setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                                String folder_name = editText != null ? editText.getText().toString() : null;
+                                                                if (folder_name != null && folder_name.length()>0) {
+                                                                    if (dbHelper != null) {
+                                                                        SQLiteDatabase db = dbHelper.getReadableDatabase();
+                                                                        if (db != null) {
+                                                                            db.execSQL("UPDATE categories SET label = :label WHERE id = :id",
+                                                                                    new String[]{folder_name, String.valueOf(longPressedId)});
+                                                                            reloadData();
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }).setNegativeButton(R.string.cancel, null).show();
                                                     }
                                                 }
                                             }
@@ -301,7 +315,7 @@ public class QDVNavigationDrawerFragment extends Fragment {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     String folder_name = editText != null ? editText.getText().toString() : null;
-                    if (folder_name != null) {
+                    if (folder_name != null && folder_name.length()>0) {
                         if (dbHelper != null) {
                             SQLiteDatabase db = dbHelper.getReadableDatabase();
                             if (db != null) {
