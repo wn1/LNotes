@@ -23,13 +23,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.commons.codec.binary.Hex;
+//import org.apache.commons.codec.binary.Hex;
 
 /**
  * Created by Vladimir Kudashov on 27.04.17.
@@ -150,6 +151,14 @@ public class QDVSendDataActivity extends AppCompatActivity {
             }
         }
         return !isError;
+    }
+
+    private String encodeHex(byte[] bytes){
+        String strHex = "";
+        for (int i = 0; i <bytes.length; i++){
+            strHex=strHex+String.format("%02X", bytes[i]).toLowerCase();
+        }
+        return  strHex;
     }
 
 
@@ -342,7 +351,7 @@ public class QDVSendDataActivity extends AppCompatActivity {
 
         ((TextView) findViewById(R.id.progressTextView)).setText("1/"+String.valueOf(n));
 
-        String hashOfDb = new String (Hex.encodeHex(md.digest()));
+        String hashOfDb = new String (encodeHex(md.digest()));
         if (hashOfDb==null ||hashOfDb.length() == 0){
             new AlertDialog.Builder(QDVSendDataActivity.this).
                     setMessage(String.format(getString(R.string.error_with_id), "108.1"))
@@ -460,17 +469,29 @@ public class QDVSendDataActivity extends AppCompatActivity {
 
         String launchURL = uri.toString();
         if (launchURL.length()<=12){
+            new AlertDialog.Builder(QDVSendDataActivity.this).
+                    setMessage(String.format(getString(R.string.error_with_id), "300"))
+                    .setCancelable(true)
+                    .setPositiveButton(R.string.cancel, null).show();
             return;
         }
         String encoded = launchURL.substring(12);
         if (encoded==null){
+            new AlertDialog.Builder(QDVSendDataActivity.this).
+                    setMessage(String.format(getString(R.string.error_with_id), "301"))
+                    .setCancelable(true)
+                    .setPositiveButton(R.string.cancel, null).show();
             return;
         }
 
         try {
             encoded = urlDecode(encoded);
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            new AlertDialog.Builder(QDVSendDataActivity.this).
+                    setMessage(String.format(getString(R.string.error_with_id), "302"))
+                    .setCancelable(true)
+                    .setPositiveButton(R.string.cancel, null).show();
             return;
         }
 
@@ -819,7 +840,7 @@ public class QDVSendDataActivity extends AppCompatActivity {
                                             Log.d("onLaunchWithUrlSheme", "Error removing file: " + filePath.toString());
                                         }
 
-                                        String hashOfDb = new String (Hex.encodeHex(md.digest()));
+                                        String hashOfDb = new String (encodeHex(md.digest()));
                                         if (!hashOfDb.equals(sha)) {
                                             new AlertDialog.Builder(QDVSendDataActivity.this).
                                                     setMessage(String.format(getString(R.string.error_with_id), "10.7"))
@@ -1061,17 +1082,8 @@ public class QDVSendDataActivity extends AppCompatActivity {
     }
 
     private String urlDecode (String str) throws UnsupportedEncodingException {
-
         Log.d("onLaunchWithUrlSheme", "Decode from: "+str);
-        int position = -1;
-
-        str = str.replaceAll("\\+", " ");
-        while ((position = str.indexOf("%")) != -1){
-            Integer b = Integer.parseInt  (str.substring(position+1, position+3), 16);
-
-            str = str.substring(0, position) + String.valueOf((char) b.byteValue()) + str.substring(position+3);
-        }
-
+        str = URLDecoder.decode(str, "ISO-8859-1");
         Log.d("onLaunchWithUrlSheme", "Decode result: "+str);
         return str;
     }

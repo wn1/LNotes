@@ -5,30 +5,30 @@ android {
     buildToolsVersion '23.0.3'
 
     defaultConfig {
-        applicationId "ru.q_dev.LNoteP"
+        applicationId "ru.q_dev.lnotes_plus"
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 9
-        versionName "1.7"
+        versionCode 12
+        versionName "1.7.1"
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 
     lintOptions {
-        checkReleaseBuilds false
+//        checkReleaseBuilds false
         // Or, if you prefer, you can continue to check for errors in release builds,
         // but continue the build even when errors are found:
-        abortOnError false
+//        abortOnError false
     }
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     //    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'org.apache.directory.studio:org.apache.commons.codec:1.8'
+    compile 'com.android.support:appcompat-v7:23+'
+//    compile 'org.apache.directory.studio:org.apache.commons.codec:1.8'
 }
