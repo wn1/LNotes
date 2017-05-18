@@ -39,7 +39,7 @@ import java.util.Date;
 public class QDVSendDataActivity extends AppCompatActivity {
 
     static final int LNOTES_SEND_INTENT_ID = 1;
-    static final int appType = 2;// 1-LNotes, 2-LNotes+
+    static final int appType = 1;// 1-LNotes, 2-LNotes+
 
     private void startLnotesSyncWithUrl (String url){
 
