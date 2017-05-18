@@ -1,6 +1,7 @@
 package ru.q_dev.lnotes;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -22,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -510,6 +512,8 @@ public class QDVNotesActivity extends ActionBarActivity
                         .setView(editText).setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        InputMethodManager inputMethodManager = (InputMethodManager) ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
                         String search_text = editText != null ? editText.getText().toString() : null;
                         if (search_text != null) {
                             searchActive = true;
@@ -517,8 +521,17 @@ public class QDVNotesActivity extends ActionBarActivity
                             reloadData(getView());
                         }
                     }
-                }).setNegativeButton(R.string.cancel, null).show();
-
+                }).setNegativeButton(R.string.cancel,  new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        InputMethodManager inputMethodManager = (InputMethodManager) ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+                    }
+                }).show();
+                editText.requestFocus();
+                editText.requestFocusFromTouch();
+                InputMethodManager inputMananger = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputMananger.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
                 return true;
             }
 

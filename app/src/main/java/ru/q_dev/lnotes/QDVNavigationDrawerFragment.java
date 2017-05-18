@@ -1,5 +1,6 @@
 package ru.q_dev.lnotes;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
@@ -24,6 +25,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -156,6 +158,8 @@ public class QDVNavigationDrawerFragment extends Fragment {
                                                                 .setView(editText).setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
                                                             @Override
                                                             public void onClick(DialogInterface dialogInterface, int i) {
+                                                                InputMethodManager inputMethodManager = (InputMethodManager)ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                                                inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
                                                                 String folder_name = editText != null ? editText.getText().toString() : null;
                                                                 if (folder_name != null && folder_name.length()>0) {
                                                                     if (dbHelper != null) {
@@ -168,7 +172,17 @@ public class QDVNavigationDrawerFragment extends Fragment {
                                                                     }
                                                                 }
                                                             }
-                                                        }).setNegativeButton(R.string.cancel, null).show();
+                                                        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(DialogInterface dialog, int which) {
+                                                                InputMethodManager inputMethodManager = (InputMethodManager)ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                                                inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+                                                            }
+                                                        }).show();
+                                                        editText.requestFocus();
+                                                        editText.requestFocusFromTouch();
+                                                        InputMethodManager inputMananger = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                                        inputMananger.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
                                                     }
                                                 }
                                             }
@@ -314,6 +328,8 @@ public class QDVNavigationDrawerFragment extends Fragment {
                     .setView(editText).setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
+                    InputMethodManager inputMethodManager = (InputMethodManager)ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
                     String folder_name = editText != null ? editText.getText().toString() : null;
                     if (folder_name != null && folder_name.length()>0) {
                         if (dbHelper != null) {
@@ -325,7 +341,17 @@ public class QDVNavigationDrawerFragment extends Fragment {
                         }
                     }
                 }
-            }).setNegativeButton(R.string.cancel, null).show();
+            }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    InputMethodManager inputMethodManager = (InputMethodManager) ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+                }
+            }).show();
+            editText.requestFocus();
+            editText.requestFocusFromTouch();
+            InputMethodManager inputMananger = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMananger.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
         }
 
         mCurrentSelectedPosition = position;
