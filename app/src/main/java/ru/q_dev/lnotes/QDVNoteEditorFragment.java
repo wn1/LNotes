@@ -143,7 +143,10 @@ public class QDVNoteEditorFragment extends Fragment {
             QDVMyBaseOpenHelper dbHelper = new QDVMyBaseOpenHelper(getContext(), new DatabaseErrorHandler() {
                 @Override
                 public void onCorruption(SQLiteDatabase sqLiteDatabase) {
-
+                    new AlertDialog.Builder(getContext()).
+                            setMessage(String.format(getString(R.string.error_with_id), "401"))
+                            .setCancelable(true)
+                            .setPositiveButton(R.string.cancel, null).show();
                 }
             });
             if (dbHelper!=null) {

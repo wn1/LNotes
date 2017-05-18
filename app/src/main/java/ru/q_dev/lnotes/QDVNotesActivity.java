@@ -16,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -82,7 +83,15 @@ public class QDVNotesActivity extends ActionBarActivity
     }
 
     private File getDbPath (){
-        File retFile = new QDVMyBaseOpenHelper(this, null).getFileDB();
+        File retFile = new QDVMyBaseOpenHelper(this, new DatabaseErrorHandler() {
+            @Override
+            public void onCorruption(SQLiteDatabase sqLiteDatabase) {
+                new AlertDialog.Builder(QDVNotesActivity.this).
+                        setMessage(String.format(getString(R.string.error_with_id), "402"))
+                        .setCancelable(true)
+                        .setPositiveButton(R.string.cancel, null).show();
+            }
+        }).getFileDB();
         return retFile;
     }
 
@@ -242,7 +251,10 @@ public class QDVNotesActivity extends ActionBarActivity
             dbHelper = new QDVMyBaseOpenHelper(getContext(), new DatabaseErrorHandler() {
                 @Override
                 public void onCorruption(SQLiteDatabase sqLiteDatabase) {
-
+                    new AlertDialog.Builder(getContext()).
+                            setMessage(String.format(getString(R.string.error_with_id), "404"))
+                            .setCancelable(true)
+                            .setPositiveButton(R.string.cancel, null).show();
                 }
             });
 

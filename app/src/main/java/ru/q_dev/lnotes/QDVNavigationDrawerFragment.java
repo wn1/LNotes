@@ -83,7 +83,12 @@ public class QDVNavigationDrawerFragment extends Fragment {
         mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
 
         if (savedInstanceState != null) {
-            mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
+            mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION, action_categories_all_position);
+            mFromSavedInstanceState = true;
+        }
+        else
+        {
+            mCurrentSelectedPosition = sp.getInt(STATE_SELECTED_POSITION, action_categories_all_position);
             mFromSavedInstanceState = true;
         }
 
@@ -144,7 +149,7 @@ public class QDVNavigationDrawerFragment extends Fragment {
                                                                                 db.execSQL("DELETE FROM notes WHERE folder_id = " + String.valueOf(longPressedId));
                                                                                 db.execSQL("DELETE FROM categories WHERE id = " + String.valueOf(longPressedId));
                                                                                 reloadData();
-                                                                                selectItem(action_categories_not_selected_position);
+                                                                                selectItem(action_categories_all_position);
                                                                             }
                                                                         }
                                                                     }
@@ -199,13 +204,16 @@ public class QDVNavigationDrawerFragment extends Fragment {
         dbHelper = new QDVMyBaseOpenHelper(getContext(), new DatabaseErrorHandler() {
             @Override
             public void onCorruption(SQLiteDatabase sqLiteDatabase) {
-
+                new AlertDialog.Builder(getContext()).
+                        setMessage(String.format(getString(R.string.error_with_id), "400"))
+                        .setCancelable(true)
+                        .setPositiveButton(R.string.cancel, null).show();
             }
         });
 
         reloadData();
 
-        selectItem(action_categories_all_position);
+        selectItem(mCurrentSelectedPosition);
 
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
@@ -353,8 +361,20 @@ public class QDVNavigationDrawerFragment extends Fragment {
             InputMethodManager inputMananger = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             inputMananger.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
         }
+        else {
+            if (mDrawerListView!=null) {
+                if (position >= mDrawerListView.getCount()) {
+                    position = mDrawerListView.getCount() - 1;
+                }
+            }
+            if (position<=action_add_categories_position){
+                position = action_categories_all_position;
+            }
+            mCurrentSelectedPosition = position;
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            sp.edit().putInt(STATE_SELECTED_POSITION, position).apply();
+        }
 
-        mCurrentSelectedPosition = position;
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);
         }
