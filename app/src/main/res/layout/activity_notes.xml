@@ -1,28 +1,46 @@
 <!-- A DrawerLayout is intended to be used as the top-level content view using match_parent for both width and height to consume the full space available. -->
-<android.support.v4.widget.DrawerLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ru.q_dev.lnotes.QDVNotesActivity">
+    android:orientation="vertical"
+    xmlns:ads="http://schemas.android.com/apk/res-auto">
 
-    <!-- As the main content view, the view below consumes the entire
-         space available using match_parent in both dimensions. -->
-    <FrameLayout
-        android:id="@+id/container"
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="wrap_content"
+        ads:adSize="BANNER"
+        ads:adUnitId="@string/admob_banner_id"/>
 
-    </FrameLayout>
-
-    <!-- The drawer is given a fixed width in dp and extends the full height of
-         the container. -->
-    <fragment android:id="@+id/navigation_drawer"
-        android:layout_width="@dimen/navigation_drawer_width"
+    <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:name="ru.q_dev.lnotes.QDVNavigationDrawerFragment"
-        tools:layout="@layout/drawer_notes" />
+        tools:context="ru.q_dev.lnotes.QDVNotesActivity">
 
-</android.support.v4.widget.DrawerLayout>
+        <!-- As the main content view, the view below consumes the entire
+         space available using match_parent in both dimensions. -->
+
+        <FrameLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true">
+
+        </FrameLayout>
+
+        <!-- The drawer is given a fixed width in dp and extends the full height of
+         the container. -->
+        <fragment
+            android:id="@+id/navigation_drawer"
+            android:name="ru.q_dev.lnotes.QDVNavigationDrawerFragment"
+            android:layout_width="@dimen/navigation_drawer_width"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            tools:layout="@layout/drawer_notes" />
+
+    </android.support.v4.widget.DrawerLayout>
+
+</LinearLayout>

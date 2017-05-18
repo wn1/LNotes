@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ru.q_dev.lnotes" >
 
-
     <supports-screens android:resizeable="true"
     android:smallScreens="true"
     android:normalScreens="true"
@@ -40,6 +39,9 @@
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>
