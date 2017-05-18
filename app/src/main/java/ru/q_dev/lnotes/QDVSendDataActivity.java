@@ -4,6 +4,8 @@ import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.DatabaseErrorHandler;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -214,7 +216,15 @@ public class QDVSendDataActivity extends AppCompatActivity {
     private void onLaunchWithStartBackup () {
         File pathDB = new File(getFilesDir(), "senddb");
         File pathTemp = new File(pathDB, "tempdbparts");
-        File dbFile = new QDVMyBaseOpenHelper(QDVSendDataActivity.this, null).getFileDB();
+        File dbFile = new QDVMyBaseOpenHelper(QDVSendDataActivity.this,  new DatabaseErrorHandler() {
+            @Override
+            public void onCorruption(SQLiteDatabase sqLiteDatabase) {
+                new AlertDialog.Builder(QDVSendDataActivity.this).
+                        setMessage(String.format(getString(R.string.error_with_id), "405"))
+                        .setCancelable(true)
+                        .setPositiveButton(R.string.cancel, null).show();
+            }
+        }).getFileDB();
         Log.d("onLaunchWithStartBackup", "pathTemp: " + pathTemp);
         if (pathDB.mkdir()) {
             pathTemp.mkdir();
@@ -890,7 +900,15 @@ public class QDVSendDataActivity extends AppCompatActivity {
 
                                 }
 
-                                File dbFile = new QDVMyBaseOpenHelper(QDVSendDataActivity.this, null).getFileDB();
+                                File dbFile = new QDVMyBaseOpenHelper(QDVSendDataActivity.this,  new DatabaseErrorHandler() {
+                                    @Override
+                                    public void onCorruption(SQLiteDatabase sqLiteDatabase) {
+                                        new AlertDialog.Builder(QDVSendDataActivity.this).
+                                                setMessage(String.format(getString(R.string.error_with_id), "406"))
+                                                .setCancelable(true)
+                                                .setPositiveButton(R.string.cancel, null).show();
+                                    }
+                                }).getFileDB();
                                 dbFile.delete();
                                 copyFile(pathDB, dbFile);
                                 removeFilesFromDir(pathTemp);

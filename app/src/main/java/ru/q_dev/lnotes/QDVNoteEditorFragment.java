@@ -25,6 +25,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -87,6 +88,10 @@ public class QDVNoteEditorFragment extends Fragment {
         mFolderIdToAdding = bundle!=null ? bundle.getLong(siFolderIdToAdding) : QDVNotesActivity.action_categories_not_selected_id;
 
         mEditTextView.setText(textContent);
+        mEditTextView.requestFocus();
+        mEditTextView.requestFocusFromTouch();
+        InputMethodManager inputMananger = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMananger.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
         mEditTextView.addTextChangedListener(new TextWatcher() {
             @Override
@@ -138,7 +143,10 @@ public class QDVNoteEditorFragment extends Fragment {
             QDVMyBaseOpenHelper dbHelper = new QDVMyBaseOpenHelper(getContext(), new DatabaseErrorHandler() {
                 @Override
                 public void onCorruption(SQLiteDatabase sqLiteDatabase) {
-
+                    new AlertDialog.Builder(getContext()).
+                            setMessage(String.format(getString(R.string.error_with_id), "401"))
+                            .setCancelable(true)
+                            .setPositiveButton(R.string.cancel, null).show();
                 }
             });
             if (dbHelper!=null) {

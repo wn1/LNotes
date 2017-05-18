@@ -23,6 +23,7 @@
             android:layout_alignParentTop="true"
             android:layout_alignRight="@+id/layout_dates"
             android:layout_weight="1"
+            android:maxLines="2"
             android:text="TextView" />
 
         <RelativeLayout
