@@ -8,7 +8,7 @@ android {
         applicationId "ru.q_dev.LNote"
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 14
+        versionCode 15
         versionName "1.7.2"
     }
     buildTypes {
