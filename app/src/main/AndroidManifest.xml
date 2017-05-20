@@ -20,7 +20,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:fullBackupContent="false">
+        android:fullBackupContent="@xml/backup_rules">
         <activity
             android:name=".QDVNotesActivity"
             android:label="@string/app_name"
