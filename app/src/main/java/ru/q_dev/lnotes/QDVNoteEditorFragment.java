@@ -90,6 +90,16 @@ public class QDVNoteEditorFragment extends Fragment {
         mEditTextView.setText(textContent);
         mEditTextView.requestFocus();
         mEditTextView.requestFocusFromTouch();
+        mEditTextView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode==KeyEvent.KEYCODE_ENTER && ((event.getFlags() & KeyEvent.FLAG_EDITOR_ACTION) > 0)){
+                    InputMethodManager inputMethodManager = (InputMethodManager)ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputMethodManager.hideSoftInputFromWindow(mEditTextView.getWindowToken(), 0);
+                }
+                return false;
+            }
+        });
         InputMethodManager inputMananger = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMananger.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
