@@ -5,11 +5,11 @@ android {
     buildToolsVersion '23.0.3'
 
     defaultConfig {
-        applicationId "ru.q_dev.LNote"
+        applicationId "ru.q_dev.LNoteP"
         minSdkVersion 14
         targetSdkVersion 25
         versionCode 15
-        versionName "1.7.2"
+        versionName "1.7.3"
     }
     buildTypes {
         release {
@@ -30,6 +30,5 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     //    testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:25.0.0'
-    compile 'com.google.android.gms:play-services-ads:10.2.0'
 //    compile 'org.apache.directory.studio:org.apache.commons.codec:1.8'
 }
