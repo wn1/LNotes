@@ -40,6 +40,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import android.widget.*;
 
 /**
  * Created by Vladimir Kudashov on 11.03.17.
@@ -237,6 +238,8 @@ public class QDVNotesActivity extends ActionBarActivity
         private Cursor mCursor;
         private Long idFolderToAdding = (long) action_categories_not_selected_id;
         private static long curren_position = 1;
+
+		
 
         public static PlaceholderFragment newInstance(long sectionNumber) {
             PlaceholderFragment fragment = new PlaceholderFragment();
@@ -571,20 +574,17 @@ public class QDVNotesActivity extends ActionBarActivity
             }
 
             if (item.getItemId() == R.id.action_backup_notes){
-                new AlertDialog.Builder(getContext()).setMessage(R.string.action_backup_confirm_title)
-                        .setCancelable(true).setPositiveButton(R.string.copy, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent sendDataActivityStartIntent = new Intent(getContext(), QDVSendDataActivity.class);
-                        sendDataActivityStartIntent.putExtra("operationName", "backupDB");
-                        startActivity(sendDataActivityStartIntent);
-                    }
-                }).setNegativeButton(R.string.cancel, null).show();
+			    Intent sendDataActivityStartIntent = new Intent(getContext(), QDVSendDataActivity.class);
+				sendDataActivityStartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(sendDataActivityStartIntent);
+				//getActivity().finish();
                 return true;
             }
 
             return super.onOptionsItemSelected(item);
         }
+		
+		
 
         @Override
         public void onAttach(Activity activity) {

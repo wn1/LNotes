@@ -11,7 +11,8 @@
     <!--android:requiresSmallestWidthDp="integer"-->
     <!--android:compatibleWidthLimitDp="integer"-->
     <!--android:largestWidthLimitDp="integer"/>-->
-
+	
+	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <application
         android:name=".ThisApp"
         android:allowBackup="true"
