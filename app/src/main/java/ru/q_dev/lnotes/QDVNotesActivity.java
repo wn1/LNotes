@@ -574,7 +574,7 @@ public class QDVNotesActivity extends ActionBarActivity
             }
 
             if (item.getItemId() == R.id.action_backup_notes){
-			    Intent sendDataActivityStartIntent = new Intent(getContext(), QDVSendDataActivity.class);
+			    Intent sendDataActivityStartIntent = new Intent(getContext(), QDVBackupActivity.class);
 				sendDataActivityStartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(sendDataActivityStartIntent);
 				//getActivity().finish();
