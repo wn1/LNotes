@@ -37,6 +37,9 @@ import android.view.*;
 import java.text.*;
 import android.provider.*;
 import android.content.*;
+
+import com.scottyab.aescrypt.AESCrypt;
+
 import java.io.*;
 
 /**
@@ -80,6 +83,14 @@ public class QDVBackupActivity extends AppCompatActivity {
     }
 	
 	private void saveBackup(){
+    	if (((EditText)findViewById(R.id.editPassword)).toString().length()==0) {
+            new AlertDialog.Builder(QDVBackupActivity.this).
+						setMessage("Введите пароль")
+						.setCancelable(true)
+						.setPositiveButton(R.string.action_ok, null).show();
+            return;
+		}
+
 		//TODO TEMP
 //		File dbFile = new QDVMyBaseOpenHelper(this,  new DatabaseErrorHandler() {
 //			@Override
@@ -87,7 +98,8 @@ public class QDVBackupActivity extends AppCompatActivity {
 //					new AlertDialog.Builder(QDVSendDataActivity.this).
 //						setMessage(String.format(getString(R.string.error_with_id), "406"))
 //						.setCancelable(true)
-//						.setPositiveButton(R.string.cancel, null).show();
+//						.setPositiveButton(R.string.cancel, null).sh
+// ow();
 //				}
 //			}).getFileDB();
 		
@@ -119,6 +131,13 @@ public class QDVBackupActivity extends AppCompatActivity {
 	}
 
     private void restoreBackup () {
+        if (((EditText)findViewById(R.id.editPassword)).toString().length()==0) {
+            new AlertDialog.Builder(QDVBackupActivity.this).
+                    setMessage("Введите пароль")
+                    .setCancelable(true)
+                    .setPositiveButton(R.string.action_ok, null).show();
+            return;
+        }
 		try {
 			Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
 			intent.setType("file/*");
@@ -154,13 +173,28 @@ public class QDVBackupActivity extends AppCompatActivity {
 							}
 						}).getFileDB();
 					InputStream inputStream = null;
+					OutputStream outputStream = null;
 					boolean result = false;
 					File backupFile = new File(dbFile.toString()+".bak");
+                    File decryptedFile = new File(dbFile.toString()+".tmp");
 					try {
+                        String password = ((EditText)findViewById(R.id.editPassword)).toString();
+                        if (password.length()==0) {
+                            new AlertDialog.Builder(QDVBackupActivity.this).
+                                    setMessage("Введите пароль")
+                                    .setCancelable(true)
+                                    .setPositiveButton(R.string.action_ok, null).show();
+                            return;
+                        }
 						backupFile.delete();
+                        decryptedFile.delete();
 						dbFile.renameTo(backupFile);
 						inputStream = cr.openInputStream(uri);
-						result = QDVFileUtils.copyFile(inputStream, dbFile, false);
+						outputStream = new FileOutputStream(decryptedFile);
+						AESCrypt.decrypt(password, inputStream, outputStream);
+                        outputStream.close();
+                        outputStream = null;
+						result = QDVFileUtils.copyFile(decryptedFile, dbFile, false);
 						Log.d("Restore db","write data");
 					} catch (Exception e) {
 						Log.d("Restore db","FAILED TO WRITE", e);
@@ -216,20 +250,37 @@ public class QDVBackupActivity extends AppCompatActivity {
 						}).getFileDB();
 						
 					OutputStream os = null;
+					InputStream is = null;
 					boolean result = false;
 					try {
 						os = cr.openOutputStream(uri);
-						result = QDVFileUtils.copyFile(dbFile, os);
+						is = new FileInputStream(dbFile);
+						String password = ((EditText)findViewById(R.id.editPassword)).toString();
+                        if (password.length()==0) {
+                            new AlertDialog.Builder(QDVBackupActivity.this).
+                                    setMessage("Введите пароль")
+                                    .setCancelable(true)
+                                    .setPositiveButton(R.string.action_ok, null).show();
+                            return;
+                        }
+						AESCrypt.encrypt(password, is, os);
+                        result = true;
 						Log.d("Save db","wrote data");
 					} catch (Exception e) {
 						Log.d("Save db","FAILED TO WRITE", e);
 					} finally {
 						try
 						{
-							os.close();
+							is.close();
 						}
-						catch (IOException ignored)
+						catch (Exception ignored)
 						{}
+                        try
+                        {
+                            os.close();
+                        }
+                        catch (Exception ignored)
+                        {}
 					}
 	
 					if (result){

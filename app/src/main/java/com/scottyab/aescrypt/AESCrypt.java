@@ -18,6 +18,7 @@ import javax.crypto.*;
  * Encrypt and decrypt messages using AES 256 bit encryption that are compatible with AESCrypt-ObjC and AESCrypt Ruby.
  * <p/>
  * Created by scottab on 04/10/2014.
+ * Updated by Vladimir Kudashov for stream crypting
  */
 public final class AESCrypt {
 
@@ -99,6 +100,21 @@ public final class AESCrypt {
 			while (-1 != (readed = inputStream.read(buffer, 0, bufferLenght))){
 				cipherOutputStream.write(buffer, 0, readed);
 			}
+    }
+
+    public static void decrypt(final String password, InputStream inputStream, OutputStream outputStream)
+            throws GeneralSecurityException, IOException {
+        final SecretKeySpec key = generateKey(password);
+        final Cipher cipher = Cipher.getInstance(AES_MODE);
+        IvParameterSpec ivSpec = new IvParameterSpec(ivBytes);
+        cipher.init(Cipher.DECRYPT_MODE, key, ivSpec);
+        CipherOutputStream cipherOutputStream = new CipherOutputStream (outputStream, cipher);
+        int bufferLenght = 1024;
+        byte[] buffer = new byte [bufferLenght];
+        int readed = 0;
+        while (-1 != (readed = inputStream.read(buffer, 0, bufferLenght))){
+            cipherOutputStream.write(buffer, 0, readed);
+        }
     }
 
     /**
