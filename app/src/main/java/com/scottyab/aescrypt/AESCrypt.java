@@ -100,6 +100,7 @@ public final class AESCrypt {
 			while (-1 != (readed = inputStream.read(buffer, 0, bufferLenght))){
 				cipherOutputStream.write(buffer, 0, readed);
 			}
+			cipherOutputStream.close();
     }
 
     public static void decrypt(final String password, InputStream inputStream, OutputStream outputStream)
@@ -115,6 +116,7 @@ public final class AESCrypt {
         while (-1 != (readed = inputStream.read(buffer, 0, bufferLenght))){
             cipherOutputStream.write(buffer, 0, readed);
         }
+        cipherOutputStream.close();
     }
 
     /**

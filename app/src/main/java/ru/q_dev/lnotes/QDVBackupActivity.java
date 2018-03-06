@@ -104,7 +104,7 @@ public class QDVBackupActivity extends AppCompatActivity {
 //			}).getFileDB();
 		
 		DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmm-ss");
-		String fileNameString = dateFormat.format(new Date())+".db";
+		String fileNameString = dateFormat.format(new Date())+".dbcr";
 //		
 //		//TODO for old version
 //		File dbBackupFile = new File("/storage/sdcard1/LNotes/lnotes"+fileNameString);
@@ -178,7 +178,7 @@ public class QDVBackupActivity extends AppCompatActivity {
 					File backupFile = new File(dbFile.toString()+".bak");
                     File decryptedFile = new File(dbFile.toString()+".tmp");
 					try {
-                        String password = ((EditText)findViewById(R.id.editPassword)).toString();
+                        String password = ((EditText)findViewById(R.id.editPassword)).getText().toString();
                         if (password.length()==0) {
                             new AlertDialog.Builder(QDVBackupActivity.this).
                                     setMessage("Введите пароль")
@@ -255,7 +255,7 @@ public class QDVBackupActivity extends AppCompatActivity {
 					try {
 						os = cr.openOutputStream(uri);
 						is = new FileInputStream(dbFile);
-						String password = ((EditText)findViewById(R.id.editPassword)).toString();
+						String password = ((EditText)findViewById(R.id.editPassword)).getText().toString();
                         if (password.length()==0) {
                             new AlertDialog.Builder(QDVBackupActivity.this).
                                     setMessage("Введите пароль")
