@@ -83,7 +83,7 @@ public class QDVBackupActivity extends AppCompatActivity {
     }
 	
 	private void saveBackup(){
-    	if (((EditText)findViewById(R.id.editPassword)).toString().length()==0) {
+    	if (((EditText)findViewById(R.id.editPassword)).getText().toString().length()==0) {
             new AlertDialog.Builder(QDVBackupActivity.this).
 						setMessage("Введите пароль")
 						.setCancelable(true)
@@ -131,7 +131,7 @@ public class QDVBackupActivity extends AppCompatActivity {
 	}
 
     private void restoreBackup () {
-        if (((EditText)findViewById(R.id.editPassword)).toString().length()==0) {
+        if (((EditText)findViewById(R.id.editPassword)).getText().toString().length()==0) {
             new AlertDialog.Builder(QDVBackupActivity.this).
                     setMessage("Введите пароль")
                     .setCancelable(true)
@@ -167,7 +167,7 @@ public class QDVBackupActivity extends AppCompatActivity {
 							@Override
 							public void onCorruption(SQLiteDatabase sqLiteDatabase) {
 								new AlertDialog.Builder(QDVBackupActivity.this).
-									setMessage(String.format(getString(R.string.error_with_id), "306"))
+									setMessage(String.format(getString(R.string.error_with_id), "302"))
 									.setCancelable(true)
 									.setPositiveButton(R.string.cancel, null).show();
 							}
@@ -203,7 +203,7 @@ public class QDVBackupActivity extends AppCompatActivity {
 						{
 							inputStream.close();
 						}
-						catch (IOException e)
+						catch (Exception ignored)
 						{
 							
 						}
@@ -216,7 +216,7 @@ public class QDVBackupActivity extends AppCompatActivity {
 					}
 					else {
 						new AlertDialog.Builder(QDVBackupActivity.this).
-							setMessage(String.format(getString(R.string.error_with_id), "302"))
+							setMessage("Ошибка. Возможно, вы ошиблись при вводе пароля.")
 							.setCancelable(true)
 							.setPositiveButton(R.string.cancel, null).show();
 						return;

@@ -12,6 +12,8 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
+import java.security.SecureRandom;
+
 import javax.crypto.*;
 
 /**
@@ -19,6 +21,7 @@ import javax.crypto.*;
  * <p/>
  * Created by scottab on 04/10/2014.
  * Updated by Vladimir Kudashov for stream crypting
+ *  and iv generate
  */
 public final class AESCrypt {
 
@@ -32,7 +35,8 @@ public final class AESCrypt {
     private static final String HASH_ALGORITHM = "SHA-256";
 
     //AESCrypt-ObjC uses blank IV (not the best security, but the aim here is compatibility)
-    private static final byte[] ivBytes = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+//    private static final byte[] ivBytes = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    private static final int ivBytesLenght = 16;
 
     //togglable log option (please turn off in live!)
     public static boolean DEBUG_LOG_ENABLED = false;
@@ -56,6 +60,12 @@ public final class AESCrypt {
         return secretKeySpec;
     }
 
+    private static byte [] generateIvBytes () {
+        SecureRandom secureRandom = new SecureRandom();
+        byte [] ivBytes = new byte[ivBytesLenght];
+        secureRandom.nextBytes(ivBytes);
+        return ivBytes;
+    }
 
     /**
      * Encrypt and encode message using 256-bit AES with key generated from password.
@@ -71,13 +81,15 @@ public final class AESCrypt {
 
         try {
             final SecretKeySpec key = generateKey(password);
+            byte[] ivBytes = generateIvBytes();
 
             log("message", message);
 
             byte[] cipherText = encrypt(key, ivBytes, message.getBytes(CHARSET));
 
             //NO_WRAP is important as was getting \n at the end
-            String encoded = Base64.encodeToString(cipherText, Base64.NO_WRAP);
+            String ivBytesEncoded = Base64.encodeToString(ivBytes, Base64.NO_WRAP);
+            String encoded = ivBytesEncoded + ":" + Base64.encodeToString(cipherText, Base64.NO_WRAP);
             log("Base64.NO_WRAP", encoded);
             return encoded;
         } catch (UnsupportedEncodingException e) {
@@ -91,7 +103,9 @@ public final class AESCrypt {
 	throws GeneralSecurityException, IOException {
             final SecretKeySpec key = generateKey(password);
 			final Cipher cipher = Cipher.getInstance(AES_MODE);
+            byte[] ivBytes = generateIvBytes();
 			IvParameterSpec ivSpec = new IvParameterSpec(ivBytes);
+            outputStream.write(ivBytes);
 			cipher.init(Cipher.ENCRYPT_MODE, key, ivSpec);
 	        CipherOutputStream cipherOutputStream = new CipherOutputStream (outputStream, cipher);
 			int bufferLenght = 1024;
@@ -107,6 +121,11 @@ public final class AESCrypt {
             throws GeneralSecurityException, IOException {
         final SecretKeySpec key = generateKey(password);
         final Cipher cipher = Cipher.getInstance(AES_MODE);
+        byte [] ivBytes = new byte[ivBytesLenght];
+        int ivLenght = inputStream.read(ivBytes);
+        if (ivLenght!=ivBytesLenght) {
+            throw new GeneralSecurityException("Decrypting error");
+        }
         IvParameterSpec ivSpec = new IvParameterSpec(ivBytes);
         cipher.init(Cipher.DECRYPT_MODE, key, ivSpec);
         CipherOutputStream cipherOutputStream = new CipherOutputStream (outputStream, cipher);
@@ -155,7 +174,12 @@ public final class AESCrypt {
             final SecretKeySpec key = generateKey(password);
 
             log("base64EncodedCipherText", base64EncodedCipherText);
-            byte[] decodedCipherText = Base64.decode(base64EncodedCipherText, Base64.NO_WRAP);
+            String [] encodedParts = base64EncodedCipherText.split(":");
+            if (encodedParts.length!=2) {
+                throw new SecurityException("Decrypting error");
+            }
+            byte[] ivBytes = Base64.decode(encodedParts[0], Base64.NO_WRAP);
+            byte[] decodedCipherText = Base64.decode(encodedParts[1], Base64.NO_WRAP);
             log("decodedCipherText", decodedCipherText);
 
             byte[] decryptedBytes = decrypt(key, ivBytes, decodedCipherText);
