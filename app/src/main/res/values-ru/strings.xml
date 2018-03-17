@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">LNotes</string>
+    <string name="app_name">LNotesTest</string>
     <string name="admob_banner_id">ca-app-pub-2316358873443936/4547716391</string>
     <string name="action_add_notes">+</string>
     <string name="action_find_notes">Поиск</string>
     <string name="action_find_notes_title">Поиск</string>
+    <string name="input_password_for_backup_db_title">Введите пароль для резервной копии</string>
     <string name="action_no">Нет</string>
     <string name="action_settings">Настройки</string>
     <string name="action_yes">Да</string>
+    <string name="action_without_password">Без пароля</string>
     <string name="exit_without_save_confirm">Выйти без сохранения?</string>
     <string name="menu_delete">Удалить...</string>
     <string name="menu_move">Переместить...</string>
