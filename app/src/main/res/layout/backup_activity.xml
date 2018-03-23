@@ -16,7 +16,7 @@
 		android:layout_height="wrap_content"
 		android:layout_toEndOf="@+id/progressTextView"
 		android:layout_toRightOf="@+id/progressTextView"
-		android:text="Сохранить базу данных" />
+		android:text="@string/save_backup_db" />
 
 	<Button
 		android:id="@+id/buttonRestoreDB"
@@ -24,7 +24,7 @@
 		android:layout_height="wrap_content"
 		android:layout_below="@id/buttonSaveDB"
 		android:layout_marginTop="10dp"
-		android:text="Восстановить базу данных" />
+		android:text="@string/restore_backup_db" />
 
 </RelativeLayout>
 

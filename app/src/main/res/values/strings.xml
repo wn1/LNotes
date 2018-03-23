@@ -44,4 +44,10 @@
     <string name="action_backup_confirm_title">Copy all notes?</string>
     <string name="copy">Copy</string>
     <string name="need_update_lnotesync">Update LNotesSync needed</string>
+    <string name="input_password">Input password</string>
+    <string name="backup_saved">Backup saved</string>
+    <string name="backup_restored">Backup restored</string>
+    <string name="password_error">Error. Password may be incorrect.</string>
+    <string name="save_backup_db">Save database</string>
+    <string name="restore_backup_db">Restore database</string>
 </resources>

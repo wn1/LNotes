@@ -1,9 +1,7 @@
 package ru.q_dev.lnotes;
 
-import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -16,29 +14,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.TextView;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import android.widget.*;
 import android.view.View.*;
 import android.view.*;
 import java.text.*;
-import android.provider.*;
+
 import android.content.*;
 
 import com.scottyab.aescrypt.AESCrypt;
@@ -107,7 +93,7 @@ public class QDVBackupActivity extends AppCompatActivity {
                 String password = editText != null ? editText.getText().toString() : "";
                 if (password.length()==0) {
                     new AlertDialog.Builder(QDVBackupActivity.this).
-                            setMessage("Введите пароль")
+                            setMessage(R.string.input_password)
                             .setCancelable(true)
                             .setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
                                 @Override
@@ -323,7 +309,7 @@ public class QDVBackupActivity extends AppCompatActivity {
 
 					passwordForBackup = null;
 					if (result){
-						Toast.makeText(this, "Резервная копия успешно сохранена", Toast.LENGTH_LONG).show();
+						Toast.makeText(this, R.string.backup_saved, Toast.LENGTH_LONG).show();
 					}
 					else 
 					{
@@ -399,11 +385,11 @@ public class QDVBackupActivity extends AppCompatActivity {
         Log.d("Restore db", "Restore db result:" + result + ", dbFile: " + dbFile.getAbsolutePath());
 
         if (result) {
-            Toast.makeText(this, "База данных успешно восстановлена", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.backup_restored, Toast.LENGTH_LONG).show();
         }
         else {
             new AlertDialog.Builder(QDVBackupActivity.this).
-                    setMessage("Ошибка. Возможно, вы ошиблись при вводе пароля.")
+                    setMessage(R.string.password_error)
                     .setCancelable(true)
                     .setPositiveButton(R.string.cancel, null).show();
             return;

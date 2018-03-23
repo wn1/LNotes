@@ -44,4 +44,10 @@
     <string name="need_update_lnotesync">Нужно обновить LNotesSync</string>
     <string name="navigation_drawer_close">Закрыть панель папок</string>
     <string name="navigation_drawer_open">Открыть панель папок</string>
+    <string name="input_password">Введите пароль</string>
+    <string name="backup_saved">Резервная копия успешно сохранена</string>
+    <string name="backup_restored">База данных успешно восстановлена</string>
+    <string name="password_error">Ошибка. Возможно, вы ошиблись при вводе пароля.</string>
+    <string name="save_backup_db">Сохранить базу данных</string>
+    <string name="restore_backup_db">Восстановить базу данных</string>
 </resources>
