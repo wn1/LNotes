@@ -46,8 +46,11 @@
     <string name="need_update_lnotesync">Update LNotesSync needed</string>
     <string name="input_password">Input password</string>
     <string name="backup_saved">Backup saved</string>
+    <string name="backup_saved_to">Backup saved to: </string>
     <string name="backup_restored">Backup restored</string>
     <string name="password_error">Error. Password may be incorrect.</string>
     <string name="save_backup_db">Save database</string>
     <string name="restore_backup_db">Restore database</string>
+    <string name="file_selector_not_found">File Manager for select files not found</string>
+    <string name="file_create_error">Error creating file:</string>
 </resources>
