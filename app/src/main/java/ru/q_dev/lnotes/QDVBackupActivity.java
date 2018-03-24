@@ -105,7 +105,6 @@ public class QDVBackupActivity extends AppCompatActivity {
                     return;
                 }
                 saveBackup(password);
-
             }
         }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
@@ -144,7 +143,6 @@ public class QDVBackupActivity extends AppCompatActivity {
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.KITKAT) {
 		//for old version
             File dbBackupFile = null;
-            String saveFileAppendPath = "/Backups/LNotes/";
             File storageBackupDir = getSaveBackupDirForOldOs();
             if (storageBackupDir != null) {
                 dbBackupFile = new File(storageBackupDir.getAbsolutePath() + "/"  + fileNameString);

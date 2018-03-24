@@ -16,7 +16,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -40,7 +39,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import android.widget.*;
 
 /**
  * Created by Vladimir Kudashov on 11.03.17.
@@ -348,7 +346,7 @@ public class QDVNotesActivity extends ActionBarActivity
                         fragment.setArguments(args);
                         QDVNoteEditorFragment.setEditorActiveFlag(true);
                         QDVNoteEditorFragment.setChangesFlag(false);
-                        getFragmentManager().beginTransaction().addToBackStack(biNotesBackStack).replace(R.id.container, fragment).commit();
+                        getFragmentManager().beginTransaction().addToBackStack(biNotesBackStack).replace(R.id.container, fragment, "notesEditorFragment").commit();
                     }
                 }
             });
@@ -513,7 +511,6 @@ public class QDVNotesActivity extends ActionBarActivity
             super.onCreateOptionsMenu(menu, inflater);
         }
 
-
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {
             if (item.getItemId() == R.id.action_add_note) {
@@ -524,7 +521,7 @@ public class QDVNotesActivity extends ActionBarActivity
                 fragment.setArguments(args);
                 QDVNoteEditorFragment.setEditorActiveFlag(true);
                 QDVNoteEditorFragment.setChangesFlag(false);
-                getFragmentManager().beginTransaction().addToBackStack(biNotesBackStack).replace(R.id.container, fragment).commit();
+                getFragmentManager().beginTransaction().addToBackStack(biNotesBackStack).replace(R.id.container, fragment, "notesEditorFragment").commit();
                 return true;
             }
 
@@ -583,8 +580,6 @@ public class QDVNotesActivity extends ActionBarActivity
 
             return super.onOptionsItemSelected(item);
         }
-		
-		
 
         @Override
         public void onAttach(Activity activity) {
@@ -592,4 +587,13 @@ public class QDVNotesActivity extends ActionBarActivity
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag("notesEditorFragment");
+        if (fragment != null && (fragment instanceof QDVNoteEditorFragment)) {
+            ((QDVNoteEditorFragment) fragment).goBackWithConfirm();
+            return;
+        }
+        super.onBackPressed();
+    }
 }

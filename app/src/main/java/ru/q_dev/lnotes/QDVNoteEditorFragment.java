@@ -182,30 +182,35 @@ public class QDVNoteEditorFragment extends Fragment {
             return true;
         }
         else {
-            if (getChangesFlag()) {
-
-                new AlertDialog.Builder(getActivity()).setMessage(R.string.exit_without_save_confirm).setCancelable(true)
-                        .setPositiveButton(R.string.action_yes, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                QDVNoteEditorFragment.setEditorActiveFlag(false);
-                                QDVNoteEditorFragment.setChangesFlag(false);
-                                InputMethodManager inputMethodManager = (InputMethodManager)ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                                inputMethodManager.hideSoftInputFromWindow(mEditTextView.getWindowToken(), 0);
-                                getFragmentManager().popBackStack();
-                            }
-                        })
-                        .setNegativeButton(R.string.action_no, null).show();
-            }
-            else {
-                QDVNoteEditorFragment.setEditorActiveFlag(false);
-                QDVNoteEditorFragment.setChangesFlag(false);
-                InputMethodManager inputMethodManager = (InputMethodManager)ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(mEditTextView.getWindowToken(), 0);
-                getFragmentManager().popBackStack();
-            }
+            goBackWithConfirm();
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+    public void goBackWithConfirm () {
+        if (getChangesFlag()) {
+
+            new AlertDialog.Builder(getActivity()).setMessage(R.string.exit_without_save_confirm).setCancelable(true)
+                    .setPositiveButton(R.string.action_yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            QDVNoteEditorFragment.setEditorActiveFlag(false);
+                            QDVNoteEditorFragment.setChangesFlag(false);
+                            InputMethodManager inputMethodManager = (InputMethodManager)ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            inputMethodManager.hideSoftInputFromWindow(mEditTextView.getWindowToken(), 0);
+                            getFragmentManager().popBackStack();
+                        }
+                    })
+                    .setNegativeButton(R.string.action_no, null).show();
+        }
+        else {
+            QDVNoteEditorFragment.setEditorActiveFlag(false);
+            QDVNoteEditorFragment.setChangesFlag(false);
+            InputMethodManager inputMethodManager = (InputMethodManager)ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(mEditTextView.getWindowToken(), 0);
+            getFragmentManager().popBackStack();
+        }
+    }
+
 }
