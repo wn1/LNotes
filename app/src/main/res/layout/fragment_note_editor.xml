@@ -16,9 +16,10 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:editable="true"
         android:ems="10"
         android:gravity="top|left|start"
-        android:inputType="text|textMultiLine|textPersonName">
-    </EditText>
+        android:inputType="text|textMultiLine|textPersonName"></EditText>
 </RelativeLayout>
