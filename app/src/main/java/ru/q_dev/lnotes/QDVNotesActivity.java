@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBarActivity;
@@ -16,6 +17,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.text.SpannableString;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -572,8 +575,13 @@ public class QDVNotesActivity extends ActionBarActivity
                 } catch (PackageManager.NameNotFoundException e) {
                     e.printStackTrace();
                 }
+
+                View alertDialogView = getActivity().getLayoutInflater().inflate(R.layout.about_dialog, null);
+                TextView textView = (TextView) alertDialogView.findViewById(R.id.aboutText);
+                textView.setText(R.string.about_message);
                 new AlertDialog.Builder(getActivity()).setTitle(lnotesNameAndVersion)
-                        .setMessage(R.string.about_message).setCancelable(true)
+                        .setCancelable(true)
+                        .setView(alertDialogView)
                         .setPositiveButton(R.string.action_ok, null).show();
 
                 return true;
@@ -585,6 +593,16 @@ public class QDVNotesActivity extends ActionBarActivity
 				startActivity(sendDataActivityStartIntent);
 				//getActivity().finish();
                 return true;
+            }
+
+            if (item.getItemId() == R.id.action_remove_ads) {
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=ru.q_dev.LNoteP")));
+                }
+                catch (Exception ignored) {
+                    new AlertDialog.Builder(getActivity()).setMessage(R.string.app_not_found)
+                            .setCancelable(true).setNegativeButton(R.string.cancel, null).show();
+                }
             }
 
             return super.onOptionsItemSelected(item);

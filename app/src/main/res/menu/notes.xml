@@ -19,4 +19,9 @@
         android:id="@+id/action_about"
         android:orderInCategory="103"
         android:title="@string/action_about" />
+
+    <item
+        android:id="@+id/action_remove_ads"
+        android:orderInCategory="103"
+        android:title="@string/action_remove_ads" />
 </menu>

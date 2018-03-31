@@ -37,7 +37,7 @@
     <string name="action_backup">Резервное копирование...</string>
     <string name="copy_base_from_old_lnotes">Обновление базы данных LNotes</string>
     <string name="action_about">О проекте...</string>
-    <string name="about_message">Лёгкие заметки в моём кармане. \n\n(C) Владимир Кудашов 2015-2017</string>
+    <string name="about_message">\nЛёгкие заметки в моём кармане. \n\n(C) Владимир Кудашов 2015-2018\n\nЛицензия MIT\nИсходный код: https://github.com/wn1/LNotes</string>
     <string name="action_backup_confirm_title">Копировать все заметки?</string>
     <string name="copy">Копировать</string>
 	<string name="file_selector_not_found">Нет программы для выбора файлов. Установите файловый менеджер и попробуйте ещё раз.</string>
@@ -52,4 +52,6 @@
     <string name="save_backup_db">Сохранить базу данных</string>
     <string name="restore_backup_db">Восстановить базу данных</string>
     <string name="file_create_error">Ошибка при создании файла: </string>
+    <string name="action_remove_ads">Убрать рекламу...</string>
+    <string name="app_not_found">Приложение для этого действия не найдено</string>
 </resources>
