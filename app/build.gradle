@@ -24,13 +24,35 @@ android {
         // but continue the build even when errors are found:
 //        abortOnError false
     }
+
+    sourceSets {
+        main {
+            manifest.srcFile "src/free/AndroidManifest.xml"
+        }
+    }
+
+    productFlavors {
+        free {
+            applicationId "ru.q_dev.LNote"
+
+        }
+
+        plusVersion {
+            applicationId "ru.q_dev.LNoteP"
+            sourceSets {
+                main {
+                    manifest.srcFile "src/plusVersion/AndroidManifest.xml"
+                }
+            }
+        }
+    }
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     //    testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:25.4.0'
-    compile 'com.google.android.gms:play-services-ads:10.2.0'
+    freeCompile 'com.google.android.gms:play-services-ads:10.2.0'
 
 //    compile 'org.apache.directory.studio:org.apache.commons.codec:1.8'
 }

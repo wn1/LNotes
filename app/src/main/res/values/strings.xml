@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">LNotes</string>
     <string name="admob_banner_id">ca-app-pub-2316358873443936/4547716391</string>
 
     <string name="navigation_drawer_open">Open folders drawer</string>

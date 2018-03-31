@@ -34,9 +34,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -80,9 +77,9 @@ public class QDVNotesActivity extends ActionBarActivity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        AdView adView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        adView.loadAd(adRequest);
+        if (QDVVersionDifference.adsPresent()) {
+            QDVVersionDifference.loadAd(this);
+        }
     }
 
     private void reloadDataDb() {
@@ -519,8 +516,9 @@ public class QDVNotesActivity extends ActionBarActivity
 
         @Override
         public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-            inflater.inflate(R.menu.notes, menu);;
+            inflater.inflate(R.menu.notes, menu);
             super.onCreateOptionsMenu(menu, inflater);
+            menu.findItem(R.id.action_remove_ads).setVisible(QDVVersionDifference.isFreeVersion());
         }
 
         @Override
@@ -567,7 +565,7 @@ public class QDVNotesActivity extends ActionBarActivity
             }
 
             if (item.getItemId() == R.id.action_about){
-                String lnotesNameAndVersion = "LNotes ";
+                String lnotesNameAndVersion = getString(R.string.app_name)+" ";
                 try {
                     lnotesNameAndVersion = lnotesNameAndVersion +
                             getContext().getPackageManager().getPackageInfo(
