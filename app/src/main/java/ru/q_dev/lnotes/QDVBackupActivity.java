@@ -78,8 +78,8 @@ public class QDVBackupActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putString("passwordForBackup", passwordForBackup);
         super.onSaveInstanceState(outState);
+        outState.putString("passwordForBackup", passwordForBackup);
     }
 
     private void saveBackup() {

@@ -1,23 +1,19 @@
 package ru.q_dev.lnotes;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
 import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.renderscript.ScriptGroup;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
-import android.text.method.KeyListener;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,11 +21,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
 
 /**
  * Created by Vladimir Kudashov on 30.03.17.
@@ -40,11 +33,11 @@ public class QDVNoteEditorFragment extends Fragment {
     private View mEditorView;
     private EditText mEditTextView;
     private Long mNoteId;
-    private Long mFolderIdToAdding = (long) QDVNotesActivity.action_categories_not_selected_id;
+    private Long mFolderId = (long) QDVNotesActivity.action_categories_not_selected_id;
 
     public static String siEditedText =  "editedText";
-    public static String siFolderIdToAdding =  "folderId";
-    public static String siEditorNoteId =  "editorNoteId"; //0 - adding, 1 - editing
+    public static String siFolderId =  "folderId";
+    public static String siEditorNoteId =  "editorNoteId"; // -1 - adding
     public static String siFragmentId =  "note_editor";
 
     public static String PREFERENCE_NOTE_EDITOR_ACTIVE = "PREFERENCE_NOTE_EDITOR_ACTIVE";
@@ -73,6 +66,12 @@ public class QDVNoteEditorFragment extends Fragment {
         return sp.getBoolean(PREFERENCE_NOTE_EDITOR_CHANGES_FLAG, false);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong(siFolderId, mFolderId);
+        outState.putLong(siEditorNoteId, mNoteId);
+    }
 
     @Nullable
     @Override
@@ -85,7 +84,7 @@ public class QDVNoteEditorFragment extends Fragment {
 
         String textContent = bundle!=null ? bundle.getString(siEditedText) : null;
         mNoteId = bundle!=null ? bundle.getLong(siEditorNoteId) : null;
-        mFolderIdToAdding = bundle!=null ? bundle.getLong(siFolderIdToAdding) : QDVNotesActivity.action_categories_not_selected_id;
+        mFolderId = bundle!=null ? bundle.getLong(siFolderId) : QDVNotesActivity.action_categories_not_selected_id;
 
         mEditTextView.setText(textContent);
         mEditTextView.requestFocus();
@@ -120,8 +119,6 @@ public class QDVNoteEditorFragment extends Fragment {
             }
         });
 
-
-
         mEditTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -129,7 +126,19 @@ public class QDVNoteEditorFragment extends Fragment {
             }
         });
 
+        String folderName = QDVMyBaseQueryHelper.getFolderDescription(getContext(), mFolderId);
+        if (folderName != null) {
+            if (getActivity()!=null && getActivity() instanceof ActionBarActivity) {
+                ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(folderName);
+            }
+        }
+
         return mEditorView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 
     @Override
@@ -169,7 +178,7 @@ public class QDVNoteEditorFragment extends Fragment {
                     else
                     {
                         db.execSQL("INSERT INTO notes (content, cdate, folder_id) VALUES (:content, DATETIME('now'), :folder_id)",
-                                new String[]{mEditTextView.getText().toString(), String.valueOf(mFolderIdToAdding)});
+                                new String[]{mEditTextView.getText().toString(), String.valueOf(mFolderId)});
                     }
                 }
                 QDVNoteEditorFragment.setEditorActiveFlag(false);

@@ -17,8 +17,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.text.SpannableString;
-import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -304,7 +302,7 @@ public class QDVNotesActivity extends ActionBarActivity
             if (dbHelper!=null){
                 SQLiteDatabase db = dbHelper.getReadableDatabase();
                 if (db != null){
-                    mCursor = db.query("notes", new String[]{"id as _id", "content", "cdate", "isready_date", "isready"}, filterString, paramStr,  null, null, "isready, isready_date DESC, cdate DESC", null);
+                    mCursor = db.query("notes", new String[]{"id as _id", "content", "cdate", "isready_date", "isready", "folder_id"}, filterString, paramStr,  null, null, "isready, isready_date DESC, cdate DESC", null);
                 }
             }
 
@@ -320,6 +318,23 @@ public class QDVNotesActivity extends ActionBarActivity
                 String search_label = String.format(getString(R.string.finding_label), searchText)
                     + "\n"+ String.format(getString(R.string.finding_label_count), String.valueOf(count));
                 ((TextView)rootView.findViewById(R.id.find_text_view_label)).setText(search_label);
+            }
+
+            String folderName = null;
+            if (idSection == action_categories_all_id) {
+                folderName = getString(R.string.category_all);
+            }
+            else if (idSection == action_categories_not_selected_id) {
+                folderName = getString(R.string.category_unknown);
+            }
+            else
+            {
+                folderName = QDVMyBaseQueryHelper.getFolderDescription(getContext(), idFolderToAdding);
+            }
+            if (folderName != null) {
+                if (getActivity()!=null && getActivity() instanceof ActionBarActivity) {
+                    ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(folderName);
+                }
             }
 
         }
@@ -341,7 +356,7 @@ public class QDVNotesActivity extends ActionBarActivity
                     if (cursor != null && !mCursor.isAfterLast() && !cursor.isNull(1)) {
                         args.putString(QDVNoteEditorFragment.siEditedText, cursor.getString(1));
                         args.putLong(QDVNoteEditorFragment.siEditorNoteId, cursor.getLong(0));
-                        args.putLong(QDVNoteEditorFragment.siFolderIdToAdding, idFolderToAdding!=null ? idFolderToAdding : action_categories_not_selected_id );
+                        args.putLong(QDVNoteEditorFragment.siFolderId, cursor.getInt(5) );
                         Fragment fragment = new QDVNoteEditorFragment();
                         fragment.setArguments(args);
                         QDVNoteEditorFragment.setEditorActiveFlag(true);
@@ -525,7 +540,7 @@ public class QDVNotesActivity extends ActionBarActivity
         public boolean onOptionsItemSelected(MenuItem item) {
             if (item.getItemId() == R.id.action_add_note) {
                 Bundle args = new Bundle();
-                args.putLong(QDVNoteEditorFragment.siFolderIdToAdding, idFolderToAdding!=null ? idFolderToAdding : action_categories_not_selected_id );
+                args.putLong(QDVNoteEditorFragment.siFolderId, idFolderToAdding!=null ? idFolderToAdding : action_categories_not_selected_id );
                 args.putLong(QDVNoteEditorFragment.siEditorNoteId, -1);
                 Fragment fragment = new QDVNoteEditorFragment();
                 fragment.setArguments(args);

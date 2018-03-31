@@ -1,7 +1,7 @@
 package ru.q_dev.lnotes;
 
 /**
- * Created by user_vladimir on 31.03.18.
+ * Created by Vladimir Kudashov on 31.03.18.
  */
 
 import android.app.Activity;
