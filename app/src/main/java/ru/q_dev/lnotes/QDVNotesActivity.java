@@ -498,10 +498,10 @@ public class QDVNotesActivity extends ActionBarActivity
                 @Override
                 public void bindView(View view, Context context, Cursor cursor) {
                     super.bindView(view, context, cursor);
-                    boolean isColorTextEnabled = cursor.getInt(4)==0;
-                    view.findViewById(R.id.text_view_date_left).setEnabled(isColorTextEnabled);
-                    view.findViewById(R.id.text_view_note).setEnabled(isColorTextEnabled);
-                    view.findViewById(R.id.text_view_date_right).setEnabled(isColorTextEnabled);
+                    boolean isStatusReady = cursor.getInt(4)!=0;
+                    view.findViewById(R.id.text_view_date_left).setAlpha(isStatusReady ? 0.3f : 0.5f);
+                    view.findViewById(R.id.text_view_note).setAlpha(isStatusReady ? 0.4f : 1f);
+                    view.findViewById(R.id.text_view_date_right).setAlpha(isStatusReady ? 0.3f : 0.5f);
                 }
             };
             mNotesList.setAdapter(cursorListAdapter);
