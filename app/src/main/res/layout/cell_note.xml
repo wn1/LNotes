@@ -24,7 +24,8 @@
             android:layout_alignRight="@+id/layout_dates"
             android:layout_weight="1"
             android:maxLines="2"
-            android:text="TextView" />
+            android:text="TextView"
+            android:textColor="?android:attr/textColorPrimary" />
 
         <RelativeLayout
             android:id="@+id/layout_dates"
@@ -39,7 +40,8 @@
                 android:id="@+id/text_view_date_left"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:text="TextView"
+                android:textColor="?android:attr/textColorPrimary" />
 
             <TextView
                 android:id="@+id/text_view_date_right"
@@ -48,7 +50,8 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
-                android:text="TextView" />
+                android:text="TextView"
+                android:textColor="?android:attr/textColorPrimary" />
         </RelativeLayout>
     </LinearLayout>
 

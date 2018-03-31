@@ -304,7 +304,7 @@ public class QDVNotesActivity extends ActionBarActivity
             if (dbHelper!=null){
                 SQLiteDatabase db = dbHelper.getReadableDatabase();
                 if (db != null){
-                    mCursor = db.query("notes", new String[]{"id as _id", "content", "cdate", "isready_date"}, filterString, paramStr,  null, null, "isready, isready_date DESC, cdate DESC", null);
+                    mCursor = db.query("notes", new String[]{"id as _id", "content", "cdate", "isready_date", "isready"}, filterString, paramStr,  null, null, "isready, isready_date DESC, cdate DESC", null);
                 }
             }
 
@@ -479,7 +479,16 @@ public class QDVNotesActivity extends ActionBarActivity
 
             String[] from = new String[] {"content", "cdate", "isready_date"};
             int[] to = new int[] {R.id.text_view_note, R.id.text_view_date_left, R.id.text_view_date_right};
-            final ListAdapter cursorListAdapter = new SimpleCursorAdapter(getContext(), R.layout.cell_note,  mCursor, from, to, SimpleCursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+            final ListAdapter cursorListAdapter = new SimpleCursorAdapter(getContext(), R.layout.cell_note,  mCursor, from, to, SimpleCursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER) {
+                @Override
+                public void bindView(View view, Context context, Cursor cursor) {
+                    super.bindView(view, context, cursor);
+                    boolean isColorTextEnabled = cursor.getInt(4)==0;
+                    view.findViewById(R.id.text_view_date_left).setEnabled(isColorTextEnabled);
+                    view.findViewById(R.id.text_view_note).setEnabled(isColorTextEnabled);
+                    view.findViewById(R.id.text_view_date_right).setEnabled(isColorTextEnabled);
+                }
+            };
             mNotesList.setAdapter(cursorListAdapter);
 
             ((Button) rootView.findViewById(R.id.button_find_cancel)).setOnClickListener(new View.OnClickListener() {
