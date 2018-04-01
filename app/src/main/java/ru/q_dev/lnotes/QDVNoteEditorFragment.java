@@ -10,8 +10,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -128,8 +128,8 @@ public class QDVNoteEditorFragment extends Fragment {
 
         String folderName = QDVMyBaseQueryHelper.getFolderDescription(getContext(), mFolderId);
         if (folderName != null) {
-            if (getActivity()!=null && getActivity() instanceof ActionBarActivity) {
-                ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(folderName);
+            if (getActivity()!=null && getActivity() instanceof AppCompatActivity) {
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(folderName);
             }
         }
 

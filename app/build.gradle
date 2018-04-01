@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion '23.0.3'
 
     defaultConfig {
         applicationId "ru.q_dev.LNote"
         minSdkVersion 14
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 18
         versionName "1.8"
     }
@@ -25,25 +25,13 @@ android {
 //        abortOnError false
     }
 
-    sourceSets {
-        main {
-            manifest.srcFile "src/free/AndroidManifest.xml"
-        }
-    }
-
     productFlavors {
         free {
             applicationId "ru.q_dev.LNote"
-
         }
 
         plusVersion {
             applicationId "ru.q_dev.LNoteP"
-            sourceSets {
-                main {
-                    manifest.srcFile "src/plusVersion/AndroidManifest.xml"
-                }
-            }
         }
     }
 }
@@ -51,8 +39,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     //    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:25.4.0'
-    freeCompile 'com.google.android.gms:play-services-ads:10.2.0'
+    compile 'com.android.support:appcompat-v7:26.1.0'
 
-//    compile 'org.apache.directory.studio:org.apache.commons.codec:1.8'
+    freeCompile 'com.google.android.gms:play-services-ads:12.0.1'
 }

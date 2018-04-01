@@ -11,12 +11,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -42,7 +42,7 @@ import java.io.IOException;
  * Created by Vladimir Kudashov on 11.03.17.
  */
 
-public class QDVNotesActivity extends ActionBarActivity
+public class QDVNotesActivity extends AppCompatActivity
         implements QDVNavigationDrawerFragment.NavigationDrawerCallbacks {
 
     private QDVNavigationDrawerFragment mNavigationDrawerFragment;
@@ -332,8 +332,8 @@ public class QDVNotesActivity extends ActionBarActivity
                 folderName = QDVMyBaseQueryHelper.getFolderDescription(getContext(), idFolderToAdding);
             }
             if (folderName != null) {
-                if (getActivity()!=null && getActivity() instanceof ActionBarActivity) {
-                    ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(folderName);
+                if (getActivity()!=null && getActivity() instanceof AppCompatActivity) {
+                    ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(folderName);
                 }
             }
 
