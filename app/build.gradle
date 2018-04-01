@@ -8,7 +8,7 @@ android {
         applicationId "ru.q_dev.LNote"
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 19
+        versionCode 20
         versionName "1.8"
     }
     buildTypes {
