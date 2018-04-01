@@ -183,7 +183,8 @@ public class QDVBackupActivity extends AppCompatActivity {
             try {
                 Intent i = new Intent(Intent.ACTION_CREATE_DOCUMENT);
                 i.addCategory(Intent.CATEGORY_OPENABLE);
-                i.setType("file/*");
+                i.setType("*/*");
+                i.putExtra( "android.content.extra.SHOW_ADVANCED", true);
                 i.putExtra(Intent.EXTRA_TITLE, fileNameString);
                 startActivityForResult(i, SELECTFILE_SAVE_DB_RESULT_CODE);
             } catch (Exception ignore) {
@@ -261,12 +262,13 @@ public class QDVBackupActivity extends AppCompatActivity {
                 //for old version
                 File backupsDir = getSaveBackupDirForOldOs();
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setDataAndType(Uri.parse(backupsDir.getAbsolutePath()), "file/*");
+                intent.setDataAndType(Uri.parse(backupsDir.getAbsolutePath()), "*/*");
                 startActivityForResult(intent, SELECTFILE_RESTORE_DB_OLD_OS_RESULT_CODE);
             }
             else {
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                intent.setType("file/*");
+                intent.setType("*/*");
+                intent.putExtra( "android.content.extra.SHOW_ADVANCED", true);
 //              String[] mimeTypes = {"file/.db", "file/.dbcr"};
 //    			intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
                 startActivityForResult(intent, SELECTFILE_RESTORE_DB_RESULT_CODE);
