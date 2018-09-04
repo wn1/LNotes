@@ -302,7 +302,22 @@ public class QDVNotesActivity extends AppCompatActivity
             if (dbHelper!=null){
                 SQLiteDatabase db = dbHelper.getReadableDatabase();
                 if (db != null){
-                    mCursor = db.query("notes", new String[]{"id as _id", "content", "cdate", "isready_date", "isready", "folder_id"}, filterString, paramStr,  null, null, "isready, isready_date DESC, cdate DESC", null);
+                    mCursor = db.query(
+                            "notes a",
+                            new String[]{
+                                "id as _id",
+                                "content",
+                                "datetime( cdate, 'localtime' ) as cdate",
+                                "datetime( isready_date, 'localtime' ) as isready_date",
+                                "isready",
+                                "folder_id"
+                            },
+                            filterString,
+                            paramStr,
+                            null,
+                            null,
+                            "isready, isready_date DESC, cdate DESC",
+                            null);
                 }
             }
 
