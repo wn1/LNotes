@@ -19,6 +19,7 @@
     <string name="menu_set_done">Set done...</string>
     <string name="delete_confirm">Delete note?</string>
     <string name="set_done">Done</string>
+    <string name="set_no_needed">No needed</string>
     <string name="set_in_work">In work</string>
     <string name="cancel">Cancel</string>
     <string name="finding_label">Search: %s</string>

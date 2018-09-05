@@ -11,6 +11,10 @@ import android.support.v7.app.AlertDialog;
  */
 
 public class QDVMyBaseQueryHelper {
+    public static int is_ready_state_in_work = 0;
+    public static int is_ready_state_success = 1;
+    public static int is_ready_state_no_needed = 2;
+
     public static String getFolderDescription (final Context context, long folderId) {
         String folderName = null;
         if (folderId == QDVNotesActivity.action_categories_not_selected_id) {

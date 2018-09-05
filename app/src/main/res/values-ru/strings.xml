@@ -15,6 +15,7 @@
     <string name="menu_set_done">Указать готовность...</string>
     <string name="delete_confirm">Удалить заметку?</string>
     <string name="set_done">Готово</string>
+    <string name="set_no_needed">Не нужно</string>
     <string name="set_in_work">В работе</string>
     <string name="cancel">Отмена</string>
     <string name="finding_label">Поиск: %s</string>

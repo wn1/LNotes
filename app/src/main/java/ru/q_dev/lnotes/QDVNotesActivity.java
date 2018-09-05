@@ -310,13 +310,14 @@ public class QDVNotesActivity extends AppCompatActivity
                                 "datetime( cdate, 'localtime' ) as cdate",
                                 "datetime( isready_date, 'localtime' ) as isready_date",
                                 "isready",
-                                "folder_id"
+                                "folder_id",
+                                "(isready > 0) as isready_order"
                             },
                             filterString,
                             paramStr,
                             null,
                             null,
-                            "isready, isready_date DESC, cdate DESC",
+                            "isready_order, isready_date DESC, cdate DESC",
                             null);
                 }
             }
@@ -478,16 +479,20 @@ public class QDVNotesActivity extends AppCompatActivity
                                         break;
                                     case 2:
                                         new AlertDialog.Builder(getActivity()).setTitle(note_content).setCancelable(true)
-                                                .setItems(new String[]{getString(R.string.set_done), getString(R.string.set_in_work)}, new DialogInterface.OnClickListener() {
+                                                .setItems(new String[]{getString(R.string.set_done), getString(R.string.set_no_needed),
+                                                        getString(R.string.set_in_work)}, new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                                        if (i == 0 || i == 1) {
+                                                        if (i >= 0 && i <= 2) {
                                                             if (dbHelper != null) {
                                                                 SQLiteDatabase db = dbHelper.getReadableDatabase();
                                                                 if (db != null) {
-                                                                    db.execSQL("UPDATE notes SET isReady = "+(i==0 ? "1" : "0") +
-                                                                                    (i==0 ? ", isready_date = DATETIME('now')" : ", isready_date = NULL")+
-                                                                            " WHERE id = "+ String.valueOf(note_id));
+                                                                    db.execSQL("UPDATE notes SET isReady = "
+                                                                            + (i==0 ? String.valueOf (QDVMyBaseQueryHelper.is_ready_state_success)
+                                                                                : (i==1 ? String.valueOf (QDVMyBaseQueryHelper.is_ready_state_no_needed)
+                                                                                    : String.valueOf (QDVMyBaseQueryHelper.is_ready_state_in_work)))
+                                                                            + (i!=2 ? ", isready_date = DATETIME('now')" : ", isready_date = NULL")
+                                                                            + " WHERE id = "+ String.valueOf(note_id));
                                                                     reloadData(rootView);
                                                                 }
                                                             }
@@ -513,10 +518,13 @@ public class QDVNotesActivity extends AppCompatActivity
                 @Override
                 public void bindView(View view, Context context, Cursor cursor) {
                     super.bindView(view, context, cursor);
-                    boolean isStatusReady = cursor.getInt(4)!=0;
-                    view.findViewById(R.id.text_view_date_left).setAlpha(isStatusReady ? 0.3f : 0.5f);
-                    view.findViewById(R.id.text_view_note).setAlpha(isStatusReady ? 0.4f : 1f);
-                    view.findViewById(R.id.text_view_date_right).setAlpha(isStatusReady ? 0.3f : 0.5f);
+                    int isReady = cursor.getInt(4);
+                    boolean isReadyOrDone = isReady!=QDVMyBaseQueryHelper.is_ready_state_in_work;
+                    view.findViewById(R.id.text_view_date_left).setAlpha(isReadyOrDone ? 0.3f : 0.5f);
+                    view.findViewById(R.id.text_view_note).setAlpha(isReadyOrDone ? 0.4f : 1f);
+                    view.findViewById(R.id.text_view_date_right).setAlpha(isReadyOrDone ? 0.3f : 0.5f);
+                    view.findViewById(R.id.imageView_ready).setVisibility(
+                            isReady==QDVMyBaseQueryHelper.is_ready_state_success ? View.VISIBLE : View.GONE);
                 }
             };
             mNotesList.setAdapter(cursorListAdapter);
