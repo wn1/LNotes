@@ -86,8 +86,10 @@ class QDVNoteEditorPresenter : MvpPresenter <QDVNoteEditorView> () {
     fun saveNote(): Boolean {
         try {
             if (editorState.editorMode == QDVNoteEditorState.EditorMode.EDITING) {
+                note?.updateTime = Date()
                 database.getDaoWithIdLong(QDVDbNote::class.java).update(note)
             } else {
+                note?.createTime = Date()
                 database.getDaoWithIdLong(QDVDbNote::class.java).create(note)
             }
         }

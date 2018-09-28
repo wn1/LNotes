@@ -13,7 +13,7 @@ import java.io.File;
  */
 
 public class QDVMyBaseOpenHelper extends SQLiteOpenHelper {
-    private static final int VERSION = 6;
+    private static final int VERSION = 7;
     public static final String DATABASE_NAME = "data.db";
 
     public QDVMyBaseOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
