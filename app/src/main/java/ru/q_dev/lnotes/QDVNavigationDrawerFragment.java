@@ -433,10 +433,8 @@ public class QDVNavigationDrawerFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (!QDVNoteEditorFragment.getEditorActiveFlag()) {
-            if (mDrawerToggle.onOptionsItemSelected(item)) {
-                return true;
-            }
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
