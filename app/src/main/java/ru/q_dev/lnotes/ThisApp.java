@@ -20,6 +20,6 @@ public class ThisApp extends Application {
         sContext = getApplicationContext();
 
         //TODO Need delete after QDVMyBaseQueryHelper remove
-        new QDVDbDatabase(sContext);
+        new QDVDbDatabase(sContext).getWritableDatabase();
     }
 }
