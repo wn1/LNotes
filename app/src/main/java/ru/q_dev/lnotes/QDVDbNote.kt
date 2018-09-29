@@ -8,6 +8,8 @@ import java.util.*
 
 @DatabaseTable(tableName="notes")
 class QDVDbNote : Serializable {
+    enum class StatusOfExecution {CREATED, COMPLETED, NOT_NEED}
+
     @DatabaseField(generatedId = true, dataType = DataType.LONG, columnName = "id")
     val id: Long = 0
     @DatabaseField(dataType = DataType.STRING, canBeNull = true)
@@ -41,5 +43,13 @@ class QDVDbNote : Serializable {
         set(value) {
             completeTimeInUnixMs = value?.time
         }
+
+    @DatabaseField (dataType = DataType.INTEGER, columnName = "isready")
+    var statusOfExecutionInt: Int = 0
+    var statusOfExecution: StatusOfExecution
+    get() = StatusOfExecution.values()[statusOfExecutionInt]
+    set(value) {
+        statusOfExecutionInt = value.ordinal
+    }
 }
 

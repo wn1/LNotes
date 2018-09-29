@@ -90,6 +90,7 @@ class QDVNoteEditorPresenter : MvpPresenter <QDVNoteEditorView> () {
                 database.getDaoWithIdLong(QDVDbNote::class.java).update(note)
             } else {
                 note?.createTime = Date()
+                note?.folderId = editorState.folderId
                 database.getDaoWithIdLong(QDVDbNote::class.java).create(note)
             }
         }

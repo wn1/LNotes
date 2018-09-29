@@ -43,6 +43,7 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
     QDVNoteEditorPresenter noteEditorPresenter;
 
     private View editorView;
+    private boolean editTextViewChangesNotifyEnable = true;
 
     @Nullable
     @Override
@@ -84,11 +85,19 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
 
             @Override
             public void afterTextChanged(Editable editable) {
-                noteEditorPresenter.onEditorInputChanges();
+                if (editTextViewChangesNotifyEnable)  {
+                    noteEditorPresenter.onEditorInputChanges();
+                }
             }
         });
 
         return editorView;
+    }
+
+    private void setTextToEditWithoutChangesNotify(String text) {
+        editTextViewChangesNotifyEnable = false;
+        editTextView.setText(text);
+        editTextViewChangesNotifyEnable = true;
     }
 
     @Override
@@ -117,25 +126,6 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
             if (noteEditorPresenter.saveNote()) {
                 goBack();
             }
-
-//            if (dbHelper!=null) {
-//                SQLiteDatabase db = dbHelper.getWritableDatabase();
-//                if (db!=null) {
-//                    if (noteId !=null && noteId >=0) {
-//                        db.execSQL("UPDATE notes SET content = :content, cdate = DATETIME('now') WHERE id = :id",
-//                                new String[]{editTextView.getText().toString(), String.valueOf(noteId)});
-//                    }
-//                    else
-//                    {
-//                        db.execSQL("INSERT INTO notes (content, cdate, folder_id) VALUES (:content, DATETIME('now'), :folder_id)",
-//                                new String[]{editTextView.getText().toString(), String.valueOf(mFolderId)});
-//                    }
-//                }
-//
-//
-//
-//
-//            }
 
             return true;
         }
@@ -192,7 +182,7 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
     @Override
     public void setNoteContent(@NotNull String content) {
         if (editTextView.getText().toString().isEmpty()) {
-            editTextView.setText(content);
+            setTextToEditWithoutChangesNotify(content);
         }
     }
 
