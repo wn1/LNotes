@@ -12,7 +12,7 @@ import com.j256.ormlite.dao.CloseableIterator
 
 @StateStrategyType(AddToEndSingleStrategy::class)
 interface QDVNotesListView : MvpView {
-    fun loadNotesList(iterator: CloseableIterator<QDVDbNote>)
+    fun loadNotesList(dbIterator: CloseableIterator<QDVDbNote>)
     fun setSearchState(searchState: QDVSearchState)
     fun setFolderName(folderName: String)
 }

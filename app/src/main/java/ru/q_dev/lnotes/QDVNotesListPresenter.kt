@@ -4,6 +4,7 @@ import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import com.j256.ormlite.dao.CloseableIterator
 import com.j256.ormlite.stmt.Where
+import java.util.*
 
 /**
  * Created by Vladimir Kudashov on 29.09.18.
@@ -13,24 +14,32 @@ class QDVNotesListPresenter : MvpPresenter <QDVNotesListView> () {
     var database: QDVDbDatabase = QDVDbDatabase.getAndLock()
     var state: QDVNotesListState = QDVNotesListState()
 
-    fun queryNotes():  CloseableIterator<QDVDbNote> {
+    fun dbIteratotorFoldersQuery(): CloseableIterator<QDVDbFolder> {
+        val noteDao = database.getDaoWithIdLong(QDVDbFolder::class.java)
+        val queryBuilder = noteDao.queryBuilder()
+
+        queryBuilder.orderByRaw("label")
+        return queryBuilder.iterator()
+    }
+
+    fun dbIteratorNotesQuery(): CloseableIterator<QDVDbNote> {
         val noteDao = database.getDaoWithIdLong(QDVDbNote::class.java)
         val queryBuilder = noteDao.queryBuilder()
         val filter = state.filterByFolderState;
 
-        var where : Where<QDVDbNote, Long>? = null
+        var where: Where<QDVDbNote, Long>? = null
         if (filter.filterType == QDVFilterByFolderState.FilterType.FOLDER_NOT_SELECTED) {
             val columnName = "folder_id";
             where = queryBuilder.where().isNull(columnName).or().le(columnName, 0)
         } else {
             val columnName = "folder_id";
             if (filter.filterType == QDVFilterByFolderState.FilterType.FOLDER_ID
-                    && state.filterByFolderState.folderId!=null) {
+                    && state.filterByFolderState.folderId != null) {
                 where = queryBuilder.where().eq(columnName, state.filterByFolderState.folderId)
-            }
-            else if (filter.filterType == QDVFilterByFolderState.FilterType.FOLDER
-                    && state.filterByFolderState.folder!=null) {
-                where = queryBuilder.where().eq(columnName, state.filterByFolderState.folder?.id ?: 0)
+            } else if (filter.filterType == QDVFilterByFolderState.FilterType.FOLDER
+                    && state.filterByFolderState.folder != null) {
+                where = queryBuilder.where().eq(columnName,
+                        state.filterByFolderState.folder?.id ?: 0)
             }
         }
         if (state.searchState.isSearchActive && !state.searchState.searchText.isNullOrEmpty()) {
@@ -63,11 +72,12 @@ class QDVNotesListPresenter : MvpPresenter <QDVNotesListView> () {
 
     fun initWithState(state: QDVNotesListState) {
         this.state = state
-        if (state.filterByFolderState.filterType==QDVFilterByFolderState.FilterType.FOLDER_ID) {
+        if (state.filterByFolderState.filterType == QDVFilterByFolderState.FilterType.FOLDER_ID) {
             val noteDao = database.getDaoWithIdLong(QDVDbFolder::class.java)
-            state.filterByFolderState.folder = noteDao.queryForId(state.filterByFolderState.folderId ?: 0)
+            state.filterByFolderState.folder =
+                    noteDao.queryForId(state.filterByFolderState.folderId ?: 0)
         }
-        viewState.loadNotesList(queryNotes())
+        viewState.loadNotesList(dbIteratorNotesQuery())
         viewState.setSearchState(state.searchState)
         viewState.setFolderName(getFolderNameForFilter())
     }
@@ -75,13 +85,32 @@ class QDVNotesListPresenter : MvpPresenter <QDVNotesListView> () {
     fun onSearchText(text: String) {
         state.searchState.isSearchActive = true
         state.searchState.searchText = text
-        viewState.loadNotesList(queryNotes())
+        viewState.loadNotesList(dbIteratorNotesQuery())
         viewState.setSearchState(state.searchState)
     }
 
     fun onUndoSearch() {
         state.searchState.isSearchActive = false
-        viewState.loadNotesList(queryNotes())
+        viewState.loadNotesList(dbIteratorNotesQuery())
         viewState.setSearchState(state.searchState)
+    }
+
+    fun doUpdateNote(note: QDVDbNote) {
+        database.getDaoWithIdLong(QDVDbNote::class.java).update(note)
+        viewState.loadNotesList(dbIteratorNotesQuery())
+    }
+
+    fun doDeleteNote(note: QDVDbNote) {
+        database.getDaoWithIdLong(QDVDbNote::class.java).delete(note)
+        viewState.loadNotesList(dbIteratorNotesQuery())
+    }
+
+    fun doSetStatusOfExecution(note: QDVDbNote, status: QDVDbNote.StatusOfExecution) {
+        note.statusOfExecution = status
+        if (status!=QDVDbNote.StatusOfExecution.CREATED){
+            note.completeTime = Date()
+        }
+        database.getDaoWithIdLong(QDVDbNote::class.java).update(note)
+        viewState.loadNotesList(dbIteratorNotesQuery())
     }
 }

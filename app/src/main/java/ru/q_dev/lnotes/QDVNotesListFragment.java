@@ -35,6 +35,7 @@ import org.jetbrains.annotations.NotNull;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -61,14 +62,13 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
     QDVNotesListPresenter notesListPresenter;
 
     QDVNotesListState state;
-    CloseableIterator<QDVDbNote> notesIterator;
+    QDVDbIteratorListViewAdapter<QDVDbNote> notesListAdapter;
 
     View rootView;
 
     DateFormat dateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.getDefault());
 
     //TODO
-    public static String biNotesBackStack =  "notes_back_stack";
     private static final String ARG_SECTION_ID = "section_id";
     private Long idFolderToAdding = null;
 
@@ -89,6 +89,151 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
     public QDVNotesListFragment() {
     }
 
+    enum MenuItemMarker {
+        NO_MENU,
+        FOLDER_UNKNOWN,
+        FOLDER_ADDING
+    }
+
+    static class QDVDbFolderWithMenuItem extends QDVDbFolder {
+        MenuItemMarker menuItem;
+
+        QDVDbFolderWithMenuItem(@Nullable String label, MenuItemMarker menuItem) {
+            super(label);
+            this.menuItem = menuItem;
+        }
+    }
+
+    static abstract class QDVFolderListWithMenuAdapter
+            extends QDVDbIteratorListViewAdapter<QDVDbFolder> {
+        ArrayList<QDVDbFolderWithMenuItem> itemsAddingToTop;
+        int topItemsCount = 0;
+
+        QDVFolderListWithMenuAdapter(ArrayList<QDVDbFolderWithMenuItem> itemsAddingToTop) {
+            this.itemsAddingToTop = itemsAddingToTop;
+            topItemsCount = itemsAddingToTop!=null ? itemsAddingToTop.size() : 0;
+        }
+
+        @Nullable
+        @Override
+        public QDVDbFolder getItem(int p0) {
+            if (p0 < topItemsCount) {
+                return itemsAddingToTop.get(p0);
+            }
+            return super.getItem(p0 - topItemsCount);
+        }
+
+        @Override
+        public long getItemId(int p0) {
+            return 0;
+        }
+
+        @Override
+        public int getCount() {
+            return super.getCount() + topItemsCount;
+        }
+    }
+
+    void onClickMoveToFolder(final QDVDbNote note) {
+        final ArrayList<QDVDbFolderWithMenuItem> itemsAddingToTop = new ArrayList<>();
+        itemsAddingToTop.add(new QDVDbFolderWithMenuItem(
+                getString(R.string.category_unknown), MenuItemMarker.FOLDER_UNKNOWN));
+
+        final QDVFolderListWithMenuAdapter adapter =
+                new QDVFolderListWithMenuAdapter(itemsAddingToTop) {
+            @Override
+            public View getView(int i, View view, ViewGroup viewGroup) {
+                QDVDbFolder folder = getItem(i);
+                if (view == null) {
+                    view = getLayoutInflater().inflate(android.R.layout.simple_list_item_activated_1,
+                            viewGroup, false);
+                }
+                if (view == null) {
+                    return null;
+                }
+                if (folder == null) {
+                    view.setVisibility(View.INVISIBLE);
+                    return view;
+                }
+                ((TextView) view.findViewById(android.R.id.text1)).setText(folder.getLabel());
+                return view;
+            }
+        };
+        adapter.loadDbIterator(notesListPresenter.dbIteratotorFoldersQuery());
+
+        new AlertDialog.Builder(getActivity()).setTitle(
+                note.getContent()!=null ? note.getContent() : "").setCancelable(true)
+                .setAdapter(adapter, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int position) {
+                        try {
+                            QDVDbFolder folder = adapter.getItem(position);
+                            if (folder == null) {
+                                return;
+                            }
+                            if (folder instanceof QDVDbFolderWithMenuItem) {
+                                QDVDbFolderWithMenuItem item = (QDVDbFolderWithMenuItem) folder;
+                                if (item.menuItem == MenuItemMarker.FOLDER_UNKNOWN) {
+                                    note.setFolderId(QDVDbFolder.Special.UNKNOWN_FOLDER.getId());
+                                    notesListPresenter.doUpdateNote(note);
+                                    return;
+                                }
+                                return;
+                            }
+                            note.setFolderId(folder.getId());
+                            notesListPresenter.doUpdateNote(note);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                })
+                .setNegativeButton(R.string.cancel, null).show();
+    }
+
+    void onClickDelete(final QDVDbNote note) {
+        new AlertDialog.Builder(getActivity())
+                .setTitle(note.getContent()!=null ? note.getContent() : "")
+                .setMessage(R.string.delete_confirm).setCancelable(true)
+                .setPositiveButton(R.string.action_yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        notesListPresenter.doDeleteNote(note);
+                    }
+                })
+                .setNegativeButton(R.string.action_no, null).show();
+    }
+
+
+    void onClickSetStatusOfExecution(final QDVDbNote note) {
+        new AlertDialog.Builder(getActivity())
+                .setTitle(note.getContent()!=null ? note.getContent() : "")
+                .setCancelable(true)
+                .setItems(new String[]{getString(R.string.set_done),
+                        getString(R.string.set_no_needed),
+                        getString(R.string.set_in_work)}, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                QDVDbNote.StatusOfExecution status = QDVDbNote.StatusOfExecution.CREATED;
+                switch (i) {
+                    case 0:
+                        status = QDVDbNote.StatusOfExecution.COMPLETED;
+                        break;
+
+                    case 1:
+                        status = QDVDbNote.StatusOfExecution.NOT_NEED;
+                        break;
+
+                    case 2:
+                        status = QDVDbNote.StatusOfExecution.CREATED;
+                        break;
+                }
+                note.setStatusOfExecution(status);
+                notesListPresenter.doSetStatusOfExecution(note, status);
+            }
+        })
+        .setNegativeButton(R.string.cancel, null).show();
+    }
+
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
@@ -103,43 +248,21 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
             state = new QDVNotesListState();
         }
 
-        BaseAdapter adapter = new BaseAdapter() {
-            @Override
-            public int getCount() {
-                if (notesIterator == null) {
-                    return 0;
-                }
-                return ((AndroidDatabaseResults) notesIterator.getRawResults()).getCount();
-            }
-
-            @Override
-            public Object getItem(int i) {
-                ((AndroidDatabaseResults) notesIterator.getRawResults()).moveAbsolute(i);
-                try {
-                    return notesIterator.current();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            public long getItemId(int i) {
-                return 0;
-            }
-
+        notesListAdapter = new QDVDbIteratorListViewAdapter <QDVDbNote> ()  {
             @Override
             public View getView(int i, View view, ViewGroup viewGroup) {
                 if (view == null) {
                     view = inflater.inflate(R.layout.cell_note, viewGroup, false);
                 }
 
-                ((AndroidDatabaseResults) notesIterator.getRawResults()).moveAbsolute(i);
-
                 view.setVisibility(View.VISIBLE);
 
                 try {
-                    QDVDbNote note = notesIterator.current();
+                    QDVDbNote note = getItem(i);
+                    if (note == null) {
+                        view.setVisibility(View.INVISIBLE);
+                        return view;
+                    }
                     boolean isReadyOrDone =
                             note.getStatusOfExecution()!=QDVDbNote.StatusOfExecution.CREATED;
                     TextView textView = view.findViewById(R.id.text_view_date_left);
@@ -153,6 +276,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
 
                     textView = view.findViewById(R.id.text_view_date_right);
                     textView.setAlpha(isReadyOrDone ? 0.3f : 0.5f);
+                    textView.setVisibility(isReadyOrDone ? View.VISIBLE : View.INVISIBLE);
                     textView.setText(note.getCompleteTime()!=null ?
                             dateFormat.format(note.getCompleteTime()) : "");
 
@@ -160,14 +284,15 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
                             note.getStatusOfExecution()==QDVDbNote.StatusOfExecution.COMPLETED ?
                                     View.VISIBLE : View.GONE);
 
-                } catch (SQLException e) {
+                } catch (Exception e) {
                     view.setVisibility(View.INVISIBLE);
                     e.printStackTrace();
                 }
                 return view;
             }
         };
-        notesList.setAdapter(adapter);
+
+        notesList.setAdapter(notesListAdapter);
 
         notesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -181,7 +306,8 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
                 noteEditorState.setState(QDVNoteEditorState.EditorMode.EDITING,
                         note.getFolderId(), note.getId());
                 Fragment fragment = new QDVNoteEditorFragment();
-                getFragmentManager().beginTransaction().addToBackStack(biNotesBackStack).replace(R.id.container, fragment, "notesEditorFragment").commit();
+                getFragmentManager().beginTransaction().addToBackStack(null)
+                        .replace(R.id.container, fragment, "notesEditorFragment").commit();
             }
         });
 
@@ -204,135 +330,44 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
         notesListPresenter.initWithState(state);
 
         //TODO
-//        notesList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-//            @Override
-//            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                final Cursor cursor = ((SimpleCursorAdapter) adapterView.getAdapter()).getCursor();
-//                if (cursor != null && !mCursor.isAfterLast() && !cursor.isNull(1)) {
-//                    final long note_id = cursor.getLong(0);
-//                    final String note_content = cursor.getString(1);
-//
-//                    new AlertDialog.Builder(getActivity()).setTitle(note_content).setCancelable(true)
-//                            .setNegativeButton(R.string.cancel, null)
-//                            .setItems(
-//                                    new String[]{getString(R.string.menu_move), getString(R.string.menu_delete),
-//                                            getString(R.string.menu_set_done)}, new DialogInterface.OnClickListener() {
-//                                        @Override
-//                                        public void onClick(DialogInterface dialogInterface, int i) {
-//                                            switch (i) {
-//                                                case 0:
-//                                                    Cursor cursorCategories = null;
-//                                                    if (dbHelper!=null){
-//                                                        SQLiteDatabase db = dbHelper.getWritableDatabase();
-//                                                        if (db != null){
-//                                                            String sqlSelect = "";
-//                                                            for (int catId=-3; catId<0; catId++){
-//                                                                String label = "";
-//                                                                switch (catId){
-//                                                                    case action_add_categories_id:
-////                                                            label = getString(R.string.add_category);
-////                                                            break;
-//                                                                        continue;
-//                                                                    case action_categories_all_id:
-//                                                                        continue;
-//                                                                    case action_categories_not_selected_id:
-//                                                                        label = getString(R.string.category_unknown);
-//                                                                        break;
-//                                                                }
-//                                                                sqlSelect += "SELECT * FROM (SELECT "+String.valueOf(catId)+" as _id, '"+label
-//                                                                        +"' as label, "+String.valueOf(catId)+" as ord FROM categories LIMIT 1 ) UNION ALL ";
-//                                                            }
-//                                                            sqlSelect +="SELECT id as _id, label, 0 as ord FROM categories ";
-//                                                            sqlSelect = "SELECT * FROM ("+sqlSelect+") ORDER BY ord, label";
-//
-//                                                            cursorCategories = db.rawQuery(sqlSelect, null);
-//                                                        }
-//                                                    }
-//                                                    String[] from = new String[] {"label"};
-//                                                    int[] to = new int[] {android.R.id.text1};
-//                                                    ListAdapter cursorListAdapter = null;
-//                                                    if (cursorCategories!=null) {
-//                                                        cursorListAdapter = new android.widget.SimpleCursorAdapter(getContext(), android.R.layout.simple_list_item_activated_1, cursorCategories, from, to, SimpleCursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-//                                                    }
-//
-//                                                    final Cursor finalCursorCategories = cursorCategories;
-//                                                    new AlertDialog.Builder(getActivity()).setTitle(note_content).setCancelable(true)
-//                                                            .setAdapter(cursorListAdapter, new DialogInterface.OnClickListener() {
-//                                                                @Override
-//                                                                public void onClick(DialogInterface dialogInterface, int position) {
-//                                                                    if (position == action_add_categories_position) {
-//                                                                        addCategoriesSelected();
-//                                                                        return;
-//                                                                    }
-//                                                                    int positionFirst = (finalCursorCategories !=null) ? finalCursorCategories.getPosition() : 0;
-//                                                                    if (finalCursorCategories!=null && !finalCursorCategories.isClosed()) {finalCursorCategories.moveToPosition(position);};
-//                                                                    long idCategories = finalCursorCategories!=null && !finalCursorCategories.isClosed() && !finalCursorCategories.isNull(0) ? finalCursorCategories.getLong(0): action_categories_not_selected_id;
-//                                                                    if (finalCursorCategories!=null && !finalCursorCategories.isClosed()) {finalCursorCategories.moveToPosition(positionFirst);};
-//
-//                                                                    if (dbHelper!=null){
-//                                                                        SQLiteDatabase db = dbHelper.getReadableDatabase();
-//                                                                        if (db != null){
-//                                                                            db.execSQL("UPDATE notes SET folder_id = "+
-//                                                                                    String.valueOf(idCategories)+
-//                                                                                    " WHERE id = "+ String.valueOf(note_id));
-//                                                                            reloadData(rootView);
-//                                                                        }
-//                                                                    }
-//                                                                }
-//                                                            })
-//                                                            .setNegativeButton(R.string.cancel, null).show();
-//                                                    break;
-//                                                case 1:
-//                                                    new AlertDialog.Builder(getActivity()).setMessage(R.string.delete_confirm).setCancelable(true)
-//                                                            .setPositiveButton(R.string.action_yes, new DialogInterface.OnClickListener() {
-//                                                                @Override
-//                                                                public void onClick(DialogInterface dialogInterface, int i) {
-//                                                                    if (dbHelper!=null){
-//                                                                        SQLiteDatabase db = dbHelper.getReadableDatabase();
-//                                                                        if (db != null){
-//                                                                            db.execSQL("DELETE FROM notes WHERE id = "
-//                                                                                    +String.valueOf(note_id));
-//                                                                            reloadData(rootView);
-//                                                                        }
-//                                                                    }
-//                                                                }
-//                                                            })
-//                                                            .setNegativeButton(R.string.action_no, null).show();
-//                                                    break;
-//                                                case 2:
-//                                                    new AlertDialog.Builder(getActivity()).setTitle(note_content).setCancelable(true)
-//                                                            .setItems(new String[]{getString(R.string.set_done), getString(R.string.set_no_needed),
-//                                                                    getString(R.string.set_in_work)}, new DialogInterface.OnClickListener() {
-//                                                                @Override
-//                                                                public void onClick(DialogInterface dialogInterface, int i) {
-//                                                                    if (i >= 0 && i <= 2) {
-//                                                                        if (dbHelper != null) {
-//                                                                            SQLiteDatabase db = dbHelper.getReadableDatabase();
-//                                                                            if (db != null) {
-//                                                                                db.execSQL("UPDATE notes SET isReady = "
-//                                                                                        + (i==0 ? String.valueOf (QDVMyBaseQueryHelper.is_ready_state_success)
-//                                                                                        : (i==1 ? String.valueOf (QDVMyBaseQueryHelper.is_ready_state_no_needed)
-//                                                                                        : String.valueOf (QDVMyBaseQueryHelper.is_ready_state_in_work)))
-//                                                                                        + (i!=2 ? ", isready_date = DATETIME('now')" : ", isready_date = NULL")
-//                                                                                        + " WHERE id = "+ String.valueOf(note_id));
-//                                                                                reloadData(rootView);
-//                                                                            }
-//                                                                        }
-//                                                                    }
-//                                                                }
-//                                                            })
-//                                                            .setNegativeButton(R.string.cancel, null).show();
-//                                                    break;
-//                                                default:
-//                                                    break;
-//                                            }
-//                                        }
-//                                    }).create().show();
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
+        notesList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Object object = notesList.getAdapter().getItem(i);
+                if (!(object instanceof QDVDbNote)) {
+                    return false;
+                }
+                final QDVDbNote note = (QDVDbNote) object;
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle(note.getContent()!=null ? note.getContent() : "")
+                            .setCancelable(true)
+                            .setNegativeButton(R.string.cancel, null)
+                            .setItems(
+                                    new String[]{getString(R.string.menu_move),
+                                            getString(R.string.menu_delete),
+                                            getString(R.string.menu_set_done)},
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i)
+                                        {
+                                            switch (i) {
+                                                case 0:
+                                                    onClickMoveToFolder(note);
+                                                    break;
+                                                case 1:
+                                                    onClickDelete(note);
+                                                    break;
+                                                case 2:
+                                                    onClickSetStatusOfExecution(note);
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
+                                        }
+                                    }).create().show();
+                return true;
+            }
+        });
 
         return rootView;
     }
@@ -367,7 +402,8 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
             noteEditorState.setState(QDVNoteEditorState.EditorMode.ADDING,
                     idFolderToAdding, null);
             Fragment fragment = new QDVNoteEditorFragment();
-            getFragmentManager().beginTransaction().addToBackStack(biNotesBackStack).replace(R.id.container, fragment, "notesEditorFragment").commit();
+            getFragmentManager().beginTransaction().addToBackStack(null)
+                    .replace(R.id.container, fragment, "notesEditorFragment").commit();
             return true;
         }
 
@@ -439,21 +475,16 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-    }
-
-    @Override
-    public void loadNotesList(@NotNull final CloseableIterator<QDVDbNote> iterator) {
-        notesIterator = iterator;
-        ((BaseAdapter)notesList.getAdapter()).notifyDataSetChanged();
+    public void loadNotesList(@NotNull final CloseableIterator<QDVDbNote> dbIterator) {
+        notesListAdapter.loadDbIterator(dbIterator);
     }
 
     @Override
     public void setSearchState(@NotNull QDVSearchState searchState) {
         layoutFindOptions.setVisibility(
                 state.getSearchState().isSearchActive() ? View.VISIBLE : View.GONE);
-        final Integer count = ((AndroidDatabaseResults)notesIterator.getRawResults()).getCount();
+
+        final Integer count = notesListAdapter.getCount();
         String search_label = String.format(
                 getString(R.string.finding_label), state.getSearchState().getSearchText()) + "\n"
                 + String.format(getString(R.string.finding_label_count), String.valueOf(count));

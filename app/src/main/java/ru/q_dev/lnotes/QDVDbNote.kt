@@ -7,11 +7,11 @@ import java.io.Serializable
 import java.util.*
 
 @DatabaseTable(tableName="notes")
-class QDVDbNote : Serializable {
+class QDVDbNote : QDVDbEntity() {
     enum class StatusOfExecution {CREATED, COMPLETED, NOT_NEED}
 
     @DatabaseField(generatedId = true, dataType = DataType.LONG, columnName = "id")
-    val id: Long = 0
+    override val id: Long = 0
     @DatabaseField(dataType = DataType.STRING, canBeNull = true)
     var content: String? = null
     @DatabaseField (dataType = DataType.LONG_OBJ, canBeNull = true, columnName = "folder_id")
