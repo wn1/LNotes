@@ -101,14 +101,14 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
     public void onActivityCreated (Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 
     @Override
@@ -172,11 +172,8 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
     }
 
     @Override
-    public void showErrorToast(@NotNull String message, boolean needExitFromEditor) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
-        if (needExitFromEditor) {
-            goBack();
-        }
+    public void initEditorInMode(@NotNull QDVNoteEditorState.EditorMode mode) {
+
     }
 
     @Override
@@ -198,8 +195,10 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
     }
 
     @Override
-    public void initEditorInMode(@NotNull QDVNoteEditorState.EditorMode mode) {
-
+    public void showErrorToast(@NotNull String message, boolean needExitFromEditor) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+        if (needExitFromEditor) {
+            goBack();
+        }
     }
-
 }

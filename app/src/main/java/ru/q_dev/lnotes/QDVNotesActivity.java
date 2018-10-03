@@ -1,11 +1,7 @@
 package ru.q_dev.lnotes;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -196,7 +192,7 @@ public class QDVNotesActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag("notesEditorFragment");
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(QDVNotesListFragment.FRAGMENT_TAG);
         if (fragment != null && (fragment instanceof QDVNoteEditorFragment)) {
             ((QDVNoteEditorFragment) fragment).goBackWithConfirm();
             return;

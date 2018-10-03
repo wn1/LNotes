@@ -1,6 +1,5 @@
 package ru.q_dev.lnotes;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,19 +19,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.j256.ormlite.android.AndroidDatabaseResults;
 import com.j256.ormlite.dao.CloseableIterator;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,7 +37,6 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.OnItemClick;
 import butterknife.Unbinder;
 
 /**
@@ -50,6 +45,8 @@ import butterknife.Unbinder;
 
 public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNotesListView {
     private Unbinder unbinder;
+    public static final String FRAGMENT_TAG = "notesEditorFragment";
+    public static final String ARG_SECTION_ID = "section_id";
 
     @BindView(R.id.notesList)
     ListView notesList;
@@ -67,10 +64,6 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
     View rootView;
 
     DateFormat dateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.getDefault());
-
-    //TODO
-    private static final String ARG_SECTION_ID = "section_id";
-    private Long idFolderToAdding = null;
 
     public static QDVNotesListFragment newInstance(long sectionNumber) {
         QDVNotesListFragment fragment = new QDVNotesListFragment();
@@ -145,7 +138,8 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
             public View getView(int i, View view, ViewGroup viewGroup) {
                 QDVDbFolder folder = getItem(i);
                 if (view == null) {
-                    view = getLayoutInflater().inflate(android.R.layout.simple_list_item_activated_1,
+                    view = getLayoutInflater().inflate(
+                            android.R.layout.simple_list_item_activated_1,
                             viewGroup, false);
                 }
                 if (view == null) {
@@ -307,7 +301,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
                         note.getFolderId(), note.getId());
                 Fragment fragment = new QDVNoteEditorFragment();
                 getFragmentManager().beginTransaction().addToBackStack(null)
-                        .replace(R.id.container, fragment, "notesEditorFragment").commit();
+                        .replace(R.id.container, fragment, FRAGMENT_TAG).commit();
             }
         });
 
@@ -324,12 +318,10 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
                     QDVFilterByFolderState.FilterType.FOLDER_NOT_SELECTED);
         }
 
-        //TODO
-        idFolderToAdding =  folderId>0 ? folderId : null;
+        state.setFolderIdForNotesAdding(folderId>0 ? folderId : null);
 
         notesListPresenter.initWithState(state);
 
-        //TODO
         notesList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -400,35 +392,47 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
         if (item.getItemId() == R.id.action_add_note) {
             QDVNoteEditorState noteEditorState = new QDVNoteEditorState();
             noteEditorState.setState(QDVNoteEditorState.EditorMode.ADDING,
-                    idFolderToAdding, null);
+                    state.getFolderIdForNotesAdding(), null);
             Fragment fragment = new QDVNoteEditorFragment();
             getFragmentManager().beginTransaction().addToBackStack(null)
-                    .replace(R.id.container, fragment, "notesEditorFragment").commit();
+                    .replace(R.id.container, fragment, FRAGMENT_TAG).commit();
             return true;
         }
 
         if (item.getItemId() == R.id.action_find_notes){
             final EditText editText = new EditText(getContext());
             new AlertDialog.Builder(getActivity()).setTitle(R.string.action_find_notes_title).setCancelable(true)
-                    .setView(editText).setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
+                    .setView(editText).setPositiveButton(R.string.action_ok,
+                    new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    InputMethodManager inputMethodManager = (InputMethodManager) ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+                    InputMethodManager inputMethodManager = (InputMethodManager)
+                            ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (inputMethodManager != null) {
+                        inputMethodManager.hideSoftInputFromWindow(
+                                editText.getWindowToken(), 0);
+                    }
                     notesListPresenter.onSearchText(editText.getText().toString());
 
                 }
             }).setNegativeButton(R.string.cancel,  new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    InputMethodManager inputMethodManager = (InputMethodManager) ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+                    InputMethodManager inputMethodManager = (InputMethodManager)
+                            ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (inputMethodManager != null) {
+                        inputMethodManager.hideSoftInputFromWindow(
+                                editText.getWindowToken(), 0);
+                    }
                 }
             }).show();
             editText.requestFocus();
             editText.requestFocusFromTouch();
-            InputMethodManager inputMananger = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            inputMananger.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+            InputMethodManager inputManager = (InputMethodManager) getContext()
+                    .getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (inputManager != null) {
+                inputManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+            }
             return true;
         }
 
@@ -442,7 +446,8 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
                 e.printStackTrace();
             }
 
-            View alertDialogView = getActivity().getLayoutInflater().inflate(R.layout.about_dialog, null);
+            View alertDialogView = getActivity().getLayoutInflater().inflate(
+                    R.layout.about_dialog, null);
             TextView textView = (TextView) alertDialogView.findViewById(R.id.aboutText);
             textView.setText(R.string.about_message);
             new AlertDialog.Builder(getActivity()).setTitle(lnotesNameAndVersion)
@@ -463,7 +468,8 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
 
         if (item.getItemId() == R.id.action_remove_ads) {
             try {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=ru.q_dev.LNoteP")));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
+                        "https://play.google.com/store/apps/details?id=ru.q_dev.LNoteP")));
             }
             catch (Exception ignored) {
                 new AlertDialog.Builder(getActivity()).setMessage(R.string.app_not_found)

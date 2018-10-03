@@ -10,63 +10,63 @@ import java.io.Serializable
 
 class QDVNoteEditorState : Serializable {
     enum class EditorMode { ADDING, EDITING }
-    private val preferencesName = "QDVNoteEditorState"
+    private val PREFERENCES_NAME = "QDVNoteEditorState"
 
-    private val preferenceNameEditorMode = "editorMode"
+    private val PREFERENCE_NAME_EDITOR_MODE = "editorMode"
     var editorMode: EditorMode = EditorMode.ADDING
         private set
 
-    private val preferenceNameNoteId = "noteId"
+    private val PREFERENCE_NAME_NOTE_ID = "noteId"
     var noteId: Long? = null
         private set
 
-    private val preferenceNameFolderId = "folderId"
+    private val PREFERENCE_NAME_FOLDER_ID = "folderId"
     var folderId: Long? = null
         private set
 
-    private val preferenceNameIsChangedFlag = "isChangedFlag"
+    private val PREFERENCE_NAME_IS_CHANGED_FLAG = "isChangedFlag"
     var isChangedFlag = false
         set (value) {
             field = value
-            getPreference().edit().putBoolean(preferenceNameIsChangedFlag, value).apply()
+            getPreference().edit().putBoolean(PREFERENCE_NAME_IS_CHANGED_FLAG, value).apply()
         }
 
     private fun getPreference(): SharedPreferences {
-        return ThisApp.getContext().getSharedPreferences(preferencesName, Context.MODE_PRIVATE)
+        return ThisApp.getContext().getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
     }
 
     init {
         val preferences = getPreference()
         editorMode = EditorMode.values()[
-                preferences.getInt(preferenceNameEditorMode, EditorMode.ADDING.ordinal)]
+                preferences.getInt(PREFERENCE_NAME_EDITOR_MODE, EditorMode.ADDING.ordinal)]
 
-        noteId = if (preferences.contains(preferenceNameNoteId))
-            preferences.getLong(preferenceNameNoteId, 0) else null
+        noteId = if (preferences.contains(PREFERENCE_NAME_NOTE_ID))
+            preferences.getLong(PREFERENCE_NAME_NOTE_ID, 0) else null
 
-        folderId = if (preferences.contains(preferenceNameFolderId))
-            preferences.getLong(preferenceNameFolderId, 0) else null
+        folderId = if (preferences.contains(PREFERENCE_NAME_FOLDER_ID))
+            preferences.getLong(PREFERENCE_NAME_FOLDER_ID, 0) else null
 
-        isChangedFlag = preferences.getBoolean(preferenceNameIsChangedFlag, false)
+        isChangedFlag = preferences.getBoolean(PREFERENCE_NAME_IS_CHANGED_FLAG, false)
     }
 
     private fun saveToPreference() {
         val editor = getPreference().edit()
-        editor.putInt(preferenceNameEditorMode, editorMode.ordinal)
+        editor.putInt(PREFERENCE_NAME_EDITOR_MODE, editorMode.ordinal)
 
         if (noteId!=null) {
-            editor.putLong(preferenceNameNoteId, noteId!!)
+            editor.putLong(PREFERENCE_NAME_NOTE_ID, noteId!!)
         }
         else
         {
-            editor.remove(preferenceNameNoteId)
+            editor.remove(PREFERENCE_NAME_NOTE_ID)
         }
 
         if (folderId!=null) {
-            editor.putLong(preferenceNameFolderId, folderId!!)
+            editor.putLong(PREFERENCE_NAME_FOLDER_ID, folderId!!)
         }
         else
         {
-            editor.remove(preferenceNameFolderId)
+            editor.remove(PREFERENCE_NAME_FOLDER_ID)
         }
 
         editor.apply()

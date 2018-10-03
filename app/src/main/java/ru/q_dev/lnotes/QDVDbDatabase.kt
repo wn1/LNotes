@@ -136,7 +136,7 @@ class QDVDbDatabase(context: Context?, databaseName: String?, factory: SQLiteDat
             sqLiteDatabase.execSQL("UPDATE notes SET update_time_u = create_time_u")
             sqLiteDatabase.execSQL("UPDATE notes SET complete_time_u = (strftime('%s', isready_date))*1000 WHERE isready_date NOT NULL")
             sqLiteDatabase.execSQL("UPDATE conf SET vers = $i")
-            i = 7
+            i = 8
         }
     }
 
