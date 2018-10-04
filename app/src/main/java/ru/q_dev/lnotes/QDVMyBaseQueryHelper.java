@@ -17,7 +17,7 @@ public class QDVMyBaseQueryHelper {
 
     public static String getFolderDescription (final Context context, long folderId) {
         String folderName = null;
-        if (folderId == QDVNotesActivity.action_categories_not_selected_id) {
+        if (folderId == QDVNotesHomeActivity.action_categories_not_selected_id) {
             folderName = context.getString(R.string.category_unknown);
         }
         else {

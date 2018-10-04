@@ -20,6 +20,6 @@ class QDVSearchState: Serializable {
 
 class QDVNotesListState : Serializable {
     val searchState: QDVSearchState = QDVSearchState()
-    val filterByFolderState: QDVFilterByFolderState = QDVFilterByFolderState()
+    var filterByFolderState: QDVFilterByFolderState = QDVFilterByFolderState()
     var folderIdForNotesAdding: Long? = null;
 }

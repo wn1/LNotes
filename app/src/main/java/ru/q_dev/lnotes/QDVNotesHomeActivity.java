@@ -4,16 +4,18 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.SimpleCursorAdapter;
-import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v4.widget.DrawerLayout;
+
+import com.arellomobile.mvp.MvpAppCompatActivity;
+import com.arellomobile.mvp.presenter.InjectPresenter;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,31 +27,36 @@ import java.io.IOException;
  * Created by Vladimir Kudashov on 11.03.17.
  */
 
-public class QDVNotesActivity extends AppCompatActivity
-        implements QDVNavigationDrawerFragment.NavigationDrawerCallbacks {
+public class QDVNotesHomeActivity extends MvpAppCompatActivity
+        implements QDVNotesHomeView, QDVNavigationDrawerFragment.NavigationDrawerCallbacks {
 
+    @InjectPresenter
+    QDVNotesHomePresenter notesHomePresenter;
 
-    public static final int action_add_categories_id = -3;
-    public static final int action_add_categories_position = 0;
+    QDVNavigationDrawerFragment navigationDrawerFragment;
+
     public static final int action_categories_all_id = -2;
-    public static final int action_categories_all_position = 1;
     public static final int action_categories_not_selected_id = -1;
-    public static final int action_categories_not_selected_position = 1;
-
-    private static boolean searchActive = false;
-    private static String searchText = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notes);
 
-        QDVNavigationDrawerFragment mNavigationDrawerFragment = (QDVNavigationDrawerFragment)
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar!=null) {
+            actionBar.setDisplayShowTitleEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+        }
+
+        navigationDrawerFragment = (QDVNavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mNavigationDrawerFragment.setEditorActive(false);
+        navigationDrawerFragment.setActive(false);
 
         // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
+        navigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
@@ -59,22 +66,21 @@ public class QDVNotesActivity extends AppCompatActivity
     }
 
     private void reloadDataDb() {
-        Intent intent = new Intent(this, QDVNotesActivity.class);
+        Intent intent = new Intent(this, QDVNotesHomeActivity.class);
         finish();
         startActivity(intent);
     }
 
     private File getDbPath (){
-        File retFile = new QDVMyBaseOpenHelper(this, new DatabaseErrorHandler() {
+        return new QDVMyBaseOpenHelper(this, new DatabaseErrorHandler() {
             @Override
             public void onCorruption(SQLiteDatabase sqLiteDatabase) {
-                new AlertDialog.Builder(QDVNotesActivity.this).
+                new AlertDialog.Builder(QDVNotesHomeActivity.this).
                         setMessage(String.format(getString(R.string.error_with_id), "402"))
                         .setCancelable(true)
                         .setPositiveButton(R.string.cancel, null).show();
             }
         }).getFileDB();
-        return retFile;
     }
 
     private File getOldLNotesDbPath (){
@@ -109,7 +115,7 @@ public class QDVNotesActivity extends AppCompatActivity
                     File newLnotesDbPath = getDbPath();
                     if (newLnotesDbPath.exists()){
                         if (!newLnotesDbPath.delete()) {
-                            new AlertDialog.Builder(QDVNotesActivity.this).
+                            new AlertDialog.Builder(QDVNotesHomeActivity.this).
                                     setMessage(String.format(getString(R.string.error_with_id), "200"))
                                     .setCancelable(true)
                                     .setPositiveButton(R.string.cancel, null).show();
@@ -122,7 +128,7 @@ public class QDVNotesActivity extends AppCompatActivity
                         from = new FileInputStream(oldLnotesDb);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
-                        new AlertDialog.Builder(QDVNotesActivity.this).
+                        new AlertDialog.Builder(QDVNotesHomeActivity.this).
                                 setMessage(String.format(getString(R.string.error_with_id), "201"))
                                 .setCancelable(true)
                                 .setPositiveButton(R.string.cancel, null).show();
@@ -138,7 +144,7 @@ public class QDVNotesActivity extends AppCompatActivity
                         } catch (IOException e1) {
                             e1.printStackTrace();
                         }
-                        new AlertDialog.Builder(QDVNotesActivity.this).
+                        new AlertDialog.Builder(QDVNotesHomeActivity.this).
                                 setMessage(String.format(getString(R.string.error_with_id), "202"))
                                 .setCancelable(true)
                                 .setPositiveButton(R.string.cancel, null).show();
@@ -162,7 +168,7 @@ public class QDVNotesActivity extends AppCompatActivity
                         } catch (IOException e1) {
                             e1.printStackTrace();
                         }
-                        new AlertDialog.Builder(QDVNotesActivity.this).
+                        new AlertDialog.Builder(QDVNotesHomeActivity.this).
                                 setMessage(String.format(getString(R.string.error_with_id), "203"))
                                 .setCancelable(true)
                                 .setPositiveButton(R.string.cancel, null).show();
@@ -183,20 +189,57 @@ public class QDVNotesActivity extends AppCompatActivity
     }
 
     @Override
-    public void onNavigationDrawerItemSelected(int position, long idSection) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, QDVNotesListFragment.newInstance(idSection))
-                .commit();
+    public void onNavigationDrawerItemSelected(int position, long folderId) {
+        notesHomePresenter.doSelectFolder(folderId);
     }
 
     @Override
     public void onBackPressed() {
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag(QDVNotesListFragment.FRAGMENT_TAG);
-        if (fragment != null && (fragment instanceof QDVNoteEditorFragment)) {
+        Fragment fragment = getSupportFragmentManager()
+                .findFragmentByTag(QDVNoteEditorFragment.FRAGMENT_TAG);
+        if (fragment instanceof QDVNoteEditorFragment) {
             ((QDVNoteEditorFragment) fragment).goBackWithConfirm();
             return;
         }
         super.onBackPressed();
+    }
+
+    @Override
+    public void setNavigationDrawerFolderEnabled(boolean enabled) {
+        navigationDrawerFragment.setActive(enabled);
+    }
+
+    @Override
+    public void initNotesList(@Nullable QDVFilterByFolderState filterByFolderState) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, QDVNotesListFragment.newInstance(filterByFolderState))
+                .commit();
+    }
+
+    @Override
+    public void initEditNote(@NotNull QDVDbNote note) {
+        QDVNoteEditorState noteEditorState = new QDVNoteEditorState();
+        noteEditorState.setState(QDVNoteEditorState.EditorMode.EDITING,
+                note.getFolderId(), note.getId());
+        Fragment fragment = new QDVNoteEditorFragment();
+        getSupportFragmentManager().beginTransaction().addToBackStack(null)
+                .replace(R.id.container, fragment, QDVNoteEditorFragment.FRAGMENT_TAG).commit();
+    }
+
+    @Override
+    public void initAddNote(Long folderIdForAdding) {
+        navigationDrawerFragment.setActive(false);
+        QDVNoteEditorState noteEditorState = new QDVNoteEditorState();
+        noteEditorState.setState(QDVNoteEditorState.EditorMode.ADDING,
+                folderIdForAdding, null);
+        Fragment fragment = new QDVNoteEditorFragment();
+        getSupportFragmentManager().beginTransaction().addToBackStack(null)
+                .replace(R.id.container, fragment, QDVNoteEditorFragment.FRAGMENT_TAG).commit();
+    }
+
+    @Override
+    public void goBackFragment() {
+        getSupportFragmentManager().popBackStack();
     }
 }

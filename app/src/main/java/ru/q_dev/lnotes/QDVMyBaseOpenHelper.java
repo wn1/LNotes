@@ -112,7 +112,7 @@ public class QDVMyBaseOpenHelper extends SQLiteOpenHelper {
             sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY, label)");
             sqLiteDatabase.execSQL("INSERT INTO conf (vers) VALUES ("+String.valueOf(VERSION)+")");
             sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS conf_filter (id INTEGER PRIMARY KEY, filter_id INTEGER DEFAULT NULL, action, label, row_type INTEGER DEFAULT 0)");
-            sqLiteDatabase.execSQL("INSERT INTO conf_filter (filter_id) VALUES ("+String.valueOf(QDVNotesActivity.action_categories_all_id)+")");
+            sqLiteDatabase.execSQL("INSERT INTO conf_filter (filter_id) VALUES ("+String.valueOf(QDVNotesHomeActivity.action_categories_all_id)+")");
         }
     }
 
@@ -122,7 +122,7 @@ public class QDVMyBaseOpenHelper extends SQLiteOpenHelper {
             String updateQuery = "DELETE FROM conf_filter";
             sqLiteDatabase.execSQL(updateQuery);
             sqLiteDatabase.execSQL("INSERT INTO conf_filter (filter_id) VALUES ("
-                    +String.valueOf(QDVNotesActivity.action_categories_all_id)+")");
+                    +String.valueOf(QDVNotesHomeActivity.action_categories_all_id)+")");
             updateQuery = "UPDATE conf SET vers = 6";
             sqLiteDatabase.execSQL(updateQuery);
             i = 6;

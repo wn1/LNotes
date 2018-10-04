@@ -9,17 +9,17 @@ import android.content.Context;
 
 public class ThisApp extends Application {
     public static Context getContext() {
-        return sContext;
+        return thisApp.getApplicationContext();
     }
 
-    private static Context sContext = null;
+    private static ThisApp thisApp = null;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        sContext = getApplicationContext();
+        thisApp = this;
 
         //TODO Need delete after QDVMyBaseQueryHelper remove
-        new QDVDbDatabase(sContext).getWritableDatabase();
+        new QDVDbDatabase(getContext()).getWritableDatabase();
     }
 }

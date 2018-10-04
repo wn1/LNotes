@@ -165,7 +165,7 @@ public class QDVBackupActivity extends AppCompatActivity {
                             .setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    Intent intent = new Intent(QDVBackupActivity.this, QDVNotesActivity.class);
+                                    Intent intent = new Intent(QDVBackupActivity.this, QDVNotesHomeActivity.class);
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     startActivity(intent);
                                 }
@@ -249,7 +249,7 @@ public class QDVBackupActivity extends AppCompatActivity {
         }
 
         if (!withoutCloseActivity) {
-            Intent intent = new Intent(this, QDVNotesActivity.class);
+            Intent intent = new Intent(this, QDVNotesHomeActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
         }
@@ -347,7 +347,7 @@ public class QDVBackupActivity extends AppCompatActivity {
             return;
         }
 
-        Intent intent = new Intent(this, QDVNotesActivity.class);
+        Intent intent = new Intent(this, QDVNotesHomeActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("needReloadDb", true);
         startActivity(intent);

@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.StrictMode;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.app.Activity;
 import android.support.v7.app.ActionBar;
@@ -27,11 +26,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 /**
  * Created by Vladimir Kudashov on 11.03.17.
@@ -62,15 +58,18 @@ public class QDVNavigationDrawerFragment extends Fragment {
     public static final int action_categories_not_selected_position = 2;
 
 
-    public boolean isEditorActive() {
-        return isEditorActive;
+    public boolean isActive() {
+        return isActive;
     }
 
-    public void setEditorActive(boolean editorActive) {
-        isEditorActive = editorActive;
+    public void setActive(boolean active) {
+        isActive = active;
+        if (mDrawerLayout != null) {
+            mDrawerLayout.closeDrawer(mFragmentContainerView);
+        }
     }
 
-    private boolean isEditorActive = false;
+    private boolean isActive = false;
 
     public QDVNavigationDrawerFragment() {
     }
@@ -99,6 +98,10 @@ public class QDVNavigationDrawerFragment extends Fragment {
     public void onActivityCreated (Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
+    }
+
+    private ActionBar getActionBar() {
+        return ((AppCompatActivity) getActivity()).getSupportActionBar();
     }
 
     @Override
@@ -273,10 +276,6 @@ public class QDVNavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
 
-        ActionBar actionBar = getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeButtonEnabled(true);
-
         mDrawerToggle = new ActionBarDrawerToggle(
                 getActivity(),
                 mDrawerLayout,
@@ -386,13 +385,14 @@ public class QDVNavigationDrawerFragment extends Fragment {
 
             if (mCursor!=null && !mCursor.isClosed()) {mCursor.moveToPosition(position);};
             ActionBar actionBar = getActionBar();
-            actionBar.setTitle(mCursor!=null && !mCursor.isClosed() && !mCursor.isAfterLast() && !mCursor.isNull(0) ? mCursor.getString(1): "");
+            if (actionBar != null) {
+                actionBar.setTitle(mCursor != null && !mCursor.isClosed() && !mCursor.isAfterLast() && !mCursor.isNull(0) ? mCursor.getString(1) : "");
+            }
             mCallbacks.onNavigationDrawerItemSelected(position, mCursor!=null && !mCursor.isClosed() && !mCursor.isAfterLast() && !mCursor.isNull(0) ? mCursor.getLong(0): action_categories_all_id);
+
             if (mCursor!=null && !mCursor.isClosed()) {mCursor.moveToPosition(positionFirst);};
         }
     }
-
-
 
     @Override
     public void onAttach(Activity activity) {
@@ -426,13 +426,16 @@ public class QDVNavigationDrawerFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if (mDrawerLayout != null && isDrawerOpen()) {
             inflater.inflate(R.menu.global, menu);
-            showGlobalContextActionBar();
         }
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (!isActive) {
+            return super.onOptionsItemSelected(item);
+        }
+
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
@@ -440,14 +443,14 @@ public class QDVNavigationDrawerFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private void showGlobalContextActionBar() {
-        ActionBar actionBar = getActionBar();
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+    @Override
+    public void onPause() {
+        super.onPause();
     }
 
-    private ActionBar getActionBar() {
-        return ((AppCompatActivity) getActivity()).getSupportActionBar();
+    @Override
+    public void onStop() {
+        super.onStop();
     }
 
 

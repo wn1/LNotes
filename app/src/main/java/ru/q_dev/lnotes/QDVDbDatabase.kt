@@ -107,7 +107,7 @@ class QDVDbDatabase(context: Context?, databaseName: String?, factory: SQLiteDat
             sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY, label)")
             sqLiteDatabase.execSQL("INSERT INTO conf (vers) VALUES (" + DATABASE_VERSION.toString() + ")")
             sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS conf_filter (id INTEGER PRIMARY KEY, filter_id INTEGER DEFAULT NULL, action, label, row_type INTEGER DEFAULT 0)")
-            sqLiteDatabase.execSQL("INSERT INTO conf_filter (filter_id) VALUES (" + QDVNotesActivity.action_categories_all_id.toString() + ")")
+            sqLiteDatabase.execSQL("INSERT INTO conf_filter (filter_id) VALUES (" + QDVNotesHomeActivity.action_categories_all_id.toString() + ")")
         }
 
 //        TableUtils.createTable(connectionSource, QDVDbNote::class.java)
@@ -123,7 +123,7 @@ class QDVDbDatabase(context: Context?, databaseName: String?, factory: SQLiteDat
             var updateQuery = "DELETE FROM conf_filter"
             sqLiteDatabase.execSQL(updateQuery)
             sqLiteDatabase.execSQL("INSERT INTO conf_filter (filter_id) VALUES ("
-                    + QDVNotesActivity.action_categories_all_id.toString() + ")")
+                    + QDVNotesHomeActivity.action_categories_all_id.toString() + ")")
             updateQuery = "UPDATE conf SET vers = 6"
             sqLiteDatabase.execSQL(updateQuery)
             i = 6

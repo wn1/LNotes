@@ -1,5 +1,6 @@
 package ru.q_dev.lnotes;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -45,8 +46,8 @@ import butterknife.Unbinder;
 
 public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNotesListView {
     private Unbinder unbinder;
-    public static final String FRAGMENT_TAG = "notesEditorFragment";
     public static final String ARG_SECTION_ID = "section_id";
+    public static final String ARG_FILTER_BY_FOLDER = "filterByFolder";
 
     @BindView(R.id.notesList)
     ListView notesList;
@@ -57,6 +58,8 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
 
     @InjectPresenter
     QDVNotesListPresenter notesListPresenter;
+
+    QDVNotesHomePresenter notesHomePresenter;
 
     QDVNotesListState state;
     QDVDbIteratorListViewAdapter<QDVDbNote> notesListAdapter;
@@ -69,6 +72,18 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
         QDVNotesListFragment fragment = new QDVNotesListFragment();
         Bundle args = new Bundle();
         args.putLong(ARG_SECTION_ID, sectionNumber);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static QDVNotesListFragment newInstance(QDVFilterByFolderState filterByFolderState)
+    {
+        QDVNotesListFragment fragment = new QDVNotesListFragment();
+        Bundle args = new Bundle();
+        if (filterByFolderState == null) {
+            filterByFolderState = new QDVFilterByFolderState();
+        }
+        args.putSerializable(ARG_FILTER_BY_FOLDER, filterByFolderState);
         fragment.setArguments(args);
         return fragment;
     }
@@ -296,29 +311,44 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
                     return;
                 }
                 QDVDbNote note = (QDVDbNote) object;
-                QDVNoteEditorState noteEditorState = new QDVNoteEditorState();
-                noteEditorState.setState(QDVNoteEditorState.EditorMode.EDITING,
-                        note.getFolderId(), note.getId());
-                Fragment fragment = new QDVNoteEditorFragment();
-                getFragmentManager().beginTransaction().addToBackStack(null)
-                        .replace(R.id.container, fragment, FRAGMENT_TAG).commit();
+                if (notesHomePresenter!=null) {
+                    notesHomePresenter.doEditNote(note);
+                }
             }
         });
 
-        long folderId = getArguments().getLong(ARG_SECTION_ID);
-        if (folderId>0) {
-            state.getFilterByFolderState().setFilterType(
-                    QDVFilterByFolderState.FilterType.FOLDER_ID);
-            state.getFilterByFolderState().setFolderId(folderId);
-        } else if (folderId==QDVNotesActivity.action_categories_all_id) {
-            state.getFilterByFolderState().setFilterType(
-                    QDVFilterByFolderState.FilterType.ALL_FOLDER);
-        } else {
-            state.getFilterByFolderState().setFilterType(
-                    QDVFilterByFolderState.FilterType.FOLDER_NOT_SELECTED);
-        }
+        Object obj = getArguments().getSerializable(ARG_FILTER_BY_FOLDER);
+        if (obj instanceof QDVFilterByFolderState) {
+            QDVFilterByFolderState filter = (QDVFilterByFolderState) obj;
+            state.setFilterByFolderState(filter);
+            Long folderIdForAdding = null;
 
-        state.setFolderIdForNotesAdding(folderId>0 ? folderId : null);
+            switch (filter.getFilterType()) {
+                case FOLDER:
+                    folderIdForAdding = filter.getFolder().getId();
+                    break;
+                case FOLDER_ID:
+                    folderIdForAdding = filter.getFolderId();
+                    break;
+            }
+            state.setFolderIdForNotesAdding(folderIdForAdding);
+
+        } else {
+            long folderId = getArguments().getLong(ARG_SECTION_ID);
+            if (folderId > 0) {
+                state.getFilterByFolderState().setFilterType(
+                        QDVFilterByFolderState.FilterType.FOLDER_ID);
+                state.getFilterByFolderState().setFolderId(folderId);
+            } else if (folderId == QDVNotesHomeActivity.action_categories_all_id) {
+                state.getFilterByFolderState().setFilterType(
+                        QDVFilterByFolderState.FilterType.ALL_FOLDER);
+            } else {
+                state.getFilterByFolderState().setFilterType(
+                        QDVFilterByFolderState.FilterType.FOLDER_NOT_SELECTED);
+            }
+
+            state.setFolderIdForNotesAdding(folderId > 0 ? folderId : null);
+        }
 
         notesListPresenter.initWithState(state);
 
@@ -377,6 +407,10 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Activity activity = getActivity();
+        if (activity instanceof QDVNotesHomeActivity) {
+            notesHomePresenter = ((QDVNotesHomeActivity) activity).notesHomePresenter;
+        }
         setHasOptionsMenu(true);
     }
 
@@ -390,12 +424,9 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_add_note) {
-            QDVNoteEditorState noteEditorState = new QDVNoteEditorState();
-            noteEditorState.setState(QDVNoteEditorState.EditorMode.ADDING,
-                    state.getFolderIdForNotesAdding(), null);
-            Fragment fragment = new QDVNoteEditorFragment();
-            getFragmentManager().beginTransaction().addToBackStack(null)
-                    .replace(R.id.container, fragment, FRAGMENT_TAG).commit();
+            if (notesHomePresenter!=null) {
+                notesHomePresenter.doAddNote(state.getFolderIdForNotesAdding());
+            }
             return true;
         }
 
@@ -472,8 +503,11 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
                         "https://play.google.com/store/apps/details?id=ru.q_dev.LNoteP")));
             }
             catch (Exception ignored) {
-                new AlertDialog.Builder(getActivity()).setMessage(R.string.app_not_found)
-                        .setCancelable(true).setNegativeButton(R.string.cancel, null).show();
+                new AlertDialog.Builder(getActivity())
+                        .setMessage(R.string.app_not_found)
+                        .setCancelable(true)
+                        .setNegativeButton(R.string.cancel, null)
+                        .show();
             }
         }
 

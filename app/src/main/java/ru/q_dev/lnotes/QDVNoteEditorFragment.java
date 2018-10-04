@@ -1,5 +1,6 @@
 package ru.q_dev.lnotes;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -34,6 +35,8 @@ import butterknife.Unbinder;
  */
 
 public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNoteEditorView {
+    public static final String FRAGMENT_TAG = "notesEditorFragment";
+
     private Unbinder unbinder;
 
     @BindView(R.id.editText)
@@ -42,12 +45,15 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
     @InjectPresenter
     QDVNoteEditorPresenter noteEditorPresenter;
 
+    QDVNotesHomePresenter notesHomePresenter;
+
     private View editorView;
     private boolean editTextViewChangesNotifyEnable = true;
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         editorView = inflater.inflate(
                 R.layout.fragment_note_editor, container, false);
 
@@ -58,16 +64,20 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
         editTextView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode==KeyEvent.KEYCODE_ENTER && ((event.getFlags() & KeyEvent.FLAG_EDITOR_ACTION) > 0)){
-                    InputMethodManager inputMethodManager = (InputMethodManager)ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (keyCode==KeyEvent.KEYCODE_ENTER && ((event.getFlags()
+                        & KeyEvent.FLAG_EDITOR_ACTION) > 0)){
+                    InputMethodManager inputMethodManager = (InputMethodManager)ThisApp.getContext()
+                            .getSystemService(Context.INPUT_METHOD_SERVICE);
                     if (inputMethodManager!=null) {
-                        inputMethodManager.hideSoftInputFromWindow(editTextView.getWindowToken(), 0);
+                        inputMethodManager.hideSoftInputFromWindow(
+                                editTextView.getWindowToken(), 0);
                     }
                 }
                 return false;
             }
         });
-        InputMethodManager inputMananger = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager inputMananger = (InputMethodManager) getContext()
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
         if (inputMananger!=null) {
             inputMananger.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
         }
@@ -103,6 +113,10 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
     @Override
     public void onActivityCreated (Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Activity activity = getActivity();
+        if (activity instanceof QDVNotesHomeActivity) {
+            notesHomePresenter = ((QDVNotesHomeActivity) activity).notesHomePresenter;
+        }
         setHasOptionsMenu(true);
     }
 
@@ -121,16 +135,17 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_save) {
-            noteEditorPresenter.onNoteContentChange(editTextView.getText().toString());
-            if (noteEditorPresenter.saveNote()) {
-                goBack();
-            }
+        switch (item.getItemId()) {
+            case R.id.menu_save:
+                noteEditorPresenter.onNoteContentChange(editTextView.getText().toString());
+                if (noteEditorPresenter.saveNote()) {
+                    goBack();
+                }
+                return true;
 
-            return true;
-        }
-        else {
-            goBackWithConfirm();
+            case android.R.id.home:
+                goBackWithConfirm();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -149,7 +164,9 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
 
     public void goBackWithConfirm () {
         if (noteEditorPresenter.isChangedFlag()) {
-            new AlertDialog.Builder(getActivity()).setMessage(R.string.exit_without_save_confirm).setCancelable(true)
+            new AlertDialog.Builder(getActivity())
+                    .setMessage(R.string.exit_without_save_confirm)
+                    .setCancelable(true)
                     .setPositiveButton(R.string.action_yes, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -164,11 +181,12 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
     }
 
     public void goBack() {
-        InputMethodManager inputMethodManager = (InputMethodManager)ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager inputMethodManager = (InputMethodManager)ThisApp.getContext()
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
         if (inputMethodManager!=null){
             inputMethodManager.hideSoftInputFromWindow(editTextView.getWindowToken(), 0);
         }
-        getFragmentManager().popBackStack();
+        notesHomePresenter.doGoBack();
     }
 
     @Override
