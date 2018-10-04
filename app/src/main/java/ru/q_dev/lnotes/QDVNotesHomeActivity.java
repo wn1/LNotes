@@ -201,6 +201,10 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity
             ((QDVNoteEditorFragment) fragment).goBackWithConfirm();
             return;
         }
+        if (navigationDrawerFragment.isDrawerOpen()) {
+            navigationDrawerFragment.setDrawerOpen(false);
+            return;
+        }
         super.onBackPressed();
     }
 

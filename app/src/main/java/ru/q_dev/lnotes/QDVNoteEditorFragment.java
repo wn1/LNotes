@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
 
 import butterknife.BindView;
@@ -44,8 +45,6 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
 
     @InjectPresenter
     QDVNoteEditorPresenter noteEditorPresenter;
-
-    QDVNotesHomePresenter notesHomePresenter;
 
     private View editorView;
     private boolean editTextViewChangesNotifyEnable = true;
@@ -113,10 +112,6 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
     @Override
     public void onActivityCreated (Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Activity activity = getActivity();
-        if (activity instanceof QDVNotesHomeActivity) {
-            notesHomePresenter = ((QDVNotesHomeActivity) activity).notesHomePresenter;
-        }
         setHasOptionsMenu(true);
     }
 
@@ -186,7 +181,7 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
         if (inputMethodManager!=null){
             inputMethodManager.hideSoftInputFromWindow(editTextView.getWindowToken(), 0);
         }
-        notesHomePresenter.doGoBack();
+        EventBus.getDefault().post(new QDVNotesHomePresenter.DoGoBackEvent());
     }
 
     @Override

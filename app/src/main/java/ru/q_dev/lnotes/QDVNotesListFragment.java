@@ -28,6 +28,7 @@ import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.j256.ormlite.dao.CloseableIterator;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.DateFormat;
@@ -58,8 +59,6 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
 
     @InjectPresenter
     QDVNotesListPresenter notesListPresenter;
-
-    QDVNotesHomePresenter notesHomePresenter;
 
     QDVNotesListState state;
     QDVDbIteratorListViewAdapter<QDVDbNote> notesListAdapter;
@@ -311,9 +310,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
                     return;
                 }
                 QDVDbNote note = (QDVDbNote) object;
-                if (notesHomePresenter!=null) {
-                    notesHomePresenter.doEditNote(note);
-                }
+                EventBus.getDefault().post(new QDVNotesHomePresenter.DoEditNoteEvent(note));
             }
         });
 
@@ -407,10 +404,6 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Activity activity = getActivity();
-        if (activity instanceof QDVNotesHomeActivity) {
-            notesHomePresenter = ((QDVNotesHomeActivity) activity).notesHomePresenter;
-        }
         setHasOptionsMenu(true);
     }
 
@@ -424,9 +417,8 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_add_note) {
-            if (notesHomePresenter!=null) {
-                notesHomePresenter.doAddNote(state.getFolderIdForNotesAdding());
-            }
+            EventBus.getDefault().post(
+                    new QDVNotesHomePresenter.DoAddNoteEvent(state.getFolderIdForNotesAdding()));
             return true;
         }
 

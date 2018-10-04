@@ -2,6 +2,9 @@ package ru.q_dev.lnotes
 
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 /**
  * Created by Vladimir Kudashov on 04.10.18.
@@ -13,6 +16,7 @@ class QDVNotesHomePresenter : MvpPresenter <QDVNotesHomeView> () {
     init {
         viewState.initNotesList()
         viewState.setNavigationDrawerFolderEnabled(true)
+        EventBus.getDefault().register(this)
     }
 
     fun doSelectFolder (folderId: Long?) {
@@ -43,10 +47,22 @@ class QDVNotesHomePresenter : MvpPresenter <QDVNotesHomeView> () {
         viewState.setNavigationDrawerFolderEnabled(false)
     }
 
+    class DoEditNoteEvent (var note: QDVDbNote)
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEvent(event: DoEditNoteEvent) {
+        doEditNote(event.note)
+    }
+
     fun doAddNote (folderIdForAdding: Long?) {
         state.uiState = QDVNotesHomeState.UiState.EDIT
         viewState.initAddNote(folderIdForAdding)
         viewState.setNavigationDrawerFolderEnabled(false)
+    }
+
+    class DoAddNoteEvent(var folderIdForAdding: Long? = null)
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEvent(event: DoAddNoteEvent) {
+        doAddNote(event.folderIdForAdding)
     }
 
     fun doGoBack () {
@@ -55,5 +71,16 @@ class QDVNotesHomePresenter : MvpPresenter <QDVNotesHomeView> () {
             viewState.setNavigationDrawerFolderEnabled(true)
             state.uiState = QDVNotesHomeState.UiState.LIST
         }
+    }
+
+    class DoGoBackEvent
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEvent(event: DoGoBackEvent) {
+        doGoBack()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        EventBus.getDefault().unregister(this)
     }
 }

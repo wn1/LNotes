@@ -268,6 +268,18 @@ public class QDVNavigationDrawerFragment extends Fragment {
         return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mFragmentContainerView);
     }
 
+    public void setDrawerOpen(boolean drawerOpen) {
+        if (mDrawerLayout != null) {
+            if (drawerOpen) {
+                mDrawerLayout.openDrawer(mFragmentContainerView);
+            }
+            else
+            {
+                mDrawerLayout.closeDrawer(mFragmentContainerView);
+            }
+        }
+    }
+
     public void setUp(int fragmentId, DrawerLayout drawerLayout) {
         mFragmentContainerView = getActivity().findViewById(fragmentId);
         mDrawerLayout = drawerLayout;
