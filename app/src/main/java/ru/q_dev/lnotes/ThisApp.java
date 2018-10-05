@@ -18,8 +18,5 @@ public class ThisApp extends Application {
     public void onCreate() {
         super.onCreate();
         thisApp = this;
-
-        //TODO Need delete after QDVMyBaseQueryHelper remove
-        new QDVDbDatabase(getContext()).getWritableDatabase();
     }
 }

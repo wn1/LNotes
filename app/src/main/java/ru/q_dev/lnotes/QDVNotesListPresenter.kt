@@ -53,6 +53,8 @@ class QDVNotesListPresenter : MvpPresenter <QDVNotesListView> () {
             where.like(columnName, "%${state.searchState.searchText}%")
         }
 
+        val oderString = "(isready > 0), complete_time_u DESC, update_time_u DESC"
+        queryBuilder.orderByRaw(oderString)
         return queryBuilder.iterator()
     }
 
@@ -111,6 +113,10 @@ class QDVNotesListPresenter : MvpPresenter <QDVNotesListView> () {
         note.statusOfExecution = status
         if (status!=QDVDbNote.StatusOfExecution.CREATED){
             note.completeTime = Date()
+        }
+        else
+        {
+            note.completeTime = null
         }
         database.getDaoWithIdLong(QDVDbNote::class.java).update(note)
         viewState.loadNotesList(dbIteratorNotesQuery())

@@ -65,6 +65,11 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
     }
 
     private void reloadDataDb() {
+        QDVDbDatabase database = QDVDbDatabase.getAndLock();
+        while(database.isOpen()) {
+            QDVDbDatabase.release();
+        }
+        new QDVNavigationDrawerState().setSelectedFolderOrMenu(null);
         Intent intent = new Intent(this, QDVNotesHomeActivity.class);
         finish();
         startActivity(intent);
