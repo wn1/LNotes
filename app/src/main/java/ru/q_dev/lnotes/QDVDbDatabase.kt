@@ -6,6 +6,7 @@ import com.j256.ormlite.android.apptools.OpenHelperManager
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper
 import com.j256.ormlite.support.ConnectionSource
 import com.j256.ormlite.dao.Dao
+import java.io.File
 import java.lang.Exception
 import java.sql.SQLException
 
@@ -108,8 +109,6 @@ class QDVDbDatabase(context: Context?, databaseName: String?,
             sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS notes (id INTEGER PRIMARY KEY, content, create_time_u INTEGER DEFAULT NULL, isready INT DEFAULT 0, folder_id INTEGER DEFAULT NULL, complete_time_u INTEGER DEFAULT NULL, update_time_u INTEGER DEFAULT NULL)")
             sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY, label)")
             sqLiteDatabase.execSQL("INSERT INTO conf (vers) VALUES (" + DATABASE_VERSION.toString() + ")")
-            sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS conf_filter (id INTEGER PRIMARY KEY, filter_id INTEGER DEFAULT NULL, action, label, row_type INTEGER DEFAULT 0)")
-            sqLiteDatabase.execSQL("INSERT INTO conf_filter (filter_id) VALUES (" + QDVNotesHomeActivity.action_categories_all_id.toString() + ")")
         }
     }
 
@@ -129,15 +128,23 @@ class QDVDbDatabase(context: Context?, databaseName: String?,
             sqLiteDatabase.execSQL(updateQuery)
             i = 6
         }
-        if (i == 7) {
+        if (i == 6) {
             sqLiteDatabase.execSQL("ALTER TABLE notes ADD COLUMN create_time_u INTEGER DEFAULT NULL")
             sqLiteDatabase.execSQL("ALTER TABLE notes ADD COLUMN update_time_u INTEGER DEFAULT NULL")
             sqLiteDatabase.execSQL("ALTER TABLE notes ADD COLUMN complete_time_u INTEGER DEFAULT NULL")
             sqLiteDatabase.execSQL("UPDATE notes SET create_time_u = (strftime('%s', cdate))*1000 WHERE cdate NOT NULL")
             sqLiteDatabase.execSQL("UPDATE notes SET update_time_u = create_time_u")
             sqLiteDatabase.execSQL("UPDATE notes SET complete_time_u = (strftime('%s', isready_date))*1000 WHERE isready_date NOT NULL")
+
+            sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS notestmp (id INTEGER PRIMARY KEY, content, create_time_u INTEGER DEFAULT NULL, isready INT DEFAULT 0, folder_id INTEGER DEFAULT NULL, complete_time_u INTEGER DEFAULT NULL, update_time_u INTEGER DEFAULT NULL)")
+            sqLiteDatabase.execSQL("INSERT INTO notestmp(id, content, create_time_u, isready, folder_id, complete_time_u, update_time_u) SELECT id, content, create_time_u, isready, folder_id, complete_time_u, update_time_u FROM notes")
+            sqLiteDatabase.execSQL("DROP TABLE IF EXISTS notes")
+            sqLiteDatabase.execSQL("ALTER TABLE notestmp RENAME TO notes")
+
+            sqLiteDatabase.execSQL("DROP TABLE IF EXISTS conf_filter")
+
+            i = 7
             sqLiteDatabase.execSQL("UPDATE conf SET vers = $i")
-            i = 8
         }
     }
 
@@ -163,6 +170,10 @@ class QDVDbDatabase(context: Context?, databaseName: String?,
     @Throws(SQLException::class)
     fun getNotesDao(): Dao<QDVDbNote, Int> {
         return getDao(QDVDbNote::class.java)
+    }
+
+    fun getFileDB(): File {
+        return File(readableDatabase.path)
     }
 
 }

@@ -133,6 +133,7 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 QDVDbFolderOrMenuItem folder = folderListAdapter.getItem(position);
                 navigationDrawerPresenter.onClickFolderOrMenu(folder);
+                drawerListView.setItemChecked(position, false);
             }
         });
 

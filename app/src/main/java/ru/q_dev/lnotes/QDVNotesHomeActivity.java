@@ -71,15 +71,7 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
     }
 
     private File getDbPath (){
-        return new QDVMyBaseOpenHelper(this, new DatabaseErrorHandler() {
-            @Override
-            public void onCorruption(SQLiteDatabase sqLiteDatabase) {
-                new AlertDialog.Builder(QDVNotesHomeActivity.this).
-                        setMessage(String.format(getString(R.string.error_with_id), "402"))
-                        .setCancelable(true)
-                        .setPositiveButton(R.string.cancel, null).show();
-            }
-        }).getFileDB();
+        return new QDVDbDatabase(this).getFileDB();
     }
 
     private File getOldLNotesDbPath (){

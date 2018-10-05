@@ -195,15 +195,7 @@ public class QDVBackupActivity extends AppCompatActivity {
 	}
 
     private boolean saveBackup (OutputStream os, boolean withoutCloseActivity) {
-        File dbFile = new QDVMyBaseOpenHelper(this,  new DatabaseErrorHandler() {
-            @Override
-            public void onCorruption(SQLiteDatabase sqLiteDatabase) {
-                new AlertDialog.Builder(QDVBackupActivity.this).
-                        setMessage(String.format(getString(R.string.error_with_id), "306"))
-                        .setCancelable(true)
-                        .setPositiveButton(R.string.cancel, null).show();
-            }
-        }).getFileDB();
+        File dbFile = new QDVDbDatabase(this).getFileDB();
 
         InputStream is = null;
         boolean result = false;
@@ -289,15 +281,7 @@ public class QDVBackupActivity extends AppCompatActivity {
             return;
         }
 
-        File dbFile = new QDVMyBaseOpenHelper(this,  new DatabaseErrorHandler() {
-            @Override
-            public void onCorruption(SQLiteDatabase sqLiteDatabase) {
-                new AlertDialog.Builder(QDVBackupActivity.this).
-                        setMessage(String.format(getString(R.string.error_with_id), "302"))
-                        .setCancelable(true)
-                        .setPositiveButton(R.string.cancel, null).show();
-            }
-        }).getFileDB();
+        File dbFile = new QDVDbDatabase(this).getFileDB();
         OutputStream outputStream = null;
         boolean result = false;
         File backupFile = new File(dbFile.toString()+".bak");
