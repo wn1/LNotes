@@ -77,7 +77,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
 
     View rootView;
 
-    DateFormat dateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.getDefault());
+    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
     public static QDVNotesListFragment newInstance(long sectionNumber) {
         QDVNotesListFragment fragment = new QDVNotesListFragment();
