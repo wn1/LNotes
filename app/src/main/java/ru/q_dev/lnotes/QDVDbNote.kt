@@ -9,8 +9,6 @@ import java.util.*
 class QDVDbNote : QDVDbEntity() {
     enum class StatusOfExecution {CREATED, COMPLETED, NOT_NEED}
 
-    @DatabaseField(generatedId = true, dataType = DataType.LONG, columnName = "id")
-    override var id: Long = 0
     @DatabaseField(dataType = DataType.STRING, canBeNull = true)
     var content: String? = null
     @DatabaseField (dataType = DataType.LONG_OBJ, canBeNull = true, columnName = "folder_id")

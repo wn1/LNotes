@@ -275,7 +275,7 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
         final String folderLabel = folder.getLabel() != null ? folder.getLabel() : "";
         new AlertDialog.Builder(getActivity())
                 .setTitle(String.format(getString(R.string.delete_folder_confirm),
-                        (Object) new String[]{folderLabel})).setCancelable(true)
+                        folderLabel)).setCancelable(true)
                 .setMessage(R.string.delete_folder_confirm_message)
                 .setPositiveButton(R.string.action_yes, new DialogInterface.OnClickListener() {
                     @Override

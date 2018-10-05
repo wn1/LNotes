@@ -1,5 +1,7 @@
 package ru.q_dev.lnotes
 
+import com.j256.ormlite.field.DataType
+import com.j256.ormlite.field.DatabaseField
 import java.io.Serializable
 
 /**
@@ -7,5 +9,6 @@ import java.io.Serializable
  */
 
 open class QDVDbEntity : Serializable {
+    @DatabaseField(generatedId = true, dataType = DataType.LONG, columnName = "id")
     open var id: Long = 0
 }

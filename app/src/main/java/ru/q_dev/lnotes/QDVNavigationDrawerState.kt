@@ -2,6 +2,7 @@ package ru.q_dev.lnotes
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.google.gson.GsonBuilder
 
 /**
  * Created by Vladimir Kudashov on 04.10.18.
@@ -9,32 +10,40 @@ import android.content.SharedPreferences
 
 class QDVNavigationDrawerState {
     private val PREFERENCES_NAME = "QDVNavigationDrawerState"
-    private val PREFERENCE_NAME_CURRENT_SELECTED_POSITION = "currentSelectedPosition"
     private val PREFERENCE_NAME_USER_LEARNED = "userLearned"
+    private val PREFERENCE_NAME_SELECTED = "selectedFolderOrMenu"
 
     private fun getPreference(): SharedPreferences {
         return ThisApp.getContext().getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
     }
 
     var selectedFolderOrMenu: QDVDbFolderOrMenuItem? = null
+    set(value) {
+        if (field == value) {
+            return
+        }
+        field = value
+        val editor = getPreference().edit()
+        if (value==null) {
+            editor.remove(PREFERENCE_NAME_SELECTED).apply()
+            return
+        }
+        val builder = GsonBuilder()
+        val gson = builder.create()
+        val jsonStr = gson.toJson(value)
+        editor.putString(PREFERENCE_NAME_SELECTED, jsonStr).apply()
+    }
 
-    var currentSelectedPosition: Long?
-        get() {
-            val preferences = getPreference()
-            return if (preferences.contains(PREFERENCE_NAME_CURRENT_SELECTED_POSITION))
-                preferences.getLong(PREFERENCE_NAME_CURRENT_SELECTED_POSITION, 0) else null
+    init {
+        val builder = GsonBuilder()
+        val gson = builder.create()
+        selectedFolderOrMenu = try {
+            gson.fromJson(getPreference().getString(PREFERENCE_NAME_SELECTED, ""),
+                    QDVDbFolderOrMenuItem::class.java)
+        } catch (e: Exception) {
+            null
         }
-        set(value) {
-            val editor = getPreference().edit()
-            if (value!=null) {
-                editor.putLong(PREFERENCE_NAME_CURRENT_SELECTED_POSITION, value)
-            }
-            else
-            {
-                editor.remove(PREFERENCE_NAME_CURRENT_SELECTED_POSITION)
-            }
-            editor.apply()
-        }
+    }
 
     var isUserLearned: Boolean
     get() {

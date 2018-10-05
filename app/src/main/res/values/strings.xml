@@ -30,7 +30,7 @@
     <string name="folder_name_need_no_empty">Folder name need no empty</string>
     <string name="category_all">All</string>
     <string name="category_unknown">Not selected</string>
-    <string name="delete_folder_confirm">Delete folder "%s\"?</string>
+    <string name="delete_folder_confirm">Delete folder \"%s\"?</string>
     <string name="delete_folder_confirm_message">Delete all notes in folder</string>
     <string name="error_with_id">Error. Contact to developer. Error id: %s</string>
     <string name="error_lnotesync_not_found">Application LNotesSync not found</string>
