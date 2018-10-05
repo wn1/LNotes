@@ -425,7 +425,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
 
             View alertDialogView = getActivity().getLayoutInflater().inflate(
                     R.layout.about_dialog, null);
-            TextView textView = (TextView) alertDialogView.findViewById(R.id.aboutText);
+            TextView textView = alertDialogView.findViewById(R.id.aboutText);
             textView.setText(R.string.about_message);
             new AlertDialog.Builder(getActivity()).setTitle(lnotesNameAndVersion)
                     .setCancelable(true)

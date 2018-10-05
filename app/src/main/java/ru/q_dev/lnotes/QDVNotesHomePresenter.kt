@@ -20,7 +20,7 @@ class QDVNotesHomePresenter : MvpPresenter <QDVNotesHomeView> () {
     }
 
     fun doSelectFolder (folderId: Long?) {
-        val filterState = QDVFilterByFolderState();
+        val filterState = QDVFilterByFolderState()
         when {
             folderId == null -> {
                 filterState.filterType = QDVFilterByFolderState.FilterType.FOLDER_NOT_SELECTED

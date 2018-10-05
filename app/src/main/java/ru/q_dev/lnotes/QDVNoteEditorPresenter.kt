@@ -22,8 +22,8 @@ class QDVNoteEditorPresenter : MvpPresenter <QDVNoteEditorView> () {
     }
 
     //Need QDVDbDatabase.release() in onDestroy()
-    private var database: QDVDbDatabase = QDVDbDatabase.getAndLock();
-    private var note: QDVDbNote? = null;
+    private var database: QDVDbDatabase = QDVDbDatabase.getAndLock()
+    private var note: QDVDbNote? = null
     private var folder: QDVDbFolder? = null
     private val editorState = QDVNoteEditorState()
 

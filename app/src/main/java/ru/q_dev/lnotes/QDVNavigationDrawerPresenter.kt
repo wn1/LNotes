@@ -57,7 +57,7 @@ class QDVNavigationDrawerPresenter : MvpPresenter<QDVNavigationDrawerView>(){
     }
 
     fun userLearned() {
-        state.isUserLearned = true;
+        state.isUserLearned = true
     }
 
     fun doAddFolder(folderName: String) {
@@ -74,7 +74,7 @@ class QDVNavigationDrawerPresenter : MvpPresenter<QDVNavigationDrawerView>(){
 
     fun doRemoveFolder(folderOrMenu: QDVDbFolderOrMenuItem) {
         if (folderOrMenu.menuItem != QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_ENTITY) {
-            return;
+            return
         }
         val noteDao =
                 database.getDaoWithIdLong(QDVDbFolderOrMenuItem::class.java)
@@ -89,7 +89,7 @@ class QDVNavigationDrawerPresenter : MvpPresenter<QDVNavigationDrawerView>(){
 
     fun doUpdateFolder(folderOrMenu: QDVDbFolderOrMenuItem) {
         if (folderOrMenu.menuItem != QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_ENTITY) {
-            return;
+            return
         }
         val noteDao =
                 database.getDaoWithIdLong(QDVDbFolderOrMenuItem::class.java)

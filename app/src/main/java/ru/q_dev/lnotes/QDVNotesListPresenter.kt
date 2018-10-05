@@ -26,14 +26,14 @@ class QDVNotesListPresenter : MvpPresenter <QDVNotesListView> () {
     fun dbIteratorNotesQuery(): CloseableIterator<QDVDbNote> {
         val noteDao = database.getDaoWithIdLong(QDVDbNote::class.java)
         val queryBuilder = noteDao.queryBuilder()
-        val filter = state.filterByFolderState;
+        val filter = state.filterByFolderState
 
         var where: Where<QDVDbNote, Long>? = null
         if (filter.filterType == QDVFilterByFolderState.FilterType.FOLDER_NOT_SELECTED) {
-            val columnName = "folder_id";
+            val columnName = "folder_id"
             where = queryBuilder.where().isNull(columnName).or().le(columnName, 0)
         } else {
-            val columnName = "folder_id";
+            val columnName = "folder_id"
             if (filter.filterType == QDVFilterByFolderState.FilterType.FOLDER_ID
                     && state.filterByFolderState.folderId != null) {
                 where = queryBuilder.where().eq(columnName, state.filterByFolderState.folderId)
@@ -44,7 +44,7 @@ class QDVNotesListPresenter : MvpPresenter <QDVNotesListView> () {
             }
         }
         if (state.searchState.isSearchActive && !state.searchState.searchText.isNullOrEmpty()) {
-            val columnName = "content";
+            val columnName = "content"
             where = if (where != null) {
                 where.and()
             } else {

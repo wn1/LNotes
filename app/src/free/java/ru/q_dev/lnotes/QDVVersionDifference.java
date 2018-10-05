@@ -20,7 +20,7 @@ public class QDVVersionDifference {
     static public void loadAd (Activity activity) {
         MobileAds.initialize(activity, activity.getString(R.string.admob_app_id));
         AdRequest adRequest = new AdRequest.Builder().build();
-        AdView adView = (AdView) activity.findViewById(R.id.adView);
+        AdView adView = activity.findViewById(R.id.adView);
         adView.loadAd(adRequest);
     }
 }

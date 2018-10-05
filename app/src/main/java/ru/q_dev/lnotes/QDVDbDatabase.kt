@@ -43,8 +43,8 @@ class QDVDbDatabase(context: Context?, databaseName: String?,
 
         //Fix for start onCreate after import db from older version LNotes
         val cursor = sqLiteDatabase.rawQuery("SELECT vers FROM conf", null)
-        if (cursor != null && !cursor.isClosed() && !cursor.isAfterLast()) {
-            if (cursor.isBeforeFirst()) {
+        if (cursor != null && !cursor.isClosed && !cursor.isAfterLast) {
+            if (cursor.isBeforeFirst) {
                 cursor.moveToFirst()
             }
             var currentVer = cursor.getInt(0)

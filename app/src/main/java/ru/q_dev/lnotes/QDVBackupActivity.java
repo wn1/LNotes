@@ -136,7 +136,7 @@ public class QDVBackupActivity extends AppCompatActivity {
     }
 
     private void saveBackup(String password) {
-        this.passwordForBackup = password;
+        passwordForBackup = password;
 		
 		DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmm-ss");
 		String fileNameString = dateFormat.format(new Date())+(passwordForBackup.length()==0 ? ".db" :".dbcr");
