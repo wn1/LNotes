@@ -35,6 +35,8 @@ class QDVNavigationDrawerPresenter : MvpPresenter<QDVNavigationDrawerView>(){
 
         loadFolderList()
 
+        onClickFolderOrMenu(state.selectedFolderOrMenu)
+
         if (!state.isUserLearned) {
             viewState.setDrawerOpen(true)
         }

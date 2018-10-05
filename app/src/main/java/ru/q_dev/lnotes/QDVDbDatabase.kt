@@ -111,8 +111,6 @@ class QDVDbDatabase(context: Context?, databaseName: String?,
             sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS conf_filter (id INTEGER PRIMARY KEY, filter_id INTEGER DEFAULT NULL, action, label, row_type INTEGER DEFAULT 0)")
             sqLiteDatabase.execSQL("INSERT INTO conf_filter (filter_id) VALUES (" + QDVNotesHomeActivity.action_categories_all_id.toString() + ")")
         }
-
-//        TableUtils.createTable(connectionSource, QDVDbNote::class.java)
     }
 
     override fun onUpgrade(database: SQLiteDatabase?, connectionSource: ConnectionSource?,
