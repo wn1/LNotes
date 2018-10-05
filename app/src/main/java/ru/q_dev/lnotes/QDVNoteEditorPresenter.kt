@@ -2,7 +2,6 @@ package ru.q_dev.lnotes
 
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
-import java.sql.SQLException
 import java.util.*
 
 /**
@@ -22,6 +21,7 @@ class QDVNoteEditorPresenter : MvpPresenter <QDVNoteEditorView> () {
         }
     }
 
+    //Need QDVDbDatabase.release() in onDestroy()
     private var database: QDVDbDatabase = QDVDbDatabase.getAndLock();
     private var note: QDVDbNote? = null;
     private var folder: QDVDbFolder? = null

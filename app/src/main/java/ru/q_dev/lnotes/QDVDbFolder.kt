@@ -12,7 +12,7 @@ import com.j256.ormlite.table.DatabaseTable
 open class QDVDbFolder(label: String? = null) : QDVDbEntity() {
     enum class Special (val id: Long) {UNKNOWN_FOLDER(-1)}
     @DatabaseField(generatedId = true, dataType = DataType.LONG, columnName = "id")
-    override val id: Long = 0
+    override var id: Long = 0
     @DatabaseField(dataType = DataType.STRING, canBeNull = true)
     var label: String? = label
 }

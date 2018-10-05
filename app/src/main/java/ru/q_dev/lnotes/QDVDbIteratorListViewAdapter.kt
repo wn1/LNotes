@@ -1,7 +1,5 @@
 package ru.q_dev.lnotes
 
-import android.view.View
-import android.view.ViewGroup
 import android.widget.BaseAdapter
 import com.j256.ormlite.android.AndroidDatabaseResults
 import com.j256.ormlite.dao.CloseableIterator
@@ -45,5 +43,6 @@ abstract class QDVDbIteratorListViewAdapter <T:QDVDbEntity> : BaseAdapter() {
 
     fun loadDbIterator (newDbIterator: CloseableIterator<T>?) {
         dbIterator = newDbIterator
+        notifyDataSetChanged()
     }
 }

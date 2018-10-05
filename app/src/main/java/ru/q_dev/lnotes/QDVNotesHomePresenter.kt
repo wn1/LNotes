@@ -36,9 +36,31 @@ class QDVNotesHomePresenter : MvpPresenter <QDVNotesHomeView> () {
                 filterState.filterType = QDVFilterByFolderState.FilterType.FOLDER_NOT_SELECTED
             }
         }
+
         state.uiState = QDVNotesHomeState.UiState.LIST
         viewState.initNotesList(filterState)
         viewState.setNavigationDrawerFolderEnabled(true)
+    }
+
+    fun doSelectFolder (filterType: QDVFilterByFolderState.FilterType, folder: QDVDbFolder?) {
+        val filterState = QDVFilterByFolderState()
+        filterState.filterType = filterType
+        if (filterType == QDVFilterByFolderState.FilterType.FOLDER_ID) {
+            filterState.folderId = folder?.id
+        } else {
+            filterState.folder = folder
+        }
+
+        state.uiState = QDVNotesHomeState.UiState.LIST
+        viewState.initNotesList(filterState)
+        viewState.setNavigationDrawerFolderEnabled(true)
+    }
+
+    class DoSelectFolderEvent (val filterType: QDVFilterByFolderState.FilterType,
+                               val folder: QDVDbFolder?)
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEvent(event: DoSelectFolderEvent) {
+        doSelectFolder(event.filterType, event.folder)
     }
 
     fun doEditNote (note: QDVDbNote) {
@@ -47,7 +69,7 @@ class QDVNotesHomePresenter : MvpPresenter <QDVNotesHomeView> () {
         viewState.setNavigationDrawerFolderEnabled(false)
     }
 
-    class DoEditNoteEvent (var note: QDVDbNote)
+    class DoEditNoteEvent (val note: QDVDbNote)
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEvent(event: DoEditNoteEvent) {
         doEditNote(event.note)
@@ -59,7 +81,7 @@ class QDVNotesHomePresenter : MvpPresenter <QDVNotesHomeView> () {
         viewState.setNavigationDrawerFolderEnabled(false)
     }
 
-    class DoAddNoteEvent(var folderIdForAdding: Long? = null)
+    class DoAddNoteEvent(val folderIdForAdding: Long? = null)
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEvent(event: DoAddNoteEvent) {
         doAddNote(event.folderIdForAdding)

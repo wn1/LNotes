@@ -23,6 +23,7 @@
     <string name="action_ok">Ок</string>
     <string name="action_restore">Восстановить</string>
     <string name="add_category">Добавить папку...</string>
+    <string name="folder_name_need_no_empty">Имя папки не может быть пустым</string>
     <string name="category_all">Все</string>
     <string name="category_unknown">Не выбрано</string>
     <string name="menu_rename">Переименовать...</string>

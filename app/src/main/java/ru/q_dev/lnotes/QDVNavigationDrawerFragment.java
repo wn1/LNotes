@@ -2,22 +2,13 @@ package ru.q_dev.lnotes;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.database.Cursor;
-import android.database.DatabaseErrorHandler;
-import android.database.sqlite.SQLiteDatabase;
-import android.support.v4.widget.SimpleCursorAdapter;
-import android.app.Activity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,35 +19,44 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
+
+import com.arellomobile.mvp.MvpAppCompatFragment;
+import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.j256.ormlite.dao.CloseableIterator;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
 
 /**
  * Created by Vladimir Kudashov on 11.03.17.
  */
 
-public class QDVNavigationDrawerFragment extends Fragment {
-    private static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
-    private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
-    private NavigationDrawerCallbacks mCallbacks;
-    private ActionBarDrawerToggle mDrawerToggle;
+public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
+        implements QDVNavigationDrawerView {
+    @InjectPresenter
+    QDVNavigationDrawerPresenter navigationDrawerPresenter;
 
-    private DrawerLayout mDrawerLayout;
-    private ListView mDrawerListView;
-    private View mFragmentContainerView;
+    //TODO
+    private ActionBarDrawerToggle drawerToggle;
+    private DrawerLayout drawerLayout;
+    private ListView drawerListView;
+    private View fragmentContainerView;
 
-    private int mCurrentSelectedPosition = 1;
-    private boolean mFromSavedInstanceState;
-    private boolean mUserLearnedDrawer;
+    QDVDbIteratorListViewAdapterExt<QDVDbFolderOrMenuItem> folderListAdapter;
+    private QDVDbFolderOrMenuItem selectedFolderOrMenu;
 
-    private QDVMyBaseOpenHelper dbHelper;
-    private Cursor mCursor;
+    public QDVDbFolderOrMenuItem getSelectedFolderOrMenu() {
+        return selectedFolderOrMenu;
+    }
 
-    public static final int action_add_categories_id = -3;
-    public static final int action_add_categories_position = 0;
-    public static final int action_categories_all_id = -2;
-    public static final int action_categories_all_position = 1;
-    public static final int action_categories_not_selected_id = -1;
-    public static final int action_categories_not_selected_position = 2;
-
+    public void setSelectedFolderOrMenu(QDVDbFolderOrMenuItem selectedFolderOrMenu) {
+        this.selectedFolderOrMenu = selectedFolderOrMenu;
+        if (folderListAdapter != null){
+            folderListAdapter.notifyDataSetChanged();
+        }
+    }
 
     public boolean isActive() {
         return isActive;
@@ -64,8 +64,8 @@ public class QDVNavigationDrawerFragment extends Fragment {
 
     public void setActive(boolean active) {
         isActive = active;
-        if (mDrawerLayout != null) {
-            mDrawerLayout.closeDrawer(mFragmentContainerView);
+        if (drawerLayout != null) {
+            drawerLayout.closeDrawer(fragmentContainerView);
         }
     }
 
@@ -77,21 +77,6 @@ public class QDVNavigationDrawerFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
-
-        if (savedInstanceState != null) {
-            mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION, action_categories_all_position);
-            mFromSavedInstanceState = true;
-        }
-        else
-        {
-            mCurrentSelectedPosition = sp.getInt(STATE_SELECTED_POSITION, action_categories_all_position);
-            mFromSavedInstanceState = true;
-        }
-
-        selectItem(mCurrentSelectedPosition);
     }
 
     @Override
@@ -100,197 +85,108 @@ public class QDVNavigationDrawerFragment extends Fragment {
         setHasOptionsMenu(true);
     }
 
-    private ActionBar getActionBar() {
-        return ((AppCompatActivity) getActivity()).getSupportActionBar();
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        mDrawerListView = (ListView) inflater.inflate(
+        drawerListView = (ListView) inflater.inflate(
                 R.layout.drawer_notes, container, false);
-        mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+        folderListAdapter =
+                new QDVDbIteratorListViewAdapterExt<QDVDbFolderOrMenuItem>() {
+                    @Override
+                    public View getView(int i, View view, ViewGroup viewGroup) {
+                        QDVDbFolderOrMenuItem folderOrMenu = getItem(i);
+                        if (view == null) {
+                            view = getLayoutInflater().inflate(
+                                    android.R.layout.simple_list_item_activated_1,
+                                    viewGroup, false);
+                        }
+                        if (view == null) {
+                            return null;
+                        }
+                        if (folderOrMenu == null) {
+                            view.setVisibility(View.INVISIBLE);
+                            return view;
+                        }
+                        ((TextView) view.findViewById(android.R.id.text1))
+                                .setText(folderOrMenu.getLabel());
+
+                        if (selectedFolderOrMenu!=null) {
+                            if (folderOrMenu.menuItem ==
+                                    QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_ENTITY) {
+                                if (folderOrMenu.getId() == selectedFolderOrMenu.getId()) {
+                                    drawerListView.setItemChecked(i, true);
+                                }
+                            } else if (folderOrMenu.menuItem == selectedFolderOrMenu.menuItem) {
+                                drawerListView.setItemChecked(i, true);
+                            }
+                        }
+
+                        return view;
+                    }
+                };
+
+        drawerListView.setAdapter(folderListAdapter);
+
+        drawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position);
+                QDVDbFolderOrMenuItem folder = folderListAdapter.getItem(position);
+                navigationDrawerPresenter.onClickFolderOrMenu(folder);
             }
         });
 
-        mDrawerListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        drawerListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
-                if (position == action_add_categories_position) {
+            public boolean onItemLongClick(AdapterView<?> adapterView,
+                                           View view, int position, long l) {
+                final QDVDbFolderOrMenuItem folderOrMenu = folderListAdapter.getItem(position);
+                if (folderOrMenu==null ||
+                        folderOrMenu.menuItem!=QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_ENTITY) {
                     return false;
                 }
+                final String folderLabel = folderOrMenu.getLabel() != null
+                        ? folderOrMenu.getLabel() : "";
+                new AlertDialog.Builder(getActivity()).setTitle(folderLabel).setCancelable(true)
+                        .setItems(new String[]{getString(R.string.menu_delete),
+                                getString(R.string.menu_rename)},
+                                new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                switch (i) {
+                                    case 0:
+                                        onClickDeleteFolder(folderOrMenu);
+                                        break;
 
-                    int positionFirst = (mCursor!=null) ? mCursor.getPosition() : 0;
-                    if (mCursor!=null && !mCursor.isClosed()) {mCursor.moveToPosition(position);};
-                    final long longPressedId = mCursor!=null && !mCursor.isClosed() && !mCursor.isAfterLast() && !mCursor.isNull(0) ? mCursor.getLong(0): action_categories_all_id;
-                    final String categoriesLabel = mCursor!=null && !mCursor.isClosed() && !mCursor.isAfterLast() && !mCursor.isNull(0) ? mCursor.getString(1): "";
-                    if (mCursor!=null && !mCursor.isClosed()) {mCursor.moveToPosition(positionFirst);};
-
-                    if (longPressedId>=0){
-                        new AlertDialog.Builder(getActivity()).setTitle(categoriesLabel).setCancelable(true)
-                                .setItems(new String[]{getString(R.string.menu_delete), getString(R.string.menu_rename)}, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        if (i == 0 || i == 1) {
-                                            if (dbHelper != null) {
-                                                SQLiteDatabase db = dbHelper.getReadableDatabase();
-                                                if (db != null) {
-                                                    if (i == 0) {
-                                                        new AlertDialog.Builder(getActivity()).setTitle(
-                                                                String.format(getString(R.string.delete_folder_confirm),
-                                                                        new String[]{categoriesLabel})).setCancelable(true)
-                                                                .setMessage(R.string.delete_folder_confirm_message)
-                                                                .setPositiveButton(R.string.action_yes, new DialogInterface.OnClickListener() {
-                                                                    @Override
-                                                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                                                        if (dbHelper!=null){
-                                                                            SQLiteDatabase db = dbHelper.getReadableDatabase();
-                                                                            if (db != null){
-                                                                                db.execSQL("DELETE FROM notes WHERE folder_id = " + String.valueOf(longPressedId));
-                                                                                db.execSQL("DELETE FROM categories WHERE id = " + String.valueOf(longPressedId));
-                                                                                reloadData();
-                                                                                selectItem(action_categories_all_position);
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                })
-                                                                .setNegativeButton(R.string.action_no, null).show();
-                                                    }
-                                                    else if (i == 1) {
-                                                        final EditText editText = new EditText(getContext());
-                                                        editText.setText(categoriesLabel);
-                                                        new AlertDialog.Builder(getActivity()).setTitle(R.string.rename_folder_title).setCancelable(true)
-                                                                .setView(editText).setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                                InputMethodManager inputMethodManager = (InputMethodManager)ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                                                                inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-                                                                String folder_name = editText != null ? editText.getText().toString() : null;
-                                                                if (folder_name != null && folder_name.length()>0) {
-                                                                    if (dbHelper != null) {
-                                                                        SQLiteDatabase db = dbHelper.getReadableDatabase();
-                                                                        if (db != null) {
-                                                                            db.execSQL("UPDATE categories SET label = :label WHERE id = :id",
-                                                                                    new String[]{folder_name, String.valueOf(longPressedId)});
-                                                                            reloadData();
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(DialogInterface dialog, int which) {
-                                                                InputMethodManager inputMethodManager = (InputMethodManager)ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                                                                inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-                                                            }
-                                                        }).show();
-                                                        editText.requestFocus();
-                                                        editText.requestFocusFromTouch();
-                                                        InputMethodManager inputMananger = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                                                        inputMananger.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                })
-                                .setNegativeButton(R.string.cancel, null).show();
-                    return true;
-                }
-                return false;
+                                    case 1:
+                                        onClickRenameFolder(folderOrMenu);
+                                        break;
+                                }
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, null).show();
+                return true;
             }
         });
 
-        dbHelper = new QDVMyBaseOpenHelper(getContext(), new DatabaseErrorHandler() {
-            @Override
-            public void onCorruption(SQLiteDatabase sqLiteDatabase) {
-                new AlertDialog.Builder(getContext()).
-                        setMessage(String.format(getString(R.string.error_with_id), "400"))
-                        .setCancelable(true)
-                        .setPositiveButton(R.string.cancel, null).show();
-            }
-        });
-
-        reloadData();
-
-        selectItem(mCurrentSelectedPosition);
-
-        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
-        return mDrawerListView;
-    }
-
-    public void reloadData(){
-        Cursor cursor = null;
-        if (dbHelper!=null){
-            SQLiteDatabase db = dbHelper.getWritableDatabase();
-            if (db != null){
-                String sqlSelect = "";
-                for (int catId=-3; catId<0; catId++){
-                    String label = "";
-                    switch (catId){
-                        case action_add_categories_id:
-                            label = getString(R.string.add_category);
-                            break;
-                        case action_categories_all_id:
-                            label = getString(R.string.category_all);
-                            break;
-                        case action_categories_not_selected_id:
-                            label = getString(R.string.category_unknown);
-                            break;
-                    }
-                    sqlSelect += "SELECT * FROM (SELECT "+String.valueOf(catId)+" as _id, '"+label
-                            +"' as label, "+String.valueOf(catId)+" as ord FROM conf LIMIT 1 ) UNION ALL ";
-                }
-                sqlSelect +="SELECT id as _id, label, 0 as ord FROM categories ";
-                sqlSelect = "SELECT * FROM ("+sqlSelect+") ORDER BY ord, label";
-
-                cursor = db.rawQuery(sqlSelect, null);
-            }
-        }
-
-        String[] from = new String[] {"label"};
-        int[] to = new int[] {android.R.id.text1};
-        android.widget.SimpleCursorAdapter cursorListAdapter =  (android.widget.SimpleCursorAdapter) mDrawerListView.getAdapter();
-        if (cursorListAdapter==null) {
-            cursorListAdapter = new android.widget.SimpleCursorAdapter(getContext(), android.R.layout.simple_list_item_activated_1, cursor, from, to, SimpleCursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-            mDrawerListView.setAdapter(cursorListAdapter);
-        }
-        else {
-            cursorListAdapter.swapCursor(cursor);
-        }
-        mCursor = cursor;
+        return drawerListView;
     }
 
     public boolean isDrawerOpen() {
-        return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mFragmentContainerView);
-    }
-
-    public void setDrawerOpen(boolean drawerOpen) {
-        if (mDrawerLayout != null) {
-            if (drawerOpen) {
-                mDrawerLayout.openDrawer(mFragmentContainerView);
-            }
-            else
-            {
-                mDrawerLayout.closeDrawer(mFragmentContainerView);
-            }
-        }
+        return drawerLayout != null && drawerLayout.isDrawerOpen(fragmentContainerView);
     }
 
     public void setUp(int fragmentId, DrawerLayout drawerLayout) {
-        mFragmentContainerView = getActivity().findViewById(fragmentId);
-        mDrawerLayout = drawerLayout;
+        fragmentContainerView = getActivity().findViewById(fragmentId);
+        this.drawerLayout = drawerLayout;
 
         // set a custom shadow that overlays the main content when the drawer opens
-        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        this.drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
 
-        mDrawerToggle = new ActionBarDrawerToggle(
+        drawerToggle = new ActionBarDrawerToggle(
                 getActivity(),
-                mDrawerLayout,
+                QDVNavigationDrawerFragment.this.drawerLayout,
                 R.drawable.ic_drawer,
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close
@@ -312,131 +208,149 @@ public class QDVNavigationDrawerFragment extends Fragment {
                     return;
                 }
 
-                if (!mUserLearnedDrawer) {
-                    mUserLearnedDrawer = true;
-                    SharedPreferences sp = PreferenceManager
-                            .getDefaultSharedPreferences(getActivity());
-                    sp.edit().putBoolean(PREF_USER_LEARNED_DRAWER, true).apply();
-                }
+                navigationDrawerPresenter.userLearned();
 
                 getActivity().supportInvalidateOptionsMenu();
             }
         };
 
-        if (!mUserLearnedDrawer && !mFromSavedInstanceState) {
-            mDrawerLayout.openDrawer(mFragmentContainerView);
-        }
-
-        mDrawerLayout.post(new Runnable() {
+        this.drawerLayout.post(new Runnable() {
             @Override
             public void run() {
-                mDrawerToggle.syncState();
+                drawerToggle.syncState();
             }
         });
 
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        this.drawerLayout.setDrawerListener(drawerToggle);
     }
 
-    private void selectItem(int position) {
-        boolean closeDrawer = true;
-        if (position == action_add_categories_position) {
-            position = mCurrentSelectedPosition;
-            closeDrawer = false;
-            final EditText editText = new EditText(getContext());
-            new AlertDialog.Builder(getActivity()).setTitle(R.string.add_category).setCancelable(true)
-                    .setView(editText).setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    InputMethodManager inputMethodManager = (InputMethodManager)ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-                    String folder_name = editText != null ? editText.getText().toString() : null;
-                    if (folder_name != null && folder_name.length()>0) {
-                        if (dbHelper != null) {
-                            SQLiteDatabase db = dbHelper.getReadableDatabase();
-                            if (db != null) {
-                                db.execSQL("INSERT INTO categories (label) VALUES (:label)", new String[]{folder_name});
-                                reloadData();
-                            }
-                        }
-                    }
-                }
-            }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    InputMethodManager inputMethodManager = (InputMethodManager) ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+    @Override
+    public void onClickAddFolder() {
+        final EditText editText = new EditText(getContext());
+        new AlertDialog.Builder(getActivity()).setTitle(R.string.add_category).setCancelable(true)
+                .setView(editText).setPositiveButton(R.string.action_ok,
+                new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                InputMethodManager inputMethodManager = (InputMethodManager)ThisApp.getContext()
+                        .getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (inputMethodManager != null) {
                     inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
                 }
-            }).show();
-            editText.requestFocus();
-            editText.requestFocusFromTouch();
-            InputMethodManager inputMananger = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                String folderName = editText.getText().toString();
+                if (folderName.length()>0) {
+                    navigationDrawerPresenter.doAddFolder(folderName);
+                }
+                else
+                {
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.folder_name_need_no_empty)
+                            .setPositiveButton(R.string.action_ok, null)
+                            .show();
+                }
+            }
+        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                InputMethodManager inputMethodManager = (InputMethodManager) ThisApp.getContext()
+                        .getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (inputMethodManager != null) {
+                    inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+                }
+            }
+        }).show();
+        editText.requestFocus();
+        editText.requestFocusFromTouch();
+        InputMethodManager inputMananger = (InputMethodManager) getContext()
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (inputMananger != null) {
             inputMananger.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
         }
-        else {
-            if (mDrawerListView!=null) {
-                if (position >= mDrawerListView.getCount()) {
-                    position = mDrawerListView.getCount() - 1;
+    }
+
+    public void onClickDeleteFolder(final QDVDbFolderOrMenuItem folder) {
+        if (folder.menuItem!=QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_ENTITY) {
+            return;
+        }
+        final String folderLabel = folder.getLabel() != null ? folder.getLabel() : "";
+        new AlertDialog.Builder(getActivity())
+                .setTitle(String.format(getString(R.string.delete_folder_confirm),
+                        (Object) new String[]{folderLabel})).setCancelable(true)
+                .setMessage(R.string.delete_folder_confirm_message)
+                .setPositiveButton(R.string.action_yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        navigationDrawerPresenter.doRemoveFolder(folder);
+                    }
+                })
+                .setNegativeButton(R.string.action_no, null).show();
+    }
+
+    public void onClickRenameFolder(final QDVDbFolderOrMenuItem folder) {
+        if (folder.menuItem!=QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_ENTITY) {
+            return;
+        }
+        final String folderLabel = folder.getLabel() != null ? folder.getLabel() : "";
+        final EditText editText = new EditText(getContext());
+        editText.setText(folderLabel);
+        new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.rename_folder_title)
+                .setCancelable(true)
+                .setView(editText).setPositiveButton(R.string.action_ok,
+                new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                InputMethodManager inputMethodManager = (InputMethodManager)ThisApp.getContext()
+                        .getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (inputMethodManager != null) {
+                    inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+                }
+                String folderName = editText.getText().toString();
+                if (folderName.length()>0) {
+                    folder.setLabel(folderName);
+                    navigationDrawerPresenter.doUpdateFolder(folder);
+                }
+                else
+                {
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.folder_name_need_no_empty)
+                            .setPositiveButton(R.string.action_ok, null)
+                            .show();
                 }
             }
-            if (position<=action_add_categories_position){
-                position = action_categories_all_position;
+        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                InputMethodManager inputMethodManager = (InputMethodManager)ThisApp.getContext()
+                        .getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (inputMethodManager != null) {
+                    inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+                }
             }
-            mCurrentSelectedPosition = position;
-            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            sp.edit().putInt(STATE_SELECTED_POSITION, position).apply();
+        }).show();
+        editText.requestFocus();
+        editText.requestFocusFromTouch();
+        InputMethodManager inputMananger = (InputMethodManager) getContext()
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (inputMananger != null) {
+            inputMananger.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
         }
-
-        if (mDrawerListView != null) {
-            mDrawerListView.setItemChecked(position, true);
-        }
-        if (mDrawerLayout != null && closeDrawer) {
-            mDrawerLayout.closeDrawer(mFragmentContainerView);
-        }
-        if (mCallbacks != null) {
-            int positionFirst = (mCursor!=null) ? mCursor.getPosition() : 0;
-
-            if (mCursor!=null && !mCursor.isClosed()) {mCursor.moveToPosition(position);};
-            ActionBar actionBar = getActionBar();
-            if (actionBar != null) {
-                actionBar.setTitle(mCursor != null && !mCursor.isClosed() && !mCursor.isAfterLast() && !mCursor.isNull(0) ? mCursor.getString(1) : "");
-            }
-            mCallbacks.onNavigationDrawerItemSelected(position, mCursor!=null && !mCursor.isClosed() && !mCursor.isAfterLast() && !mCursor.isNull(0) ? mCursor.getLong(0): action_categories_all_id);
-
-            if (mCursor!=null && !mCursor.isClosed()) {mCursor.moveToPosition(positionFirst);};
-        }
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mCallbacks = (NavigationDrawerCallbacks) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException("Activity must implement NavigationDrawerCallbacks.");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mCallbacks = null;
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if (mDrawerLayout != null && isDrawerOpen()) {
+        if (drawerLayout != null && isDrawerOpen()) {
             inflater.inflate(R.menu.global, menu);
         }
         super.onCreateOptionsMenu(menu, inflater);
@@ -448,7 +362,7 @@ public class QDVNavigationDrawerFragment extends Fragment {
             return super.onOptionsItemSelected(item);
         }
 
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
+        if (drawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
 
@@ -465,8 +379,25 @@ public class QDVNavigationDrawerFragment extends Fragment {
         super.onStop();
     }
 
+    @Override
+    public void loadFolderList(@NotNull CloseableIterator<QDVDbFolderOrMenuItem> dbIterator,
+                               @NotNull ArrayList<QDVDbFolderOrMenuItem> itemsAddingToTop,
+                               @Nullable QDVDbFolderOrMenuItem selectedFolderOrMenu) {
+        this.selectedFolderOrMenu = selectedFolderOrMenu;
+        folderListAdapter.loadData(itemsAddingToTop,
+                navigationDrawerPresenter.dbIteratotorFoldersQuery());
+    }
 
-    public static interface NavigationDrawerCallbacks {
-        void onNavigationDrawerItemSelected(int position, long notesId);
+    @Override
+    public void setDrawerOpen(boolean drawerOpen) {
+        if (drawerLayout != null) {
+            if (drawerOpen) {
+                drawerLayout.openDrawer(fragmentContainerView);
+            }
+            else
+            {
+                drawerLayout.closeDrawer(fragmentContainerView);
+            }
+        }
     }
 }

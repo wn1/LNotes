@@ -11,11 +11,12 @@ import java.util.*
  */
 @InjectViewState
 class QDVNotesListPresenter : MvpPresenter <QDVNotesListView> () {
-    var database: QDVDbDatabase = QDVDbDatabase.getAndLock()
-    var state: QDVNotesListState = QDVNotesListState()
+    private var database: QDVDbDatabase = QDVDbDatabase.getAndLock()
+    private var state: QDVNotesListState = QDVNotesListState()
 
-    fun dbIteratotorFoldersQuery(): CloseableIterator<QDVDbFolder> {
-        val noteDao = database.getDaoWithIdLong(QDVDbFolder::class.java)
+    fun dbIteratotorFoldersQuery(): CloseableIterator<QDVDbFolderOrMenuItem> {
+        val noteDao =
+                database.getDaoWithIdLong(QDVDbFolderOrMenuItem::class.java)
         val queryBuilder = noteDao.queryBuilder()
 
         queryBuilder.orderByRaw("label")
@@ -73,7 +74,8 @@ class QDVNotesListPresenter : MvpPresenter <QDVNotesListView> () {
     fun initWithState(state: QDVNotesListState) {
         this.state = state
         if (state.filterByFolderState.filterType == QDVFilterByFolderState.FilterType.FOLDER_ID) {
-            val noteDao = database.getDaoWithIdLong(QDVDbFolder::class.java)
+            val noteDao =
+                    database.getDaoWithIdLong(QDVDbFolderOrMenuItem::class.java)
             state.filterByFolderState.folder =
                     noteDao.queryForId(state.filterByFolderState.folderId ?: 0)
         }
@@ -112,5 +114,10 @@ class QDVNotesListPresenter : MvpPresenter <QDVNotesListView> () {
         }
         database.getDaoWithIdLong(QDVDbNote::class.java).update(note)
         viewState.loadNotesList(dbIteratorNotesQuery())
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        QDVDbDatabase.release()
     }
 }

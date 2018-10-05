@@ -27,8 +27,7 @@ import java.io.IOException;
  * Created by Vladimir Kudashov on 11.03.17.
  */
 
-public class QDVNotesHomeActivity extends MvpAppCompatActivity
-        implements QDVNotesHomeView, QDVNavigationDrawerFragment.NavigationDrawerCallbacks {
+public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNotesHomeView {
 
     @InjectPresenter
     QDVNotesHomePresenter notesHomePresenter;
@@ -186,11 +185,6 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-    }
-
-    @Override
-    public void onNavigationDrawerItemSelected(int position, long folderId) {
-        notesHomePresenter.doSelectFolder(folderId);
     }
 
     @Override

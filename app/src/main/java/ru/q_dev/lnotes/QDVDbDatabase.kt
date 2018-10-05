@@ -17,7 +17,9 @@ import java.sql.SQLException
 const val DATABASE_VERSION = 7
 const val DATABASE_NAME = "data.db"
 
-class QDVDbDatabase(context: Context?, databaseName: String?, factory: SQLiteDatabase.CursorFactory?, databaseVersion: Int) : OrmLiteSqliteOpenHelper(context, databaseName, factory, databaseVersion) {
+class QDVDbDatabase(context: Context?, databaseName: String?,
+                    factory: SQLiteDatabase.CursorFactory?, databaseVersion: Int) :
+        OrmLiteSqliteOpenHelper(context, databaseName, factory, databaseVersion) {
 
     constructor (context: Context) : this (context, DATABASE_NAME, null, DATABASE_VERSION)
 
@@ -113,7 +115,8 @@ class QDVDbDatabase(context: Context?, databaseName: String?, factory: SQLiteDat
 //        TableUtils.createTable(connectionSource, QDVDbNote::class.java)
     }
 
-    override fun onUpgrade(database: SQLiteDatabase?, connectionSource: ConnectionSource?, oldVersion: Int, newVersion: Int) {
+    override fun onUpgrade(database: SQLiteDatabase?, connectionSource: ConnectionSource?,
+                           oldVersion: Int, newVersion: Int) {
         if (database == null) {
             throw Exception ("Database update error")
         }

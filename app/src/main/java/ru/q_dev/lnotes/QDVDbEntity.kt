@@ -7,5 +7,5 @@ import java.io.Serializable
  */
 
 open class QDVDbEntity : Serializable {
-    open val id: Long = 0
+    open var id: Long = 0
 }

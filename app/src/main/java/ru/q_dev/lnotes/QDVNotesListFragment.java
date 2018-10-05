@@ -1,6 +1,5 @@
 package ru.q_dev.lnotes;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -96,61 +94,16 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
     public QDVNotesListFragment() {
     }
 
-    enum MenuItemMarker {
-        NO_MENU,
-        FOLDER_UNKNOWN,
-        FOLDER_ADDING
-    }
-
-    static class QDVDbFolderWithMenuItem extends QDVDbFolder {
-        MenuItemMarker menuItem;
-
-        QDVDbFolderWithMenuItem(@Nullable String label, MenuItemMarker menuItem) {
-            super(label);
-            this.menuItem = menuItem;
-        }
-    }
-
-    static abstract class QDVFolderListWithMenuAdapter
-            extends QDVDbIteratorListViewAdapter<QDVDbFolder> {
-        ArrayList<QDVDbFolderWithMenuItem> itemsAddingToTop;
-        int topItemsCount = 0;
-
-        QDVFolderListWithMenuAdapter(ArrayList<QDVDbFolderWithMenuItem> itemsAddingToTop) {
-            this.itemsAddingToTop = itemsAddingToTop;
-            topItemsCount = itemsAddingToTop!=null ? itemsAddingToTop.size() : 0;
-        }
-
-        @Nullable
-        @Override
-        public QDVDbFolder getItem(int p0) {
-            if (p0 < topItemsCount) {
-                return itemsAddingToTop.get(p0);
-            }
-            return super.getItem(p0 - topItemsCount);
-        }
-
-        @Override
-        public long getItemId(int p0) {
-            return 0;
-        }
-
-        @Override
-        public int getCount() {
-            return super.getCount() + topItemsCount;
-        }
-    }
-
     void onClickMoveToFolder(final QDVDbNote note) {
-        final ArrayList<QDVDbFolderWithMenuItem> itemsAddingToTop = new ArrayList<>();
-        itemsAddingToTop.add(new QDVDbFolderWithMenuItem(
-                getString(R.string.category_unknown), MenuItemMarker.FOLDER_UNKNOWN));
+        final ArrayList<QDVDbFolderOrMenuItem> itemsAddingToTop = new ArrayList<>();
+        itemsAddingToTop.add(new QDVDbFolderOrMenuItem(
+                getString(R.string.category_unknown), QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_UNKNOWN));
 
-        final QDVFolderListWithMenuAdapter adapter =
-                new QDVFolderListWithMenuAdapter(itemsAddingToTop) {
+        final QDVDbIteratorListViewAdapterExt<QDVDbFolderOrMenuItem> adapter =
+                new QDVDbIteratorListViewAdapterExt<QDVDbFolderOrMenuItem>(itemsAddingToTop) {
             @Override
             public View getView(int i, View view, ViewGroup viewGroup) {
-                QDVDbFolder folder = getItem(i);
+                QDVDbFolderOrMenuItem folder = getItem(i);
                 if (view == null) {
                     view = getLayoutInflater().inflate(
                             android.R.layout.simple_list_item_activated_1,
@@ -175,20 +128,21 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
                     @Override
                     public void onClick(DialogInterface dialogInterface, int position) {
                         try {
-                            QDVDbFolder folder = adapter.getItem(position);
-                            if (folder == null) {
+                            QDVDbFolderOrMenuItem folderOrMenu = adapter.getItem(position);
+                            if (folderOrMenu == null) {
                                 return;
                             }
-                            if (folder instanceof QDVDbFolderWithMenuItem) {
-                                QDVDbFolderWithMenuItem item = (QDVDbFolderWithMenuItem) folder;
-                                if (item.menuItem == MenuItemMarker.FOLDER_UNKNOWN) {
-                                    note.setFolderId(QDVDbFolder.Special.UNKNOWN_FOLDER.getId());
-                                    notesListPresenter.doUpdateNote(note);
-                                    return;
-                                }
+                            if (folderOrMenu.menuItem ==
+                                    QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_UNKNOWN) {
+                                note.setFolderId(QDVDbFolder.Special.UNKNOWN_FOLDER.getId());
+                                notesListPresenter.doUpdateNote(note);
                                 return;
                             }
-                            note.setFolderId(folder.getId());
+                            if (folderOrMenu.menuItem!=
+                                    QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_ENTITY) {
+                                return;
+                            }
+                            note.setFolderId(folderOrMenu.getId());
                             notesListPresenter.doUpdateNote(note);
                         } catch (Exception e) {
                             e.printStackTrace();
