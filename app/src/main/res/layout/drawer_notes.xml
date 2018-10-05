@@ -6,4 +6,4 @@
     android:divider="@android:color/transparent"
     android:dividerHeight="0dp"
     android:background="#cccc"
-    tools:context="ru.q_dev.lnotes.QDVNavigationDrawerFragment" />
+    tools:context="ru.qdev.lnotes.ui.fragment.QDVNavigationDrawerFragment" />

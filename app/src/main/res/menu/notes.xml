@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="ru.q_dev.lnotes.QDVNotesHomeActivity" >
+    tools:context="ru.qdev.lnotes.ui.activity.QDVNotesHomeActivity" >
     <item
         android:id="@+id/action_add_note"
         android:title="@string/action_add_notes"
