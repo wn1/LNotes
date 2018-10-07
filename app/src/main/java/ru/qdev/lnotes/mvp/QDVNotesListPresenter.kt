@@ -14,9 +14,12 @@ import java.util.*
  * Created by Vladimir Kudashov on 29.09.18.
  */
 @InjectViewState
-class QDVNotesListPresenter : MvpPresenter <QDVNotesListView> () {
-    private var database: QDVDbDatabase = QDVDbDatabase.getAndLock()
+class QDVNotesListPresenter : QDVMvpDbPresenter <QDVNotesListView> () {
     private var state: QDVNotesListState = QDVNotesListState()
+
+    override fun onDatabaseReload() {
+
+    }
 
     fun dbIteratotorFoldersQuery(): CloseableIterator<QDVDbFolderOrMenuItem> {
         val noteDao =
@@ -124,10 +127,5 @@ class QDVNotesListPresenter : MvpPresenter <QDVNotesListView> () {
         }
         database.getDaoWithIdLong(QDVDbNote::class.java).update(note)
         viewState.loadNotesList(dbIteratorNotesQuery())
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        QDVDbDatabase.release()
     }
 }

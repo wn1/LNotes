@@ -44,6 +44,8 @@ public class QDVBackupActivity extends AppCompatActivity {
     private static final int SELECTFILE_RESTORE_DB_OLD_OS_RESULT_CODE = 3;
 	private static String passwordForBackup;
 
+	//TODO To MVP architect migration needed
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

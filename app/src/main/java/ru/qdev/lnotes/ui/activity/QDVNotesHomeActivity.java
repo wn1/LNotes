@@ -25,7 +25,6 @@ import ru.qdev.lnotes.*;
 import ru.qdev.lnotes.db.QDVDbDatabase;
 import ru.qdev.lnotes.db.entity.QDVDbNote;
 import ru.qdev.lnotes.mvp.QDVFilterByFolderState;
-import ru.qdev.lnotes.mvp.QDVNavigationDrawerState;
 import ru.qdev.lnotes.mvp.QDVNoteEditorState;
 import ru.qdev.lnotes.mvp.QDVNotesHomePresenter;
 import ru.qdev.lnotes.mvp.QDVNotesHomeView;
@@ -44,8 +43,26 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
 
     QDVNavigationDrawerFragment navigationDrawerFragment;
 
-    public static final int action_categories_all_id = -2;
-    public static final int action_categories_not_selected_id = -1;
+    static private String needReloadDbIntentFlag = "needReloadDb";
+
+    static private String OLD_DB_FILE_NAME = "data.db";
+    static private String OLD_DB_FOLDER_NAME = "data";
+    public enum OldDbUpdateError {
+        ERROR_1("1.1"),
+        ERROR_2("1.2"),
+        ERROR_3("1.3"),
+        ERROR_4("1.4");
+
+        String errorCode;
+        OldDbUpdateError(String errorCode ) {
+            this.errorCode = errorCode;
+        }
+
+        @Override
+        public String toString() {
+            return String.format(ThisApp.getContext().getString(R.string.error_with_id), errorCode);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,14 +93,7 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
     }
 
     private void reloadDataDb() {
-        QDVDbDatabase database = QDVDbDatabase.getAndLock();
-        while(database.isOpen()) {
-            QDVDbDatabase.release();
-        }
-        new QDVNavigationDrawerState().setSelectedFolderOrMenu(null);
-        Intent intent = new Intent(this, QDVNotesHomeActivity.class);
-        finish();
-        startActivity(intent);
+        notesHomePresenter.doReloadDb();
     }
 
     private File getDbPath (){
@@ -91,103 +101,122 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
     }
 
     private File getOldLNotesDbPath (){
-        File retFile = getDir("data", 0);
-        retFile = new File (retFile, "data.db");
+        File retFile = getDir(OLD_DB_FOLDER_NAME, 0);
+        retFile = new File (retFile, OLD_DB_FILE_NAME);
         return retFile;
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        boolean needReloadDb = intent.getBooleanExtra("needReloadDb", false);
+        boolean needReloadDb = intent.getBooleanExtra(needReloadDbIntentFlag, false);
         if (needReloadDb){
             reloadDataDb();
+        }
+    }
+
+    private void oldDbUpdateIfNeeded() {
+        //Old version update support
+        final File oldLnotesDb = getOldLNotesDbPath();
+        if (oldLnotesDb.exists()){
+            new AlertDialog.Builder(this)
+                    .setCancelable(false)
+                    .setMessage(R.string.copy_base_from_old_lnotes).
+                    setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            File newLnotesDbPath = getDbPath();
+                            if (newLnotesDbPath.exists()){
+                                if (!newLnotesDbPath.delete()) {
+                                    new AlertDialog.Builder(QDVNotesHomeActivity.this)
+                                            .setMessage(String.format(
+                                                    getString(R.string.error_with_id),
+                                                    OldDbUpdateError.ERROR_1))
+                                            .setCancelable(true)
+                                            .setPositiveButton(R.string.cancel, null)
+                                            .show();
+                                    return;
+                                }
+                            }
+
+                            FileInputStream from = null;
+                            try {
+                                from = new FileInputStream(oldLnotesDb);
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                                new AlertDialog.Builder(QDVNotesHomeActivity.this).
+                                        setMessage(String.format(
+                                                getString(R.string.error_with_id),
+                                                OldDbUpdateError.ERROR_2))
+                                        .setCancelable(true)
+                                        .setPositiveButton(R.string.cancel, null)
+                                        .show();
+                                return;
+                            }
+                            FileOutputStream to = null;
+                            try {
+                                to = new FileOutputStream(newLnotesDbPath);
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                                try {
+                                    from.close();
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
+                                new AlertDialog.Builder(QDVNotesHomeActivity.this).
+                                        setMessage(String.format(
+                                                getString(R.string.error_with_id),
+                                                OldDbUpdateError.ERROR_3))
+                                        .setCancelable(true)
+                                        .setPositiveButton(R.string.cancel, null)
+                                        .show();
+                                return;
+                            }
+                            byte[] buffer = new byte[1024];
+                            int readedCount = 0;
+                            try {
+                                while ((readedCount = from.read(buffer, 0, buffer.length))!=-1){
+                                    to.write(buffer, 0, readedCount);
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                try {
+                                    from.close();
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
+                                try {
+                                    to.close();
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
+                                new AlertDialog.Builder(QDVNotesHomeActivity.this).
+                                        setMessage(String.format(
+                                                getString(R.string.error_with_id),
+                                                OldDbUpdateError.ERROR_4))
+                                        .setCancelable(true)
+                                        .setPositiveButton(R.string.cancel, null)
+                                        .show();
+                                newLnotesDbPath.delete();
+                                return;
+                            }
+                            oldLnotesDb.delete();
+
+                            reloadDataDb();
+                        }
+                    }).show();
         }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        boolean needReloadDb = getIntent().getBooleanExtra("needReloadDb", false);
+        boolean needReloadDb = getIntent().getBooleanExtra(needReloadDbIntentFlag, false);
         if (needReloadDb){
             reloadDataDb();
+            return;
         }
-
-        final File oldLnotesDb = getOldLNotesDbPath();
-        if (oldLnotesDb.exists()){
-            new AlertDialog.Builder(this).setCancelable(false).setMessage(R.string.copy_base_from_old_lnotes).
-                    setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    File newLnotesDbPath = getDbPath();
-                    if (newLnotesDbPath.exists()){
-                        if (!newLnotesDbPath.delete()) {
-                            new AlertDialog.Builder(QDVNotesHomeActivity.this).
-                                    setMessage(String.format(getString(R.string.error_with_id), "200"))
-                                    .setCancelable(true)
-                                    .setPositiveButton(R.string.cancel, null).show();
-                            return;
-                        }
-                    }
-
-                    FileInputStream from = null;
-                    try {
-                        from = new FileInputStream(oldLnotesDb);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                        new AlertDialog.Builder(QDVNotesHomeActivity.this).
-                                setMessage(String.format(getString(R.string.error_with_id), "201"))
-                                .setCancelable(true)
-                                .setPositiveButton(R.string.cancel, null).show();
-                        return;
-                    }
-                    FileOutputStream to = null;
-                    try {
-                        to = new FileOutputStream(newLnotesDbPath);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                        try {
-                            from.close();
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
-                        }
-                        new AlertDialog.Builder(QDVNotesHomeActivity.this).
-                                setMessage(String.format(getString(R.string.error_with_id), "202"))
-                                .setCancelable(true)
-                                .setPositiveButton(R.string.cancel, null).show();
-                        return;
-                    }
-                    byte[] buffer = new byte[1024];
-                    int readedCount = 0;
-                    try {
-                        while ((readedCount = from.read(buffer, 0, buffer.length))!=-1){
-                            to.write(buffer, 0, readedCount);
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        try {
-                            from.close();
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
-                        }
-                        try {
-                            to.close();
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
-                        }
-                        new AlertDialog.Builder(QDVNotesHomeActivity.this).
-                                setMessage(String.format(getString(R.string.error_with_id), "203"))
-                                .setCancelable(true)
-                                .setPositiveButton(R.string.cancel, null).show();
-                        newLnotesDbPath.delete();
-                        return;
-                    }
-                    oldLnotesDb.delete();
-
-                    reloadDataDb();
-                }
-            }).show();
-        }
+        oldDbUpdateIfNeeded();
     }
 
     @Override
@@ -217,14 +246,17 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
 
     @Override
     public void initNotesList(@Nullable QDVFilterByFolderState filterByFolderState) {
+        navigationDrawerFragment.setActive(true);
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, QDVNotesListFragment.newInstance(filterByFolderState))
+                .replace(R.id.container, QDVNotesListFragment.newInstance(filterByFolderState),
+                        QDVNotesListFragment.FRAGMENT_TAG)
                 .commit();
     }
 
     @Override
     public void initEditNote(@NotNull QDVDbNote note) {
+        navigationDrawerFragment.setActive(false);
         QDVNoteEditorState noteEditorState = new QDVNoteEditorState();
         noteEditorState.setState(QDVNoteEditorState.EditorMode.EDITING,
                 note.getFolderId(), note.getId());

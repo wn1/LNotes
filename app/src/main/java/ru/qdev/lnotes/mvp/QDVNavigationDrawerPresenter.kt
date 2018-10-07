@@ -16,37 +16,38 @@ import java.util.ArrayList
  */
 
 @InjectViewState
-class QDVNavigationDrawerPresenter : MvpPresenter<QDVNavigationDrawerView>(){
-    private val state: QDVNavigationDrawerState = QDVNavigationDrawerState()
-
-    //Need QDVDbDatabase.release() in onDestroy()
-    private var database: QDVDbDatabase = QDVDbDatabase.getAndLock()
+class QDVNavigationDrawerPresenter : QDVMvpDbPresenter <QDVNavigationDrawerView> (){
+    private var state: QDVNavigationDrawerState = QDVNavigationDrawerState()
 
     private val itemsAddingToTop = ArrayList<QDVDbFolderOrMenuItem>()
-    private var menuItemSelectedByDefault: QDVDbFolderOrMenuItem? = null
+    private var menuItemFolderAll: QDVDbFolderOrMenuItem? = null
+    private var menuItemFolderUnknown: QDVDbFolderOrMenuItem? = null
 
     init {
         val context = ThisApp.getContext()
         itemsAddingToTop.add(QDVDbFolderOrMenuItem(
                 context.getString(R.string.add_category),
                 QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_ADDING))
-        itemsAddingToTop.add(QDVDbFolderOrMenuItem(
+        menuItemFolderAll =  QDVDbFolderOrMenuItem(
                 context.getString(R.string.category_all),
-                QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_ALL))
-        menuItemSelectedByDefault = QDVDbFolderOrMenuItem(
+                QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_ALL)
+        itemsAddingToTop.add(menuItemFolderAll!!)
+        menuItemFolderUnknown = QDVDbFolderOrMenuItem(
                 context.getString(R.string.category_unknown),
                 QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_UNKNOWN)
-        itemsAddingToTop.add(menuItemSelectedByDefault!!)
+        itemsAddingToTop.add(menuItemFolderUnknown!!)
 
+        onDatabaseReload()
+    }
+
+    override fun onDatabaseReload() {
+        state = QDVNavigationDrawerState()
         loadFolderList()
-
         onClickFolderOrMenu(state.selectedFolderOrMenu)
-
         if (!state.isUserLearned) {
             viewState.setDrawerOpen(true)
         }
-
-        EventBus.getDefault().register(this)
+        onClickFolderOrMenu(state.selectedFolderOrMenu)
     }
 
     fun doDrawerOpenOrClose() {
@@ -60,6 +61,9 @@ class QDVNavigationDrawerPresenter : MvpPresenter<QDVNavigationDrawerView>(){
     }
 
     private fun loadFolderList() {
+        if (state.selectedFolderOrMenu == null) {
+            state.selectedFolderOrMenu = menuItemFolderAll
+        }
         viewState.loadFolderList(
                 dbIteratotorFoldersQuery(), itemsAddingToTop, state.selectedFolderOrMenu)
     }
@@ -97,7 +101,7 @@ class QDVNavigationDrawerPresenter : MvpPresenter<QDVNavigationDrawerView>(){
                 database.getDaoWithIdLong(QDVDbFolderOrMenuItem::class.java)
         noteDao.delete(folderOrMenu)
         if (state.selectedFolderOrMenu?.id == folderOrMenu.id) {
-            state.selectedFolderOrMenu = menuItemSelectedByDefault
+            state.selectedFolderOrMenu = menuItemFolderUnknown
         }
         loadFolderList()
         EventBus.getDefault().post(QDVNotesHomePresenter.DoSelectFolderEvent(
@@ -112,6 +116,11 @@ class QDVNavigationDrawerPresenter : MvpPresenter<QDVNavigationDrawerView>(){
                 database.getDaoWithIdLong(QDVDbFolderOrMenuItem::class.java)
         noteDao.update(folderOrMenu)
         loadFolderList()
+        if (state.selectedFolderOrMenu?.menuItem==QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_ENTITY &&
+                folderOrMenu.id == state.selectedFolderOrMenu?.id) {
+            EventBus.getDefault().post(QDVNotesHomePresenter.DoSelectFolderEvent(
+                    QDVFilterByFolderState.FilterType.FOLDER, folderOrMenu))
+        }
     }
 
     fun onClickFolderOrMenu(folderOrMenu: QDVDbFolderOrMenuItem?) {
@@ -148,7 +157,5 @@ class QDVNavigationDrawerPresenter : MvpPresenter<QDVNavigationDrawerView>(){
 
     override fun onDestroy() {
         super.onDestroy()
-        QDVDbDatabase.release()
-        EventBus.getDefault().unregister(this)
     }
 }

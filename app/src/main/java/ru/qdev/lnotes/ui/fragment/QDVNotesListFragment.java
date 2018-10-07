@@ -51,16 +51,18 @@ import ru.qdev.lnotes.mvp.QDVNotesListState;
 import ru.qdev.lnotes.mvp.QDVNotesListView;
 import ru.qdev.lnotes.mvp.QDVSearchState;
 import ru.qdev.lnotes.ui.activity.QDVBackupActivity;
-import ru.qdev.lnotes.ui.activity.QDVNotesHomeActivity;
 
 /**
  * Created by Vladimir Kudashov on 29.09.18.
  */
 
 public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNotesListView {
-    private Unbinder unbinder;
-    public static final String ARG_SECTION_ID = "section_id";
+    public static final String FRAGMENT_TAG = "notesEditorFragment";
     public static final String ARG_FILTER_BY_FOLDER = "filterByFolder";
+    private static final String STATE_KEY_NAME = "state";
+
+    private Unbinder unbinder;
+
 
     @BindView(R.id.notesList)
     ListView notesList;
@@ -79,14 +81,6 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
 
     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
-    public static QDVNotesListFragment newInstance(long sectionNumber) {
-        QDVNotesListFragment fragment = new QDVNotesListFragment();
-        Bundle args = new Bundle();
-        args.putLong(ARG_SECTION_ID, sectionNumber);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     public static QDVNotesListFragment newInstance(QDVFilterByFolderState filterByFolderState)
     {
         QDVNotesListFragment fragment = new QDVNotesListFragment();
@@ -102,7 +96,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("state", state);
+        outState.putSerializable(STATE_KEY_NAME, state);
     }
 
     public QDVNotesListFragment() {
@@ -217,7 +211,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
         unbinder = ButterKnife.bind(this, rootView);
 
         if (savedInstanceState!=null) {
-            state = (QDVNotesListState) savedInstanceState.getSerializable("state");
+            state = (QDVNotesListState) savedInstanceState.getSerializable(STATE_KEY_NAME);
         }
 
         if (state == null) {
@@ -283,6 +277,9 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
         });
 
         Object obj = getArguments().getSerializable(ARG_FILTER_BY_FOLDER);
+        if (obj==null) {
+            obj = new QDVFilterByFolderState();
+        }
         if (obj instanceof QDVFilterByFolderState) {
             QDVFilterByFolderState filter = (QDVFilterByFolderState) obj;
             state.setFilterByFolderState(filter);
@@ -297,22 +294,6 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
                     break;
             }
             state.setFolderIdForNotesAdding(folderIdForAdding);
-
-        } else {
-            long folderId = getArguments().getLong(ARG_SECTION_ID);
-            if (folderId > 0) {
-                state.getFilterByFolderState().setFilterType(
-                        QDVFilterByFolderState.FilterType.FOLDER_ID);
-                state.getFilterByFolderState().setFolderId(folderId);
-            } else if (folderId == QDVNotesHomeActivity.action_categories_all_id) {
-                state.getFilterByFolderState().setFilterType(
-                        QDVFilterByFolderState.FilterType.ALL_FOLDER);
-            } else {
-                state.getFilterByFolderState().setFilterType(
-                        QDVFilterByFolderState.FilterType.FOLDER_NOT_SELECTED);
-            }
-
-            state.setFolderIdForNotesAdding(folderId > 0 ? folderId : null);
         }
 
         notesListPresenter.initWithState(state);

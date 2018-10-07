@@ -125,8 +125,7 @@ class QDVDbDatabase(context: Context?, databaseName: String?,
         if (i == 5) {
             var updateQuery = "DELETE FROM conf_filter"
             sqLiteDatabase.execSQL(updateQuery)
-            sqLiteDatabase.execSQL("INSERT INTO conf_filter (filter_id) VALUES ("
-                    + QDVNotesHomeActivity.action_categories_all_id.toString() + ")")
+            sqLiteDatabase.execSQL("INSERT INTO conf_filter (filter_id) VALUES (-2)")
             updateQuery = "UPDATE conf SET vers = 6"
             sqLiteDatabase.execSQL(updateQuery)
             i = 6

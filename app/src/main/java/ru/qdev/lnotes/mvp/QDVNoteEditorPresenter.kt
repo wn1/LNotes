@@ -13,20 +13,17 @@ import java.util.*
  */
 
 @InjectViewState
-class QDVNoteEditorPresenter : MvpPresenter <QDVNoteEditorView> () {
-
+class QDVNoteEditorPresenter : QDVMvpDbPresenter <QDVNoteEditorView> () {
     private enum class AppError (val stringCode: String) {
-        ERROR_GET_NOTE_1 ("401"),
-        ERROR_GET_NOTE_2 ("402"),
-        ERROR_SAVE_NOTE_1 ("403");
+        ERROR_GET_NOTE_1 ("2.1"),
+        ERROR_GET_NOTE_2 ("2.2"),
+        ERROR_SAVE_NOTE_1 ("2.3");
 
         fun getErrorMessage (): String {
             return String.format(ThisApp.getContext().getString(R.string.error_with_id), stringCode)
         }
     }
 
-    //Need QDVDbDatabase.release() in onDestroy()
-    private var database: QDVDbDatabase = QDVDbDatabase.getAndLock()
     private var note: QDVDbNote? = null
     private var folder: QDVDbFolder? = null
     private val editorState = QDVNoteEditorState()
@@ -35,6 +32,10 @@ class QDVNoteEditorPresenter : MvpPresenter <QDVNoteEditorView> () {
        get() = editorState.isChangedFlag
 
     init {
+        onDatabaseReload()
+    }
+
+    override fun onDatabaseReload() {
         loadNoteToEditView()
     }
 
@@ -106,10 +107,5 @@ class QDVNoteEditorPresenter : MvpPresenter <QDVNoteEditorView> () {
             return false
         }
         return true
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        QDVDbDatabase.release()
     }
 }

@@ -7,7 +7,6 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import ru.qdev.lnotes.db.entity.QDVDbFolder
 import ru.qdev.lnotes.db.entity.QDVDbNote
-import ru.qdev.lnotes.ui.activity.QDVNotesHomeActivity
 
 /**
  * Created by Vladimir Kudashov on 04.10.18.
@@ -17,32 +16,12 @@ import ru.qdev.lnotes.ui.activity.QDVNotesHomeActivity
 class QDVNotesHomePresenter : MvpPresenter <QDVNotesHomeView> () {
     private val state: QDVNotesHomeState = QDVNotesHomeState()
     init {
-        viewState.initNotesList()
-        viewState.setNavigationDrawerFolderEnabled(true)
         EventBus.getDefault().register(this)
+        doShowNotesList()
     }
 
-    fun doSelectFolder (folderId: Long?) {
-        val filterState = QDVFilterByFolderState()
-        when {
-            folderId == null -> {
-                filterState.filterType = QDVFilterByFolderState.FilterType.FOLDER_NOT_SELECTED
-            }
-            folderId > 0 -> {
-                filterState.filterType = QDVFilterByFolderState.FilterType.FOLDER_ID
-                filterState.folderId = folderId
-            }
-            folderId == QDVNotesHomeActivity.action_categories_all_id.toLong() -> {
-                filterState.filterType = QDVFilterByFolderState.FilterType.ALL_FOLDER
-            }
-            else -> {
-                filterState.filterType = QDVFilterByFolderState.FilterType.FOLDER_NOT_SELECTED
-            }
-        }
-
-        state.uiState = QDVNotesHomeState.UiState.LIST
-        viewState.initNotesList(filterState)
-        viewState.setNavigationDrawerFolderEnabled(true)
+    fun doShowNotesList() {
+        viewState.initNotesList()
     }
 
     fun doSelectFolder (filterType: QDVFilterByFolderState.FilterType, folder: QDVDbFolder?) {
@@ -56,7 +35,6 @@ class QDVNotesHomePresenter : MvpPresenter <QDVNotesHomeView> () {
 
         state.uiState = QDVNotesHomeState.UiState.LIST
         viewState.initNotesList(filterState)
-        viewState.setNavigationDrawerFolderEnabled(true)
     }
 
     class DoSelectFolderEvent (val filterType: QDVFilterByFolderState.FilterType,
@@ -69,7 +47,6 @@ class QDVNotesHomePresenter : MvpPresenter <QDVNotesHomeView> () {
     fun doEditNote (note: QDVDbNote) {
         state.uiState = QDVNotesHomeState.UiState.EDIT
         viewState.initEditNote(note)
-        viewState.setNavigationDrawerFolderEnabled(false)
     }
 
     class DoEditNoteEvent (val note: QDVDbNote)
@@ -81,7 +58,6 @@ class QDVNotesHomePresenter : MvpPresenter <QDVNotesHomeView> () {
     fun doAddNote (folderIdForAdding: Long?) {
         state.uiState = QDVNotesHomeState.UiState.EDIT
         viewState.initAddNote(folderIdForAdding)
-        viewState.setNavigationDrawerFolderEnabled(false)
     }
 
     class DoAddNoteEvent(val folderIdForAdding: Long? = null)
@@ -106,6 +82,12 @@ class QDVNotesHomePresenter : MvpPresenter <QDVNotesHomeView> () {
 
     fun onFolderNameClick() {
         EventBus.getDefault().post(QDVNavigationDrawerPresenter.DoDrawerOpenOrClose())
+    }
+
+    fun doReloadDb() {
+        QDVNavigationDrawerState().selectedFolderOrMenu = null
+        EventBus.getDefault().post(QDVMvpDbPresenter.DoCloseDatabase())
+        EventBus.getDefault().post(QDVMvpDbPresenter.DoReloadDatabase())
     }
 
     override fun onDestroy() {
