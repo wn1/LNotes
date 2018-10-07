@@ -16,7 +16,12 @@ interface QDVNavigationDrawerView : MvpView {
                        itemsAddingToTop: ArrayList<QDVDbFolderOrMenuItem>,
                        selectedFolderOrMenu: QDVDbFolderOrMenuItem?)
     fun setSelectedFolderOrMenu(folderOrMenu: QDVDbFolderOrMenuItem?)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
     fun setDrawerOpen(drawerOpen: Boolean)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun setDrawerOpenOrClose()
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onClickAddFolder()

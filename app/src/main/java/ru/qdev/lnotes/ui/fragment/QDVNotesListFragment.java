@@ -213,7 +213,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_notes, container, false);
+        rootView = inflater.inflate(R.layout.notes_list_fragment, container, false);
         unbinder = ButterKnife.bind(this, rootView);
 
         if (savedInstanceState!=null) {
@@ -228,7 +228,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
             @Override
             public View getView(int i, View view, ViewGroup viewGroup) {
                 if (view == null) {
-                    view = inflater.inflate(R.layout.cell_note, viewGroup, false);
+                    view = inflater.inflate(R.layout.notes_list_cell, viewGroup, false);
                 }
 
                 view.setVisibility(View.VISIBLE);
@@ -377,7 +377,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.notes, menu);
+        inflater.inflate(R.menu.notes_list, menu);
         super.onCreateOptionsMenu(menu, inflater);
         menu.findItem(R.id.action_remove_ads).setVisible(QDVVersionDifference.isFreeVersion());
     }

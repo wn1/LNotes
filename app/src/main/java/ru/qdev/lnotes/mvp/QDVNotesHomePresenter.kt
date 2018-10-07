@@ -104,6 +104,10 @@ class QDVNotesHomePresenter : MvpPresenter <QDVNotesHomeView> () {
         doGoBack()
     }
 
+    fun onFolderNameClick() {
+        EventBus.getDefault().post(QDVNavigationDrawerPresenter.DoDrawerOpenOrClose())
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)

@@ -58,7 +58,7 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         editorView = inflater.inflate(
-                R.layout.fragment_note_editor, container, false);
+                R.layout.note_editor_fragment, container, false);
 
         unbinder = ButterKnife.bind(this, editorView);
 

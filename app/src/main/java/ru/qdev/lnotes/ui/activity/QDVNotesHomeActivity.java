@@ -49,8 +49,9 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.QDVActionBarTheme);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_notes);
+        setContentView(R.layout.home_activity);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar!=null) {

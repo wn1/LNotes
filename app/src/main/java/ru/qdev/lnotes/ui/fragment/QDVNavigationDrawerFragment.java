@@ -95,7 +95,7 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         drawerListView = (ListView) inflater.inflate(
-                R.layout.drawer_notes, container, false);
+                R.layout.navigation_drawer, container, false);
 
         folderListAdapter =
                 new QDVDbIteratorListViewAdapterExt<QDVDbFolderOrMenuItem>() {
@@ -358,7 +358,7 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if (drawerLayout != null && isDrawerOpen()) {
-            inflater.inflate(R.menu.global, menu);
+            inflater.inflate(R.menu.navigation_drawer, menu);
         }
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -397,6 +397,10 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
 
     @Override
     public void setDrawerOpen(boolean drawerOpen) {
+        if (!isActive) {
+            drawerLayout.closeDrawer(fragmentContainerView);
+            return;
+        }
         if (drawerLayout != null) {
             if (drawerOpen) {
                 drawerLayout.openDrawer(fragmentContainerView);
@@ -405,6 +409,19 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
             {
                 drawerLayout.closeDrawer(fragmentContainerView);
             }
+        }
+    }
+
+    @Override
+    public void setDrawerOpenOrClose() {
+        if (!isActive) {
+            drawerLayout.closeDrawer(fragmentContainerView);
+            return;
+        }
+        if (drawerLayout.isDrawerOpen(fragmentContainerView)) {
+            drawerLayout.closeDrawer(fragmentContainerView);
+        } else {
+            drawerLayout.openDrawer(fragmentContainerView);
         }
     }
 }
