@@ -270,7 +270,6 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
     @Override
     @UiThread
     public void initNotesList(@Nullable QDVFilterByFolderState filterByFolderState) {
-        navigationDrawerFragment.setActive(true);
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.container, QDVNotesListFragment.newInstance(filterByFolderState),
@@ -280,6 +279,7 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
         if (actionBar!=null) {
             actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_24dp);
         }
+        navigationDrawerFragment.setActive(true);
     }
 
     @Override

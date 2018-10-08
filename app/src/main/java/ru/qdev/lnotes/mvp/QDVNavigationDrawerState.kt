@@ -50,7 +50,7 @@ class QDVNavigationDrawerState {
 
     var isUserLearned: Boolean
     get() {
-        return getPreference().getBoolean(PREFERENCE_NAME_USER_LEARNED, true)
+        return getPreference().getBoolean(PREFERENCE_NAME_USER_LEARNED, false)
     }
     set (value) {
         getPreference().edit().putBoolean(PREFERENCE_NAME_USER_LEARNED, value).apply()

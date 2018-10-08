@@ -75,7 +75,10 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
     @UiThread
     public void setActive(boolean active) {
         isActive = active;
-        if (drawerLayout != null) {
+        if (isActive) {
+            navigationDrawerPresenter.doDrawerShowIfUserLearn();
+        }
+        if (drawerLayout != null && !isActive) {
             drawerLayout.closeDrawer(fragmentContainerView);
         }
     }

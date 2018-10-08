@@ -55,10 +55,13 @@ class QDVNavigationDrawerPresenter : QDVMvpDbPresenter <QDVNavigationDrawerView>
         state = QDVNavigationDrawerState()
         loadFolderList()
         onClickFolderOrMenu(state.selectedFolderOrMenu)
+    }
+
+    @UiThread
+    fun doDrawerShowIfUserLearn() {
         if (!state.isUserLearned) {
             viewState.setDrawerOpen(true)
         }
-        onClickFolderOrMenu(state.selectedFolderOrMenu)
     }
 
     @UiThread
@@ -155,6 +158,7 @@ class QDVNavigationDrawerPresenter : QDVMvpDbPresenter <QDVNavigationDrawerView>
                 EventBus.getDefault().post(QDVNotesHomePresenter.DoSelectFolderEvent(
                         QDVFilterByFolderState.FilterType.ALL_FOLDER,
                         null))
+                viewState.setDrawerOpen(false)
                 return
             }
             QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_UNKNOWN -> {
@@ -162,6 +166,7 @@ class QDVNavigationDrawerPresenter : QDVMvpDbPresenter <QDVNavigationDrawerView>
                 viewState.setSelectedFolderOrMenu(folderOrMenu)
                 EventBus.getDefault().post(QDVNotesHomePresenter.DoSelectFolderEvent(
                         QDVFilterByFolderState.FilterType.FOLDER_NOT_SELECTED, null))
+                viewState.setDrawerOpen(false)
                 return
             }
             QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_ENTITY -> {
@@ -169,6 +174,7 @@ class QDVNavigationDrawerPresenter : QDVMvpDbPresenter <QDVNavigationDrawerView>
                 viewState.setSelectedFolderOrMenu(folderOrMenu)
                 EventBus.getDefault().post(QDVNotesHomePresenter.DoSelectFolderEvent(
                         QDVFilterByFolderState.FilterType.FOLDER, folderOrMenu))
+                viewState.setDrawerOpen(false)
             }
             else -> {
             }
