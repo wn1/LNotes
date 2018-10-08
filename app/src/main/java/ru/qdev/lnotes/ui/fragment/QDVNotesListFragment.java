@@ -6,7 +6,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.AnyThread;
+import android.support.annotation.MainThread;
 import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -81,6 +84,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
 
     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
+    @UiThread
     public static QDVNotesListFragment newInstance(QDVFilterByFolderState filterByFolderState)
     {
         QDVNotesListFragment fragment = new QDVNotesListFragment();
@@ -94,14 +98,13 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
     }
 
     @Override
+    @UiThread
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(STATE_KEY_NAME, state);
     }
 
-    public QDVNotesListFragment() {
-    }
-
+    @UiThread
     void onClickMoveToFolder(final QDVDbNote note) {
         final ArrayList<QDVDbFolderOrMenuItem> itemsAddingToTop = new ArrayList<>();
         itemsAddingToTop.add(new QDVDbFolderOrMenuItem(
@@ -160,6 +163,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
                 .setNegativeButton(R.string.cancel, null).show();
     }
 
+    @UiThread
     void onClickDelete(final QDVDbNote note) {
         new AlertDialog.Builder(getActivity())
                 .setTitle(note.getContent()!=null ? note.getContent() : "")
@@ -173,7 +177,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
                 .setNegativeButton(R.string.action_no, null).show();
     }
 
-
+    @UiThread
     void onClickSetStatusOfExecution(final QDVDbNote note) {
         new AlertDialog.Builder(getActivity())
                 .setTitle(note.getContent()!=null ? note.getContent() : "")
@@ -205,6 +209,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
     }
 
     @Override
+    @UiThread
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.notes_list_fragment, container, false);
@@ -340,23 +345,29 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
         return rootView;
     }
 
-    @OnClick(R.id.buttonFindCancel) void OnClick() {
+    @OnClick(R.id.buttonFindCancel)
+    @UiThread
+    void OnClick() {
         notesListPresenter.onUndoSearch();
     }
 
+
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    @UiThread
+    public void onDestroyView() {
+        super.onDestroyView();
         unbinder.unbind();
     }
 
     @Override
+    @UiThread
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
     }
 
     @Override
+    @UiThread
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.notes_list, menu);
         super.onCreateOptionsMenu(menu, inflater);
@@ -364,6 +375,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
     }
 
     @Override
+    @UiThread
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_add_note) {
             EventBus.getDefault().post(
@@ -456,11 +468,13 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
     }
 
     @Override
+    @UiThread
     public void loadNotesList(@NotNull final CloseableIterator<QDVDbNote> dbIterator) {
         notesListAdapter.loadDbIterator(dbIterator);
     }
 
     @Override
+    @UiThread
     public void setSearchState(@NotNull QDVSearchState searchState) {
         layoutFindOptions.setVisibility(
                 state.getSearchState().isSearchActive() ? View.VISIBLE : View.GONE);
@@ -474,6 +488,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
 
 
     @Override
+    @UiThread
     public void setFolderName(@NotNull String folderName) {
         if (getActivity()!=null && getActivity() instanceof AppCompatActivity) {
             ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();

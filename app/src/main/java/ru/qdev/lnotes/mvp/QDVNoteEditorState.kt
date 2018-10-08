@@ -2,6 +2,7 @@ package ru.qdev.lnotes.mvp
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.support.annotation.AnyThread
 import ru.qdev.lnotes.ThisApp
 import java.io.Serializable
 
@@ -9,6 +10,7 @@ import java.io.Serializable
  * Created by Vladimir Kudashov on 28.09.18.
  */
 
+@AnyThread
 class QDVNoteEditorState : Serializable {
     enum class EditorMode { ADDING, EDITING }
     private val PREFERENCES_NAME = "QDVNoteEditorState"

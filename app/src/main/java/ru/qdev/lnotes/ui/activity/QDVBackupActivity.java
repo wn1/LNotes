@@ -7,7 +7,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.AnyThread;
 import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -47,10 +49,12 @@ public class QDVBackupActivity extends AppCompatActivity {
 	//TODO To MVP architect migration needed
 
     @Override
+    @UiThread
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState!=null) {
-            passwordForBackup = savedInstanceState.getString("passwordForBackup", null);
+            passwordForBackup =
+                    savedInstanceState.getString("passwordForBackup", null);
         }
         setContentView(R.layout.backup_activity);
 		findViewById(R.id.buttonRestoreDB).setOnClickListener(new OnClickListener () {
@@ -66,36 +70,29 @@ public class QDVBackupActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
+    @UiThread
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("passwordForBackup", passwordForBackup);
     }
 
+    @UiThread
     private void saveBackup() {
         final EditText editText = new EditText(this);
         editText.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-        new AlertDialog.Builder(this).setTitle(R.string.input_password_for_backup_db_title).setCancelable(true)
-                .setView(editText).setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
+        new AlertDialog.Builder(this).
+                setTitle(R.string.input_password_for_backup_db_title).
+                setCancelable(true)
+                .setView(editText).
+                setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                InputMethodManager inputMethodManager = (InputMethodManager) ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-                String password = editText != null ? editText.getText().toString() : "";
+                InputMethodManager inputMethodManager = (InputMethodManager) ThisApp.getContext()
+                        .getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (inputMethodManager != null) {
+                    inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+                }
+                String password = editText.getText().toString();
                 if (password.length()==0) {
                     new AlertDialog.Builder(QDVBackupActivity.this).
                             setMessage(R.string.input_password)
@@ -113,23 +110,33 @@ public class QDVBackupActivity extends AppCompatActivity {
         }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                InputMethodManager inputMethodManager = (InputMethodManager) ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+                InputMethodManager inputMethodManager = (InputMethodManager) ThisApp.getContext()
+                        .getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (inputMethodManager != null) {
+                    inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+                }
             }
         }).setNeutralButton(R.string.action_without_password, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                InputMethodManager inputMethodManager = (InputMethodManager) ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+                InputMethodManager inputMethodManager = (InputMethodManager) ThisApp.getContext()
+                        .getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (inputMethodManager != null) {
+                    inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+                }
                 saveBackup("");
             }
         }).show();
         editText.requestFocus();
         editText.requestFocusFromTouch();
-        InputMethodManager inputMananger = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMananger.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+        InputMethodManager inputMananger =
+                (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (inputMananger != null) {
+            inputMananger.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+        }
     }
 
+    @AnyThread
     private File getSaveBackupDirForOldOs() {
         String saveFileAppendPath = "/Backups/LNotes/";
         File storageFile = Environment.getExternalStorageDirectory();
@@ -139,6 +146,7 @@ public class QDVBackupActivity extends AppCompatActivity {
         return null;
     }
 
+    @UiThread
     private void saveBackup(String password) {
         passwordForBackup = password;
 		
@@ -198,6 +206,7 @@ public class QDVBackupActivity extends AppCompatActivity {
         }
 	}
 
+    @UiThread
     private boolean saveBackup (OutputStream os, boolean withoutCloseActivity) {
         File dbFile = new QDVDbDatabase(this).getFileDB();
 
@@ -252,6 +261,7 @@ public class QDVBackupActivity extends AppCompatActivity {
         return true;
     }
 
+    @UiThread
     private void restoreBackup () {
 		try {
             if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.KITKAT) {
@@ -276,6 +286,7 @@ public class QDVBackupActivity extends AppCompatActivity {
 		}		
     }
 
+    @UiThread
     private void restoreBackup(InputStream inputStream, boolean isCrypted, String password) {
         if (isCrypted && password==null) {
             new AlertDialog.Builder(QDVBackupActivity.this).
@@ -342,6 +353,7 @@ public class QDVBackupActivity extends AppCompatActivity {
     }
 	
 	@Override
+    @UiThread
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch(requestCode){
 			case SELECTFILE_RESTORE_DB_RESULT_CODE:

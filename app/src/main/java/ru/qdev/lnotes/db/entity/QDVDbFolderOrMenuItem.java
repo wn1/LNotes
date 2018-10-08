@@ -1,5 +1,6 @@
 package ru.qdev.lnotes.db.entity;
 
+import android.support.annotation.AnyThread;
 import android.support.annotation.Nullable;
 
 import com.j256.ormlite.table.DatabaseTable;
@@ -9,6 +10,7 @@ import com.j256.ormlite.table.DatabaseTable;
  */
 
 @DatabaseTable(tableName="categories")
+@AnyThread
 public class QDVDbFolderOrMenuItem extends QDVDbFolder {
     public enum MenuItemMarker {
         FOLDER_ENTITY,

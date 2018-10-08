@@ -1,5 +1,6 @@
 package ru.qdev.lnotes.mvp
 
+import android.support.annotation.AnyThread
 import ru.qdev.lnotes.db.entity.QDVDbFolder
 import java.io.Serializable
 
@@ -7,6 +8,7 @@ import java.io.Serializable
  * Created by Vladimir Kudashov on 29.09.18.
  */
 
+@AnyThread
 class QDVFilterByFolderState : Serializable {
     enum class FilterType {ALL_FOLDER, FOLDER_NOT_SELECTED, FOLDER_ID, FOLDER}
     var folder: QDVDbFolder? = null

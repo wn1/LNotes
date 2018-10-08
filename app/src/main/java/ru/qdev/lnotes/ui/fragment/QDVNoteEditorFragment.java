@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -55,6 +56,7 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
 
     @Nullable
     @Override
+    @UiThread
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         editorView = inflater.inflate(
@@ -107,6 +109,7 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
         return editorView;
     }
 
+    @UiThread
     private void setTextToEditWithoutChangesNotify(String text) {
         editTextViewChangesNotifyEnable = false;
         editTextView.setText(text);
@@ -114,17 +117,14 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
     }
 
     @Override
+    @UiThread
     public void onActivityCreated (Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
+    @UiThread
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if (editorView != null) {
             inflater.inflate(R.menu.note_editor, menu);
@@ -133,6 +133,7 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
     }
 
     @Override
+    @UiThread
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_save:
@@ -151,16 +152,13 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
+    @UiThread
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
     }
 
+    @UiThread
     public void goBackWithConfirm () {
         if (noteEditorPresenter.isChangedFlag()) {
             new AlertDialog.Builder(getActivity())
@@ -179,6 +177,7 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
         }
     }
 
+    @UiThread
     public void goBack() {
         InputMethodManager inputMethodManager = (InputMethodManager)ThisApp.getContext()
                 .getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -189,11 +188,13 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
     }
 
     @Override
+    @UiThread
     public void initEditorInMode(@NotNull QDVNoteEditorState.EditorMode mode) {
 
     }
 
     @Override
+    @UiThread
     public void setNoteContent(@NotNull String content) {
         if (editTextView.getText().toString().isEmpty()) {
             setTextToEditWithoutChangesNotify(content);
@@ -201,6 +202,7 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
     }
 
     @Override
+    @UiThread
     public void setNoteFolderName(@NotNull String folderName) {
         if (getActivity()!=null && getActivity() instanceof AppCompatActivity) {
             ActionBar actionBar =
@@ -212,6 +214,7 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
     }
 
     @Override
+    @UiThread
     public void showErrorToast(@NotNull String message, boolean needExitFromEditor) {
         Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
         if (needExitFromEditor) {

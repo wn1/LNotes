@@ -1,6 +1,7 @@
 package ru.qdev.lnotes.db;
 
 import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 
 import com.j256.ormlite.dao.CloseableIterator;
 
@@ -11,6 +12,8 @@ import ru.qdev.lnotes.db.entity.QDVDbEntity;
 /**
  * Created by Vladimir Kudashov on 04.10.18.
  */
+
+@UiThread
 public abstract class QDVDbIteratorListViewAdapterExt<T extends QDVDbEntity>
         extends QDVDbIteratorListViewAdapter<T> {
 

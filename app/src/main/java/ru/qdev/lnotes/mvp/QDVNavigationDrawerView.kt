@@ -1,5 +1,6 @@
 package ru.qdev.lnotes.mvp
 
+import android.support.annotation.UiThread
 import com.arellomobile.mvp.MvpView
 import com.arellomobile.mvp.viewstate.strategy.*
 import com.j256.ormlite.dao.CloseableIterator
@@ -11,6 +12,7 @@ import java.util.ArrayList
  */
 
 @StateStrategyType(AddToEndSingleStrategy::class)
+@UiThread
 interface QDVNavigationDrawerView : MvpView {
     fun loadFolderList(dbIterator: CloseableIterator<QDVDbFolderOrMenuItem>,
                        itemsAddingToTop: ArrayList<QDVDbFolderOrMenuItem>,
@@ -21,7 +23,7 @@ interface QDVNavigationDrawerView : MvpView {
     fun setDrawerOpen(drawerOpen: Boolean)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun setDrawerOpenOrClose()
+    fun switchDrawerOpenOrClose()
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onClickAddFolder()

@@ -1,8 +1,11 @@
 package ru.qdev.lnotes.utils;
 
 import java.io.*;
+
+import android.support.annotation.AnyThread;
 import android.util.*;
 
+@AnyThread
 public class QDVFileUtils
 {
 	public static boolean copyFile(InputStream is, OutputStream os) {

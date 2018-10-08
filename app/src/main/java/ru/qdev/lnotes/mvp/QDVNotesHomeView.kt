@@ -1,5 +1,6 @@
 package ru.qdev.lnotes.mvp
 
+import android.support.annotation.UiThread
 import com.arellomobile.mvp.MvpView
 import com.arellomobile.mvp.viewstate.strategy.*
 import ru.qdev.lnotes.db.entity.QDVDbNote
@@ -9,6 +10,7 @@ import ru.qdev.lnotes.db.entity.QDVDbNote
  */
 
 @StateStrategyType(AddToEndSingleStrategy::class)
+@UiThread
 interface QDVNotesHomeView : MvpView {
     @StateStrategyType(SingleStateStrategy::class)
     fun initNotesList(filterByFolderState: QDVFilterByFolderState? = null)

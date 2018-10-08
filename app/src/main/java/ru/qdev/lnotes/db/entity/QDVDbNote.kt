@@ -1,5 +1,6 @@
 package ru.qdev.lnotes.db.entity
 
+import android.support.annotation.AnyThread
 import com.j256.ormlite.field.DataType
 import com.j256.ormlite.field.DatabaseField
 import com.j256.ormlite.table.DatabaseTable
@@ -7,6 +8,7 @@ import ru.qdev.lnotes.db.entity.QDVDbEntity
 import java.util.*
 
 @DatabaseTable(tableName="notes")
+@AnyThread
 class QDVDbNote : QDVDbEntity() {
     enum class StatusOfExecution {CREATED, COMPLETED, NOT_NEED}
 

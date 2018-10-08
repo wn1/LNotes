@@ -1,13 +1,14 @@
 package ru.qdev.lnotes.mvp
 
+import android.support.annotation.AnyThread
+import android.support.annotation.MainThread
+import android.support.annotation.UiThread
 import com.arellomobile.mvp.InjectViewState
-import com.arellomobile.mvp.MvpPresenter
 import com.j256.ormlite.dao.CloseableIterator
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import ru.qdev.lnotes.*
-import ru.qdev.lnotes.db.QDVDbDatabase
 import ru.qdev.lnotes.db.entity.QDVDbFolderOrMenuItem
 import java.util.ArrayList
 
@@ -16,7 +17,7 @@ import java.util.ArrayList
  */
 
 @InjectViewState
-class QDVNavigationDrawerPresenter : QDVMvpDbPresenter <QDVNavigationDrawerView> (){
+class QDVNavigationDrawerPresenter : QDVMvpDbPresenter <QDVNavigationDrawerView> () {
     private var state: QDVNavigationDrawerState = QDVNavigationDrawerState()
 
     private val itemsAddingToTop = ArrayList<QDVDbFolderOrMenuItem>()
@@ -36,11 +37,21 @@ class QDVNavigationDrawerPresenter : QDVMvpDbPresenter <QDVNavigationDrawerView>
                 context.getString(R.string.category_unknown),
                 QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_UNKNOWN)
         itemsAddingToTop.add(menuItemFolderUnknown!!)
-
-        onDatabaseReload()
     }
 
-    override fun onDatabaseReload() {
+    @UiThread
+    override fun onFirstViewAttach() {
+        super.onFirstViewAttach()
+        afterDatabaseReload()
+    }
+
+    @AnyThread
+    override fun beforeDatabaseClose() {
+
+    }
+
+    @UiThread
+    override fun afterDatabaseReload() {
         state = QDVNavigationDrawerState()
         loadFolderList()
         onClickFolderOrMenu(state.selectedFolderOrMenu)
@@ -50,16 +61,19 @@ class QDVNavigationDrawerPresenter : QDVMvpDbPresenter <QDVNavigationDrawerView>
         onClickFolderOrMenu(state.selectedFolderOrMenu)
     }
 
+    @UiThread
     fun doDrawerOpenOrClose() {
-        viewState.setDrawerOpenOrClose()
+        viewState.switchDrawerOpenOrClose()
     }
 
     class DoDrawerOpenOrClose
     @Subscribe(threadMode = ThreadMode.MAIN)
+    @MainThread
     fun onEvent(event: DoDrawerOpenOrClose) {
         doDrawerOpenOrClose()
     }
 
+    @UiThread
     private fun loadFolderList() {
         if (state.selectedFolderOrMenu == null) {
             state.selectedFolderOrMenu = menuItemFolderAll
@@ -68,6 +82,7 @@ class QDVNavigationDrawerPresenter : QDVMvpDbPresenter <QDVNavigationDrawerView>
                 dbIteratotorFoldersQuery(), itemsAddingToTop, state.selectedFolderOrMenu)
     }
 
+    @AnyThread
     fun dbIteratotorFoldersQuery(): CloseableIterator<QDVDbFolderOrMenuItem> {
         val noteDao =
                 database.getDaoWithIdLong(QDVDbFolderOrMenuItem::class.java)
@@ -77,10 +92,12 @@ class QDVNavigationDrawerPresenter : QDVMvpDbPresenter <QDVNavigationDrawerView>
         return queryBuilder.iterator()
     }
 
+    @AnyThread
     fun userLearned() {
         state.isUserLearned = true
     }
 
+    @UiThread
     fun doAddFolder(folderName: String) {
         val noteDao =
                 database.getDaoWithIdLong(QDVDbFolderOrMenuItem::class.java)
@@ -93,6 +110,7 @@ class QDVNavigationDrawerPresenter : QDVMvpDbPresenter <QDVNavigationDrawerView>
                 QDVFilterByFolderState.FilterType.FOLDER, folder))
     }
 
+    @UiThread
     fun doRemoveFolder(folderOrMenu: QDVDbFolderOrMenuItem) {
         if (folderOrMenu.menuItem != QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_ENTITY) {
             return
@@ -108,6 +126,7 @@ class QDVNavigationDrawerPresenter : QDVMvpDbPresenter <QDVNavigationDrawerView>
                 QDVFilterByFolderState.FilterType.FOLDER_NOT_SELECTED, null))
     }
 
+    @UiThread
     fun doUpdateFolder(folderOrMenu: QDVDbFolderOrMenuItem) {
         if (folderOrMenu.menuItem != QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_ENTITY) {
             return
@@ -123,6 +142,7 @@ class QDVNavigationDrawerPresenter : QDVMvpDbPresenter <QDVNavigationDrawerView>
         }
     }
 
+    @UiThread
     fun onClickFolderOrMenu(folderOrMenu: QDVDbFolderOrMenuItem?) {
         when (folderOrMenu?.menuItem) {
             QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_ADDING -> {
@@ -153,9 +173,5 @@ class QDVNavigationDrawerPresenter : QDVMvpDbPresenter <QDVNavigationDrawerView>
             else -> {
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 }

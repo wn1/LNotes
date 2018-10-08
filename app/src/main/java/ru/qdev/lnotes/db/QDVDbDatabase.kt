@@ -2,6 +2,7 @@ package ru.qdev.lnotes.db
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
+import android.support.annotation.AnyThread
 import com.j256.ormlite.android.apptools.OpenHelperManager
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper
 import com.j256.ormlite.support.ConnectionSource
@@ -21,6 +22,7 @@ import java.sql.SQLException
 const val DATABASE_VERSION = 7
 const val DATABASE_NAME = "data.db"
 
+@AnyThread
 class QDVDbDatabase(context: Context?, databaseName: String?,
                     factory: SQLiteDatabase.CursorFactory?, databaseVersion: Int) :
         OrmLiteSqliteOpenHelper(context, databaseName, factory, databaseVersion) {

@@ -1,5 +1,7 @@
 package ru.qdev.lnotes.mvp
 
+import android.support.annotation.AnyThread
+import android.support.annotation.UiThread
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import com.j256.ormlite.dao.CloseableIterator
@@ -17,10 +19,17 @@ import java.util.*
 class QDVNotesListPresenter : QDVMvpDbPresenter <QDVNotesListView> () {
     private var state: QDVNotesListState = QDVNotesListState()
 
-    override fun onDatabaseReload() {
+    @AnyThread
+    override fun beforeDatabaseClose() {
 
     }
 
+    @UiThread
+    override fun afterDatabaseReload() {
+
+    }
+
+    @AnyThread
     fun dbIteratotorFoldersQuery(): CloseableIterator<QDVDbFolderOrMenuItem> {
         val noteDao =
                 database.getDaoWithIdLong(QDVDbFolderOrMenuItem::class.java)
@@ -30,6 +39,7 @@ class QDVNotesListPresenter : QDVMvpDbPresenter <QDVNotesListView> () {
         return queryBuilder.iterator()
     }
 
+    @AnyThread
     fun dbIteratorNotesQuery(): CloseableIterator<QDVDbNote> {
         val noteDao = database.getDaoWithIdLong(QDVDbNote::class.java)
         val queryBuilder = noteDao.queryBuilder()
@@ -65,6 +75,7 @@ class QDVNotesListPresenter : QDVMvpDbPresenter <QDVNotesListView> () {
         return queryBuilder.iterator()
     }
 
+    @AnyThread
     fun getFolderNameForFilter(): String {
         val context = ThisApp.getContext()
         return when (state.filterByFolderState.filterType) {
@@ -80,6 +91,7 @@ class QDVNotesListPresenter : QDVMvpDbPresenter <QDVNotesListView> () {
         }
     }
 
+    @UiThread
     fun initWithState(state: QDVNotesListState) {
         this.state = state
         if (state.filterByFolderState.filterType == QDVFilterByFolderState.FilterType.FOLDER_ID) {
@@ -93,6 +105,7 @@ class QDVNotesListPresenter : QDVMvpDbPresenter <QDVNotesListView> () {
         viewState.setFolderName(getFolderNameForFilter())
     }
 
+    @UiThread
     fun onSearchText(text: String) {
         state.searchState.isSearchActive = true
         state.searchState.searchText = text
@@ -100,22 +113,26 @@ class QDVNotesListPresenter : QDVMvpDbPresenter <QDVNotesListView> () {
         viewState.setSearchState(state.searchState)
     }
 
+    @UiThread
     fun onUndoSearch() {
         state.searchState.isSearchActive = false
         viewState.loadNotesList(dbIteratorNotesQuery())
         viewState.setSearchState(state.searchState)
     }
 
+    @UiThread
     fun doUpdateNote(note: QDVDbNote) {
         database.getDaoWithIdLong(QDVDbNote::class.java).update(note)
         viewState.loadNotesList(dbIteratorNotesQuery())
     }
 
+    @UiThread
     fun doDeleteNote(note: QDVDbNote) {
         database.getDaoWithIdLong(QDVDbNote::class.java).delete(note)
         viewState.loadNotesList(dbIteratorNotesQuery())
     }
 
+    @UiThread
     fun doSetStatusOfExecution(note: QDVDbNote, status: QDVDbNote.StatusOfExecution) {
         note.statusOfExecution = status
         if (status!=QDVDbNote.StatusOfExecution.CREATED){

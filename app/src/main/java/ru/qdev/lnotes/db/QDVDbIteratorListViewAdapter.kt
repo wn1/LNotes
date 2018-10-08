@@ -1,5 +1,6 @@
 package ru.qdev.lnotes.db
 
+import android.support.annotation.UiThread
 import android.widget.BaseAdapter
 import com.j256.ormlite.android.AndroidDatabaseResults
 import com.j256.ormlite.dao.CloseableIterator
@@ -10,6 +11,7 @@ import java.sql.SQLException
  * Created by Vladimir Kudashov on 30.09.18.
  */
 
+@UiThread
 abstract class QDVDbIteratorListViewAdapter <T: QDVDbEntity> : BaseAdapter() {
     private var dbIterator: CloseableIterator<T>? = null
         private set (value) {

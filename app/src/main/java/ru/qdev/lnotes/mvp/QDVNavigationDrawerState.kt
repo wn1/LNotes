@@ -2,6 +2,7 @@ package ru.qdev.lnotes.mvp
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.support.annotation.AnyThread
 import com.google.gson.GsonBuilder
 import ru.qdev.lnotes.ThisApp
 import ru.qdev.lnotes.db.entity.QDVDbFolderOrMenuItem
@@ -9,7 +10,7 @@ import ru.qdev.lnotes.db.entity.QDVDbFolderOrMenuItem
 /**
  * Created by Vladimir Kudashov on 04.10.18.
  */
-
+@AnyThread
 class QDVNavigationDrawerState {
     private val PREFERENCES_NAME = "QDVNavigationDrawerState"
     private val PREFERENCE_NAME_USER_LEARNED = "userLearned"

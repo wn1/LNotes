@@ -1,9 +1,9 @@
 package ru.qdev.lnotes.mvp
 
+import android.support.annotation.AnyThread
+import android.support.annotation.UiThread
 import com.arellomobile.mvp.InjectViewState
-import com.arellomobile.mvp.MvpPresenter
 import ru.qdev.lnotes.*
-import ru.qdev.lnotes.db.QDVDbDatabase
 import ru.qdev.lnotes.db.entity.QDVDbFolder
 import ru.qdev.lnotes.db.entity.QDVDbNote
 import java.util.*
@@ -14,6 +14,8 @@ import java.util.*
 
 @InjectViewState
 class QDVNoteEditorPresenter : QDVMvpDbPresenter <QDVNoteEditorView> () {
+
+    @AnyThread
     private enum class AppError (val stringCode: String) {
         ERROR_GET_NOTE_1 ("2.1"),
         ERROR_GET_NOTE_2 ("2.2"),
@@ -29,16 +31,26 @@ class QDVNoteEditorPresenter : QDVMvpDbPresenter <QDVNoteEditorView> () {
     private val editorState = QDVNoteEditorState()
 
     val isChangedFlag
+        @AnyThread
        get() = editorState.isChangedFlag
 
-    init {
-        onDatabaseReload()
+    @UiThread
+    override fun onFirstViewAttach() {
+        super.onFirstViewAttach()
+        afterDatabaseReload()
     }
 
-    override fun onDatabaseReload() {
+    @UiThread
+    override fun afterDatabaseReload() {
         loadNoteToEditView()
     }
 
+    @UiThread
+    override fun beforeDatabaseClose() {
+
+    }
+
+    @AnyThread
     private fun getFolderName(): String {
         if (folder==null) {
             return ThisApp.getContext().getString(R.string.category_unknown)
@@ -46,6 +58,7 @@ class QDVNoteEditorPresenter : QDVMvpDbPresenter <QDVNoteEditorView> () {
         return folder!!.label ?: ""
     }
 
+    @UiThread
     private fun loadNoteToEditView() {
         if (editorState.editorMode == QDVNoteEditorState.EditorMode.EDITING) {
             if (editorState.noteId == null) {
@@ -76,6 +89,7 @@ class QDVNoteEditorPresenter : QDVMvpDbPresenter <QDVNoteEditorView> () {
         viewState.setNoteFolderName(getFolderName())
     }
 
+    @UiThread
     fun onNoteContentChange(content: String) {
         if (note == null) {
             return
@@ -84,10 +98,12 @@ class QDVNoteEditorPresenter : QDVMvpDbPresenter <QDVNoteEditorView> () {
         viewState.setNoteContent(note!!.content ?: "")
     }
 
+    @AnyThread
     fun onEditorInputChanges() {
         editorState.isChangedFlag = true
     }
 
+    @UiThread
     fun saveNote(): Boolean {
         try {
             if (editorState.editorMode == QDVNoteEditorState.EditorMode.EDITING) {

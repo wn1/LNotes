@@ -2,6 +2,8 @@ package ru.qdev.lnotes.ui.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.annotation.AnyThread;
+import android.support.annotation.UiThread;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
@@ -37,16 +39,12 @@ import ru.qdev.lnotes.ui.fragment.QDVNotesListFragment;
  */
 
 public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNotesHomeView {
-
-    @InjectPresenter
-    QDVNotesHomePresenter notesHomePresenter;
-
-    QDVNavigationDrawerFragment navigationDrawerFragment;
-
-    static private String needReloadDbIntentFlag = "needReloadDb";
+    static private String NEED_RELOAD_DB_FLAG = "needReloadDb";
 
     static private String OLD_DB_FILE_NAME = "data.db";
     static private String OLD_DB_FOLDER_NAME = "data";
+
+    @AnyThread
     public enum OldDbUpdateError {
         ERROR_1("1.1"),
         ERROR_2("1.2"),
@@ -64,7 +62,13 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
         }
     }
 
+    @InjectPresenter
+    QDVNotesHomePresenter notesHomePresenter;
+
+    QDVNavigationDrawerFragment navigationDrawerFragment;
+
     @Override
+    @UiThread
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.QDVActionBarTheme);
         super.onCreate(savedInstanceState);
@@ -92,14 +96,17 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
         }
     }
 
+    @AnyThread
     private void reloadDataDb() {
         notesHomePresenter.doReloadDb();
     }
 
+    @AnyThread
     private File getDbPath (){
         return new QDVDbDatabase(this).getFileDB();
     }
 
+    @AnyThread
     private File getOldLNotesDbPath (){
         File retFile = getDir(OLD_DB_FOLDER_NAME, 0);
         retFile = new File (retFile, OLD_DB_FILE_NAME);
@@ -107,14 +114,16 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
     }
 
     @Override
+    @UiThread
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        boolean needReloadDb = intent.getBooleanExtra(needReloadDbIntentFlag, false);
+        boolean needReloadDb = intent.getBooleanExtra(NEED_RELOAD_DB_FLAG, false);
         if (needReloadDb){
             reloadDataDb();
         }
     }
 
+    @UiThread
     private void oldDbUpdateIfNeeded() {
         //Old version update support
         final File oldLnotesDb = getOldLNotesDbPath();
@@ -209,9 +218,10 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
     }
 
     @Override
+    @UiThread
     protected void onStart() {
         super.onStart();
-        boolean needReloadDb = getIntent().getBooleanExtra(needReloadDbIntentFlag, false);
+        boolean needReloadDb = getIntent().getBooleanExtra(NEED_RELOAD_DB_FLAG, false);
         if (needReloadDb){
             reloadDataDb();
             return;
@@ -220,11 +230,7 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
+    @UiThread
     public void onBackPressed() {
         Fragment fragment = getSupportFragmentManager()
                 .findFragmentByTag(QDVNoteEditorFragment.FRAGMENT_TAG);
@@ -240,11 +246,13 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
     }
 
     @Override
+    @UiThread
     public void setNavigationDrawerFolderEnabled(boolean enabled) {
         navigationDrawerFragment.setActive(enabled);
     }
 
     @Override
+    @UiThread
     public void initNotesList(@Nullable QDVFilterByFolderState filterByFolderState) {
         navigationDrawerFragment.setActive(true);
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -255,6 +263,7 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
     }
 
     @Override
+    @UiThread
     public void initEditNote(@NotNull QDVDbNote note) {
         navigationDrawerFragment.setActive(false);
         QDVNoteEditorState noteEditorState = new QDVNoteEditorState();
@@ -266,6 +275,7 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
     }
 
     @Override
+    @UiThread
     public void initAddNote(Long folderIdForAdding) {
         navigationDrawerFragment.setActive(false);
         QDVNoteEditorState noteEditorState = new QDVNoteEditorState();
@@ -277,6 +287,7 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
     }
 
     @Override
+    @UiThread
     public void goBackFragment() {
         getSupportFragmentManager().popBackStack();
     }

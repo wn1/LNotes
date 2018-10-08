@@ -2,7 +2,9 @@ package ru.qdev.lnotes.ui.fragment;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.support.annotation.AnyThread;
 import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -57,6 +59,7 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
         return selectedFolderOrMenu;
     }
 
+    @UiThread
     public void setSelectedFolderOrMenu(QDVDbFolderOrMenuItem selectedFolderOrMenu) {
         this.selectedFolderOrMenu = selectedFolderOrMenu;
         if (folderListAdapter != null){
@@ -64,10 +67,12 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
         }
     }
 
+    @AnyThread
     public boolean isActive() {
         return isActive;
     }
 
+    @UiThread
     public void setActive(boolean active) {
         isActive = active;
         if (drawerLayout != null) {
@@ -77,21 +82,15 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
 
     private boolean isActive = false;
 
-    public QDVNavigationDrawerFragment() {
-    }
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
+    @UiThread
     public void onActivityCreated (Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
     }
 
     @Override
+    @UiThread
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         drawerListView = (ListView) inflater.inflate(
@@ -179,10 +178,12 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
         return drawerListView;
     }
 
+    @UiThread
     public boolean isDrawerOpen() {
         return drawerLayout != null && drawerLayout.isDrawerOpen(fragmentContainerView);
     }
 
+    @UiThread
     public void setUp(int fragmentId, DrawerLayout drawerLayout) {
         fragmentContainerView = getActivity().findViewById(fragmentId);
         this.drawerLayout = drawerLayout;
@@ -232,6 +233,7 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
     }
 
     @Override
+    @UiThread
     public void onClickAddFolder() {
         final EditText editText = new EditText(getContext());
         new AlertDialog.Builder(getActivity()).setTitle(R.string.add_category).setCancelable(true)
@@ -275,6 +277,7 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
         }
     }
 
+    @UiThread
     public void onClickDeleteFolder(final QDVDbFolderOrMenuItem folder) {
         if (folder.menuItem!=QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_ENTITY) {
             return;
@@ -293,6 +296,7 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
                 .setNegativeButton(R.string.action_no, null).show();
     }
 
+    @UiThread
     public void onClickRenameFolder(final QDVDbFolderOrMenuItem folder) {
         if (folder.menuItem!=QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_ENTITY) {
             return;
@@ -344,18 +348,16 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
         }
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
 
     @Override
+    @UiThread
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         drawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
+    @UiThread
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if (drawerLayout != null && isDrawerOpen()) {
             inflater.inflate(R.menu.navigation_drawer, menu);
@@ -364,6 +366,7 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
     }
 
     @Override
+    @UiThread
     public boolean onOptionsItemSelected(MenuItem item) {
         if (!isActive) {
             return super.onOptionsItemSelected(item);
@@ -377,16 +380,7 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    @Override
+    @UiThread
     public void loadFolderList(@NotNull CloseableIterator<QDVDbFolderOrMenuItem> dbIterator,
                                @NotNull ArrayList<QDVDbFolderOrMenuItem> itemsAddingToTop,
                                @Nullable QDVDbFolderOrMenuItem selectedFolderOrMenu) {
@@ -396,6 +390,7 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
     }
 
     @Override
+    @UiThread
     public void setDrawerOpen(boolean drawerOpen) {
         if (!isActive) {
             drawerLayout.closeDrawer(fragmentContainerView);
@@ -413,7 +408,8 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
     }
 
     @Override
-    public void setDrawerOpenOrClose() {
+    @UiThread
+    public void switchDrawerOpenOrClose() {
         if (!isActive) {
             drawerLayout.closeDrawer(fragmentContainerView);
             return;
