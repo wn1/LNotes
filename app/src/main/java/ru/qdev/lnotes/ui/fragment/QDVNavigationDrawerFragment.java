@@ -2,6 +2,8 @@ package ru.qdev.lnotes.ui.fragment;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.AnyThread;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
@@ -76,7 +78,12 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
     public void setActive(boolean active) {
         isActive = active;
         if (isActive) {
-            navigationDrawerPresenter.doDrawerShowIfUserLearn();
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    navigationDrawerPresenter.doDrawerShowIfUserLearn();
+                }
+            }, 1000);
         }
         if (drawerLayout != null && !isActive) {
             drawerLayout.closeDrawer(fragmentContainerView);

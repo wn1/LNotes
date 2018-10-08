@@ -10,6 +10,7 @@ import android.os.Looper;
 import android.support.annotation.AnyThread;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -52,6 +53,14 @@ public class QDVBackupActivity extends AppCompatActivity {
     @UiThread
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar!=null) {
+            actionBar.setDisplayShowTitleEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setTitle(R.string.backup_title);
+        }
         if (savedInstanceState!=null) {
             passwordForBackup =
                     savedInstanceState.getString("passwordForBackup", null);
@@ -74,6 +83,15 @@ public class QDVBackupActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("passwordForBackup", passwordForBackup);
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @UiThread

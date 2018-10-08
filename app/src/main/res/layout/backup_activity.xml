@@ -10,21 +10,23 @@
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true" />
 
-	<Button
+	<android.support.v7.widget.AppCompatButton
 		android:id="@+id/buttonSaveDB"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_toEndOf="@+id/progressTextView"
 		android:layout_toRightOf="@+id/progressTextView"
-		android:text="@string/save_backup_db" />
+		android:text="@string/save_backup_db"
+		style="@style/Widget.AppCompat.Button.Borderless.Colored" />
 
-	<Button
+	<android.support.v7.widget.AppCompatButton
 		android:id="@+id/buttonRestoreDB"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_below="@id/buttonSaveDB"
 		android:layout_marginTop="10dp"
-		android:text="@string/restore_backup_db" />
+		android:text="@string/restore_backup_db"
+		style="@style/Widget.AppCompat.Button.Borderless.Colored" />
 
 </RelativeLayout>
 
