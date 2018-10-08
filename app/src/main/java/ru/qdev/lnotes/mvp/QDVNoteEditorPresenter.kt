@@ -114,6 +114,7 @@ class QDVNoteEditorPresenter : QDVMvpDbPresenter <QDVNoteEditorView> () {
                 note?.updateTime = note?.createTime
                 note?.folderId = editorState.folderId
                 database.getDaoWithIdLong(QDVDbNote::class.java).create(note)
+                QDVStatisticState.addNotesSuccess(1)
             }
         }
         catch (e: Exception){

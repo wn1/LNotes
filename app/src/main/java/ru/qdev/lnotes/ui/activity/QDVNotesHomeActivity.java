@@ -2,6 +2,7 @@ package ru.qdev.lnotes.ui.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.AnyThread;
 import android.support.annotation.UiThread;
 import android.support.v4.app.Fragment;
@@ -33,6 +34,7 @@ import ru.qdev.lnotes.mvp.QDVFilterByFolderState;
 import ru.qdev.lnotes.mvp.QDVNoteEditorState;
 import ru.qdev.lnotes.mvp.QDVNotesHomePresenter;
 import ru.qdev.lnotes.mvp.QDVNotesHomeView;
+import ru.qdev.lnotes.mvp.QDVStatisticState;
 import ru.qdev.lnotes.ui.fragment.QDVNavigationDrawerFragment;
 import ru.qdev.lnotes.ui.fragment.QDVNoteEditorFragment;
 import ru.qdev.lnotes.ui.fragment.QDVNotesListFragment;
@@ -318,5 +320,36 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
     @UiThread
     public void goBackFragment() {
         getSupportFragmentManager().popBackStack();
+    }
+
+    @Override
+    public void showUserRatingQuest() {
+        new AlertDialog.Builder(QDVNotesHomeActivity.this)
+                .setTitle(R.string.like_app_quest_title)
+                .setMessage(getString(R.string.like_app_quest_text))
+                .setCancelable(false)
+                .setPositiveButton(R.string.open_google_play,
+                        new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        startActivity(new Intent(Intent.ACTION_VIEW,
+                                Uri.parse(getString(R.string.google_play_link))));
+                        QDVStatisticState.INSTANCE.setUserRatingQuestShownNoNeed(true);
+                    }
+                })
+                .setNeutralButton(R.string.later, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        QDVStatisticState.INSTANCE.addTimeForShowUserRatingQuest();
+                    }
+                })
+                .setNegativeButton(R.string.no_but_thanks, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        QDVStatisticState.INSTANCE.setUserRatingQuestShownNoNeed(true);
+                    }
+                })
+                .show();
+        return;
     }
 }

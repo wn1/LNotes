@@ -55,4 +55,10 @@
     <string name="file_create_error">Ошибка при создании файла: </string>
     <string name="action_remove_ads">Убрать рекламу</string>
     <string name="app_not_found">Приложение для этого действия не найдено</string>
+    <string name="like_app_quest_title">Нравится приложение?</string>
+    <string name="like_app_quest_text">Пожалуйста, поставьте нам оценку в Google Play. Это поможет нам улучшить приложение.</string>
+    <string name="open_google_play">Открыть Google Play</string>
+    <string name="later">Позже</string>
+    <string name="no_but_thanks">Нет оценки, но спасибо</string>
+
 </resources>

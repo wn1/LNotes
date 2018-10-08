@@ -46,6 +46,7 @@ class QDVNotesHomePresenter : MvpPresenter <QDVNotesHomeView> () {
 
         state.uiState = QDVNotesHomeState.UiState.LIST
         viewState.initNotesList(filterState)
+        stateChanged()
     }
 
     class DoSelectFolderEvent (val filterType: QDVFilterByFolderState.FilterType,
@@ -60,6 +61,7 @@ class QDVNotesHomePresenter : MvpPresenter <QDVNotesHomeView> () {
     fun doEditNote (note: QDVDbNote) {
         state.uiState = QDVNotesHomeState.UiState.EDIT
         viewState.initEditNote(note)
+        stateChanged()
     }
 
     class DoEditNoteEvent (val note: QDVDbNote)
@@ -73,6 +75,7 @@ class QDVNotesHomePresenter : MvpPresenter <QDVNotesHomeView> () {
     fun doAddNote (folderIdForAdding: Long?) {
         state.uiState = QDVNotesHomeState.UiState.EDIT
         viewState.initAddNote(folderIdForAdding)
+        stateChanged()
     }
 
     class DoAddNoteEvent(val folderIdForAdding: Long? = null)
@@ -88,6 +91,15 @@ class QDVNotesHomePresenter : MvpPresenter <QDVNotesHomeView> () {
             viewState.goBackFragment()
             viewState.setNavigationDrawerFolderEnabled(true)
             state.uiState = QDVNotesHomeState.UiState.LIST
+            stateChanged()
+        }
+    }
+
+    @UiThread
+    private fun stateChanged(){
+        if (state.uiState == QDVNotesHomeState.UiState.LIST &&
+                QDVStatisticState.isTimeForShowUserRatingQuest()) {
+            viewState.showUserRatingQuest()
         }
     }
 

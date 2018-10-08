@@ -25,4 +25,7 @@ interface QDVNotesHomeView : MvpView {
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun goBackFragment()
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun showUserRatingQuest()
 }
