@@ -10,6 +10,7 @@ import android.support.annotation.AnyThread;
 import android.support.annotation.MainThread;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -73,6 +75,8 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
     TextView findTextViewLabel;
     @BindView(R.id.layoutFindOptions)
     View layoutFindOptions;
+    @BindView(R.id.fab)
+    FloatingActionButton fab;
 
     @InjectPresenter
     QDVNotesListPresenter notesListPresenter;
@@ -303,6 +307,24 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
 
         notesListPresenter.initWithState(state);
 
+        notesList.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                if (scrollState != SCROLL_STATE_IDLE) {
+                    fab.hide();
+                }
+
+                if (scrollState == SCROLL_STATE_IDLE) {
+                    fab.show();
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+            }
+        });
+
         notesList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -341,16 +363,21 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
                 return true;
             }
         });
-
         return rootView;
     }
 
     @OnClick(R.id.buttonFindCancel)
     @UiThread
-    void OnClick() {
+    void onSearchUndoClick() {
         notesListPresenter.onUndoSearch();
     }
 
+    @OnClick(R.id.fab)
+    @UiThread
+    void onFabClick() {
+        EventBus.getDefault().post(
+                new QDVNotesHomePresenter.DoAddNoteEvent(state.getFolderIdForNotesAdding()));
+    }
 
     @Override
     @UiThread
@@ -377,12 +404,6 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
     @Override
     @UiThread
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_add_note) {
-            EventBus.getDefault().post(
-                    new QDVNotesHomePresenter.DoAddNoteEvent(state.getFolderIdForNotesAdding()));
-            return true;
-        }
-
         if (item.getItemId() == R.id.action_find_notes){
             final EditText editText = new EditText(getContext());
             new AlertDialog.Builder(getActivity()).setTitle(R.string.action_find_notes_title).setCancelable(true)
