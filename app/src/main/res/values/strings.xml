@@ -56,8 +56,13 @@
     <string name="action_remove_ads">Remove ads</string>
     <string name="app_not_found">The application for this action was not found</string>
     <string name="like_app_quest_title">Like the app?</string>
-    <string name="like_app_quest_text">Please rate us on Google Play. This will help us to improve the app.</string>
+    <string name="like_app_quest_text">Please rate us on Google Play. This will help us to improve the app</string>
     <string name="open_google_play">Open Google Play</string>
     <string name="later">Later</string>
     <string name="no_but_thanks">No rating, but thanks</string>
+    <string name="rating_star_1">Rating star 1</string>
+    <string name="rating_star_2">Rating star 2</string>
+    <string name="rating_star_3">Rating star 3</string>
+    <string name="rating_star_4">Rating star 4</string>
+    <string name="rating_star_5">Rating star 5</string>
 </resources>

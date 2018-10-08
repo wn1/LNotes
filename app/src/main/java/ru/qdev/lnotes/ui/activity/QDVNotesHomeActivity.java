@@ -1,16 +1,26 @@
 package ru.qdev.lnotes.ui.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.AnyThread;
 import android.support.annotation.UiThread;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.AppCompatImageView;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
@@ -323,10 +333,101 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
     }
 
     @Override
+    @UiThread
     public void showUserRatingQuest() {
+        View ratingView = getLayoutInflater().inflate(R.layout.rating_view, null);
+        AppCompatImageView imageStar1 = ratingView.findViewById(R.id.star1);
+        AppCompatImageView imageStar2 = ratingView.findViewById(R.id.star2);
+        AppCompatImageView imageStar3 = ratingView.findViewById(R.id.star3);
+        AppCompatImageView imageStar4 = ratingView.findViewById(R.id.star4);
+        AppCompatImageView imageStar5 = ratingView.findViewById(R.id.star5);
+
+        AppCompatImageView[] appCompatImageViews = new AppCompatImageView[5];
+        appCompatImageViews[0] = imageStar1;
+        appCompatImageViews[1] = imageStar2;
+        appCompatImageViews[2] = imageStar3;
+        appCompatImageViews[3] = imageStar4;
+        appCompatImageViews[4] = imageStar5;
+
+        int filterStartColor = Color.parseColor("#00000000");
+        int filterSelectedColor = ContextCompat.getColor(this, R.color.rateStarSelectedColor);
+        ArgbEvaluator argbEvaluator = new ArgbEvaluator();
+        String colorFilterProperty = "colorFilter";
+        long selectStarDuration = 250;
+
+        AnimatorSet selectAnimatorSet = new AnimatorSet();
+        ObjectAnimator objectAnimator = ObjectAnimator.ofObject(
+                imageStar1,
+                colorFilterProperty,
+                argbEvaluator,
+                filterStartColor,
+                filterSelectedColor);
+        objectAnimator.setStartDelay(0);
+        objectAnimator.setRepeatCount(0);
+        objectAnimator.setDuration(selectStarDuration);
+
+        selectAnimatorSet.play(objectAnimator);
+
+        for (AppCompatImageView imageStar : appCompatImageViews) {
+            if (imageStar == imageStar1) {
+                continue;
+            }
+            ObjectAnimator objectAnimatorNext = objectAnimator.clone();
+            objectAnimatorNext.setTarget(imageStar);
+            selectAnimatorSet.play(objectAnimatorNext).after(objectAnimator);
+            objectAnimator = objectAnimatorNext;
+        }
+
+        final AnimatorSet scaleAnimatorSet = new AnimatorSet();
+
+        String scaleXProperty = "scaleX";
+        String scaleYProperty = "scaleY";
+        long scaleStarDuration = 250;
+        final long scaleStarRepeatDelay = 250;
+
+        ObjectAnimator objectAnimatorScale = ObjectAnimator.ofFloat(
+                imageStar1,
+                scaleXProperty, 1.0f, 1.5f);
+        objectAnimatorScale.setStartDelay(0);
+        objectAnimatorScale.setRepeatCount(1);
+        objectAnimatorScale.setRepeatMode(ValueAnimator.REVERSE);
+        objectAnimatorScale.setDuration(scaleStarDuration);
+
+        for (AppCompatImageView imageStar : appCompatImageViews) {
+            ObjectAnimator objectAnimatorScaleX = objectAnimatorScale.clone();
+            objectAnimatorScaleX.setTarget(imageStar);
+            objectAnimatorScaleX.setPropertyName(scaleXProperty);
+            scaleAnimatorSet.play(objectAnimatorScaleX);
+
+            ObjectAnimator objectAnimatorScaleY = objectAnimatorScale.clone();
+            objectAnimatorScaleY.setTarget(imageStar);
+            objectAnimatorScaleY.setPropertyName(scaleYProperty);
+            scaleAnimatorSet.play(objectAnimatorScaleY);
+        }
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.play(selectAnimatorSet).before(scaleAnimatorSet);
+
+        final int[] repeatCount = {0};
+
+        scaleAnimatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                repeatCount[0]++;
+                if (repeatCount[0]<3) {
+                    animation.setStartDelay(scaleStarRepeatDelay);
+                    animation.start();
+                }
+            }
+        });
+
+        animatorSet.start();
+
         new AlertDialog.Builder(QDVNotesHomeActivity.this)
                 .setTitle(R.string.like_app_quest_title)
                 .setMessage(getString(R.string.like_app_quest_text))
+                .setView(ratingView)
                 .setCancelable(false)
                 .setPositiveButton(R.string.open_google_play,
                         new DialogInterface.OnClickListener() {
@@ -350,6 +451,5 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
                     }
                 })
                 .show();
-        return;
     }
 }

@@ -56,9 +56,14 @@
     <string name="action_remove_ads">Убрать рекламу</string>
     <string name="app_not_found">Приложение для этого действия не найдено</string>
     <string name="like_app_quest_title">Нравится приложение?</string>
-    <string name="like_app_quest_text">Пожалуйста, поставьте нам оценку в Google Play. Это поможет нам улучшить приложение.</string>
+    <string name="like_app_quest_text">Пожалуйста, поставьте нам оценку в Google Play. Это поможет нам улучшить приложение</string>
     <string name="open_google_play">Открыть Google Play</string>
     <string name="later">Позже</string>
     <string name="no_but_thanks">Нет оценки, но спасибо</string>
+    <string name="rating_star_1">Звезда рейтинга 1</string>
+    <string name="rating_star_2">Звезда рейтинга 2</string>
+    <string name="rating_star_3">Звезда рейтинга 3</string>
+    <string name="rating_star_4">Звезда рейтинга 4</string>
+    <string name="rating_star_5">Звезда рейтинга 5</string>
 
 </resources>
