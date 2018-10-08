@@ -170,7 +170,8 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
                             goBack();
                         }
                     })
-                    .setNegativeButton(R.string.action_no, null).show();
+                    .setNegativeButton(R.string.action_no, null)
+                    .show();
         }
         else {
             goBack();

@@ -7,4 +7,5 @@
     android:dividerHeight="0dp"
     android:background="#cccc"
     android:listSelector="@drawable/listview_folder_selector"
-    tools:context="ru.qdev.lnotes.ui.fragment.QDVNavigationDrawerFragment" />
+    tools:context="ru.qdev.lnotes.ui.fragment.QDVNavigationDrawerFragment"
+    android:animateLayoutChanges="true"/>

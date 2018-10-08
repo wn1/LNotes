@@ -22,7 +22,7 @@
     <string name="set_no_needed">No needed</string>
     <string name="set_in_work">In work</string>
     <string name="cancel">Cancel</string>
-    <string name="finding_label">Search: %s</string>
+    <string name="finding_label">Search results: %s</string>
     <string name="finding_label_count">Count: %s</string>
     <string name="action_ok">Ok</string>
     <string name="action_restore">Restore</string>

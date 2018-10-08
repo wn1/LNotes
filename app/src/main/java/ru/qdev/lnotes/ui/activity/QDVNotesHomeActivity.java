@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v4.widget.DrawerLayout;
+import android.view.ViewGroup;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -23,6 +24,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import ru.qdev.lnotes.*;
 import ru.qdev.lnotes.db.QDVDbDatabase;
 import ru.qdev.lnotes.db.entity.QDVDbNote;
@@ -67,12 +70,17 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
 
     QDVNavigationDrawerFragment navigationDrawerFragment;
 
+    @BindView(R.id.rootLayout)
+    ViewGroup rootLayout;
+
     @Override
     @UiThread
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.QDVActionBarTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
+
+        ButterKnife.bind(this);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar!=null) {
@@ -249,6 +257,14 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
     @UiThread
     public void setNavigationDrawerFolderEnabled(boolean enabled) {
         navigationDrawerFragment.setActive(enabled);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar!=null) {
+            if (enabled) {
+                actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_24dp);
+            } else {
+                actionBar.setHomeAsUpIndicator(null);
+            }
+        }
     }
 
     @Override
@@ -260,6 +276,10 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
                 .replace(R.id.container, QDVNotesListFragment.newInstance(filterByFolderState),
                         QDVNotesListFragment.FRAGMENT_TAG)
                 .commit();
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar!=null) {
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_24dp);
+        }
     }
 
     @Override
@@ -272,6 +292,10 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
         Fragment fragment = new QDVNoteEditorFragment();
         getSupportFragmentManager().beginTransaction().addToBackStack(null)
                 .replace(R.id.container, fragment, QDVNoteEditorFragment.FRAGMENT_TAG).commit();
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar!=null) {
+            actionBar.setHomeAsUpIndicator(null);
+        }
     }
 
     @Override
@@ -284,6 +308,10 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
         Fragment fragment = new QDVNoteEditorFragment();
         getSupportFragmentManager().beginTransaction().addToBackStack(null)
                 .replace(R.id.container, fragment, QDVNoteEditorFragment.FRAGMENT_TAG).commit();
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar!=null) {
+            actionBar.setHomeAsUpIndicator(null);
+        }
     }
 
     @Override

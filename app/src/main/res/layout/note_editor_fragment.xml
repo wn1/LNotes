@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/note_editor_fragmet_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true">
 
     <EditText
         android:id="@+id/editText"
@@ -22,5 +23,5 @@
         android:ems="10"
         android:gravity="top|left|start"
         android:inputType="text|textMultiLine|textPersonName"
-        android:textSize="18sp"></EditText>
+        android:textSize="18sp"/>
 </RelativeLayout>

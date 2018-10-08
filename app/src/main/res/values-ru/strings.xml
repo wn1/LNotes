@@ -18,7 +18,7 @@
     <string name="set_no_needed">Не нужно</string>
     <string name="set_in_work">В работе</string>
     <string name="cancel">Отмена</string>
-    <string name="finding_label">Поиск: %s</string>
+    <string name="finding_label">Результаты поиска: %s</string>
     <string name="finding_label_count">Найдено: %s</string>
     <string name="action_ok">Ок</string>
     <string name="action_restore">Восстановить</string>

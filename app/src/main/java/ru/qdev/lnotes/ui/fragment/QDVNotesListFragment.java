@@ -6,8 +6,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.AnyThread;
-import android.support.annotation.MainThread;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.support.design.widget.FloatingActionButton;
@@ -67,7 +68,6 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
     private static final String STATE_KEY_NAME = "state";
 
     private Unbinder unbinder;
-
 
     @BindView(R.id.notesList)
     ListView notesList;
@@ -312,9 +312,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
             public void onScrollStateChanged(AbsListView view, int scrollState) {
                 if (scrollState != SCROLL_STATE_IDLE) {
                     fab.hide();
-                }
-
-                if (scrollState == SCROLL_STATE_IDLE) {
+                } else {
                     fab.show();
                 }
             }
@@ -366,6 +364,25 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
         return rootView;
     }
 
+    @Override
+    @UiThread
+    public void onResume() {
+        super.onResume();
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                fab.show();
+            }
+        }, 200);
+    }
+
+    @Override
+    @UiThread
+    public void onPause() {
+        super.onPause();
+        fab.hide();
+    }
+
     @OnClick(R.id.buttonFindCancel)
     @UiThread
     void onSearchUndoClick() {
@@ -401,34 +418,49 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
         menu.findItem(R.id.action_remove_ads).setVisible(QDVVersionDifference.isFreeVersion());
     }
 
+
+    void hideKeyboard(IBinder windowToken) {
+        InputMethodManager inputMethodManager = (InputMethodManager)
+                ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (inputMethodManager != null) {
+            inputMethodManager.hideSoftInputFromWindow(
+                    windowToken, 0);
+        }
+    }
+
     @Override
     @UiThread
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_find_notes){
             final EditText editText = new EditText(getContext());
-            new AlertDialog.Builder(getActivity()).setTitle(R.string.action_find_notes_title).setCancelable(true)
-                    .setView(editText).setPositiveButton(R.string.action_ok,
+            fab.hide();
+            new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.action_find_notes_title)
+                    .setCancelable(false)
+                    .setView(editText)
+                    .setPositiveButton(R.string.action_ok,
                     new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    InputMethodManager inputMethodManager = (InputMethodManager)
-                            ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    if (inputMethodManager != null) {
-                        inputMethodManager.hideSoftInputFromWindow(
-                                editText.getWindowToken(), 0);
-                    }
-                    notesListPresenter.onSearchText(editText.getText().toString());
-
+                    hideKeyboard(editText.getWindowToken());
+                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            fab.show();
+                            notesListPresenter.onSearchText(editText.getText().toString());
+                        }
+                    }, 300);
                 }
             }).setNegativeButton(R.string.cancel,  new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    InputMethodManager inputMethodManager = (InputMethodManager)
-                            ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    if (inputMethodManager != null) {
-                        inputMethodManager.hideSoftInputFromWindow(
-                                editText.getWindowToken(), 0);
-                    }
+                    hideKeyboard(editText.getWindowToken());
+                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            fab.show();
+                        }
+                    }, 300);
                 }
             }).show();
             editText.requestFocus();
@@ -464,6 +496,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
         }
 
         if (item.getItemId() == R.id.action_backup_notes){
+
             Intent sendDataActivityStartIntent = new Intent(getContext(), QDVBackupActivity.class);
             sendDataActivityStartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(sendDataActivityStartIntent);
