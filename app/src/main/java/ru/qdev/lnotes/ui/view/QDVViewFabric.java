@@ -48,7 +48,7 @@ public class QDVViewFabric {
         appCompatImageViews[3] = imageStar4;
         appCompatImageViews[4] = imageStar5;
 
-        int filterStartColor = Color.parseColor("#00000000");
+        int filterStartColor = ContextCompat.getColor(context, R.color.transparentColor);
         int filterSelectedColor =
                 ContextCompat.getColor(context, R.color.rateStarSelectedColor);
         ArgbEvaluator argbEvaluator = new ArgbEvaluator();

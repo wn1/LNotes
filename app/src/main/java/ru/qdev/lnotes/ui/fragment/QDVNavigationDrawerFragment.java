@@ -8,6 +8,7 @@ import android.support.annotation.AnyThread;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.content.res.Configuration;
@@ -126,16 +127,20 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
                         ((TextView) view.findViewById(android.R.id.text1))
                                 .setText(folderOrMenu.getLabel());
 
+                        Boolean itemChecked = false;
                         if (selectedFolderOrMenu!=null) {
                             if (folderOrMenu.menuItem ==
                                     QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_ENTITY) {
                                 if (folderOrMenu.getId() == selectedFolderOrMenu.getId()) {
-                                    drawerListView.setItemChecked(i, true);
+                                    itemChecked = true;
                                 }
                             } else if (folderOrMenu.menuItem == selectedFolderOrMenu.menuItem) {
-                                drawerListView.setItemChecked(i, true);
+                                itemChecked = true;
                             }
                         }
+
+                        view.setBackgroundColor(ContextCompat.getColor(getContext(), itemChecked ?
+                                R.color.listViewFolderSelectedColor : R.color.transparentColor));
 
                         return view;
                     }

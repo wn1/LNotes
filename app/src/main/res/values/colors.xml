@@ -6,4 +6,5 @@
     <color name="colorControlHighlight">#6200a3a3</color>
     <color name="listViewFolderSelectedColor">#6200a3a3</color>
     <color name="rateStarSelectedColor">#ff00a3a3</color>
+    <color name="transparentColor">#00000000</color>
 </resources>
