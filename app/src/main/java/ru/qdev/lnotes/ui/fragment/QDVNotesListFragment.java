@@ -56,6 +56,8 @@ import ru.qdev.lnotes.mvp.QDVNotesListPresenter;
 import ru.qdev.lnotes.mvp.QDVNotesListState;
 import ru.qdev.lnotes.mvp.QDVNotesListView;
 import ru.qdev.lnotes.mvp.QDVSearchState;
+import ru.qdev.lnotes.mvp.QDVStatisticState;
+import ru.qdev.lnotes.ui.view.QDVViewFabric;
 import ru.qdev.lnotes.ui.activity.QDVBackupActivity;
 
 /**
@@ -153,7 +155,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
                                 notesListPresenter.doUpdateNote(note);
                                 return;
                             }
-                            if (folderOrMenu.menuItem!=
+                            if (folderOrMenu.menuItem !=
                                     QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_ENTITY) {
                                 return;
                             }
@@ -485,13 +487,26 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
 
             View alertDialogView = getActivity().getLayoutInflater().inflate(
                     R.layout.about_dialog, null);
-            TextView textView = alertDialogView.findViewById(R.id.aboutText);
-            textView.setText(R.string.about_message);
+            TextView aboutTextView = alertDialogView.findViewById(R.id.aboutText);
+            aboutTextView.setText(R.string.about_message);
+            View ratingView = new QDVViewFabric(getContext(), getLayoutInflater()).createRatingView();
+            TextView rateQuestText = alertDialogView.findViewById(R.id.rateQuestText);
+            ((ViewGroup)alertDialogView.findViewById(R.id.layoutForView)).addView(ratingView);
+            rateQuestText.setText(getString(R.string.like_app_quest_text));
+
             new AlertDialog.Builder(getActivity()).setTitle(lnotesNameAndVersion)
                     .setCancelable(true)
                     .setView(alertDialogView)
-                    .setPositiveButton(R.string.action_ok, null).show();
-
+                    .setPositiveButton(R.string.open_google_play,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                startActivity(new Intent(Intent.ACTION_VIEW,
+                                        Uri.parse(getString(R.string.google_play_link))));
+                                QDVStatisticState.INSTANCE.setUserRatingQuestShownNoNeed(true);
+                            }
+                        })
+                    .setNeutralButton(R.string.action_thanks, null).show();
             return true;
         }
 
