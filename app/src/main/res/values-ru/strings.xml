@@ -39,7 +39,7 @@
     <string name="backup_title">Резервное копирование</string>
     <string name="copy_base_from_old_lnotes">Обновление базы данных LNotes</string>
     <string name="action_about">О приложении</string>
-    <string name="about_message">\nЛёгкие заметки в моём кармане\n\nСвободная лицензия MIT\nИсходный код: https://github.com/wn1/LNotes\n\n(C) Владимир Кудашов 2015-2018</string>
+    <string name="about_message">\nЛёгкие заметки в моём кармане\n\nСвободная лицензия MIT\nИсходный код:\nhttps://github.com/wn1/LNotes\n\n(C) Владимир Кудашов 2015-2018</string>
     <string name="action_backup_confirm_title">Копировать все заметки?</string>
     <string name="copy">Копировать</string>
 	<string name="file_selector_not_found">Нет программы для выбора файлов. Установите файловый менеджер и попробуйте ещё раз.</string>
@@ -57,7 +57,7 @@
     <string name="action_remove_ads">Убрать рекламу</string>
     <string name="app_not_found">Приложение для этого действия не найдено</string>
     <string name="like_app_quest_title">Нравится приложение?</string>
-    <string name="like_app_quest_text">Пожалуйста, поставьте оценку в Google Play. Это поможет улучшить приложение</string>
+    <string name="like_app_quest_text">Пожалуйста, поставьте оценку в Google&#160;Play. Это поможет улучшить приложение</string>
     <string name="open_google_play">Открыть Google Play</string>
     <string name="later">Позже</string>
     <string name="no_but_thanks">Нет оценки, но спасибо</string>

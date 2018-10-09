@@ -41,7 +41,7 @@
     <string name="backup_title">Backup</string>
     <string name="copy_base_from_old_lnotes">LNotes database update</string>
     <string name="action_about">About</string>
-    <string name="about_message">\nLight notes in my pocket\n\nFree MIT License\nSource code: https://github.com/wn1/LNotes\n\n(C) Vladimir Kudashov 2015-2018</string>
+    <string name="about_message">\nLight notes in my pocket\n\nFree MIT License\nSource code:\nhttps://github.com/wn1/LNotes\n\n(C) Vladimir Kudashov 2015-2018</string>
     <string name="action_backup_confirm_title">Copy all notes?</string>
     <string name="copy">Copy</string>
     <string name="need_update_lnotesync">Update LNotesSync needed</string>
@@ -57,7 +57,7 @@
     <string name="action_remove_ads">Remove ads</string>
     <string name="app_not_found">The application for this action was not found</string>
     <string name="like_app_quest_title">Like the app?</string>
-    <string name="like_app_quest_text">Please rate us on Google Play. This will help us to improve the app</string>
+    <string name="like_app_quest_text">Please, rate us on Google&#160;Play. This will help us to improve the app</string>
     <string name="open_google_play">Open Google Play</string>
     <string name="later">Later</string>
     <string name="no_but_thanks">No rating, but thanks</string>
