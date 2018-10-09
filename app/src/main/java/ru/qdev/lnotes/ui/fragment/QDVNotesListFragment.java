@@ -65,7 +65,7 @@ import ru.qdev.lnotes.ui.activity.QDVBackupActivity;
  */
 
 public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNotesListView {
-    public static final String FRAGMENT_TAG = "notesEditorFragment";
+    public static final String FRAGMENT_TAG = "notesListFragment";
     public static final String ARG_FILTER_BY_FOLDER = "filterByFolder";
     private static final String STATE_KEY_NAME = "state";
 

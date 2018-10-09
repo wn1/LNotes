@@ -18,6 +18,7 @@ import ru.qdev.lnotes.db.entity.QDVDbNote
 @InjectViewState
 class QDVNotesHomePresenter : MvpPresenter <QDVNotesHomeView> () {
     private val state: QDVNotesHomeState = QDVNotesHomeState()
+    var editNoteFilterState = QDVFilterByFolderState()
 
     init {
         EventBus.getDefault().register(this)
@@ -25,16 +26,16 @@ class QDVNotesHomePresenter : MvpPresenter <QDVNotesHomeView> () {
 
     @UiThread
     fun doSelectFolder (filterType: QDVFilterByFolderState.FilterType, folder: QDVDbFolder?) {
-        val filterState = QDVFilterByFolderState()
-        filterState.filterType = filterType
+        editNoteFilterState = QDVFilterByFolderState()
+        editNoteFilterState.filterType = filterType
         if (filterType == QDVFilterByFolderState.FilterType.FOLDER_ID) {
-            filterState.folderId = folder?.id
+            editNoteFilterState.folderId = folder?.id
         } else {
-            filterState.folder = folder
+            editNoteFilterState.folder = folder
         }
 
         state.uiState = QDVNotesHomeState.UiState.LIST
-        viewState.initNotesList(filterState)
+        viewState.initNotesList(editNoteFilterState)
         stateChanged()
     }
 
@@ -77,7 +78,7 @@ class QDVNotesHomePresenter : MvpPresenter <QDVNotesHomeView> () {
     @UiThread
     fun doGoBack () {
         if (state.uiState == QDVNotesHomeState.UiState.EDIT) {
-            viewState.goBackFragment()
+            viewState.initNotesList(editNoteFilterState)
             viewState.setNavigationDrawerFolderEnabled(true)
             state.uiState = QDVNotesHomeState.UiState.LIST
             stateChanged()

@@ -11,17 +11,17 @@
         style="@style/Widget.AppCompat.EditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:editable="true"
         android:ems="10"
         android:gravity="top|left|start"
-        android:inputType="text|textMultiLine|textPersonName"
-        android:textSize="18sp"/>
+        android:inputType="text|textCapSentences|textAutoCorrect|textAutoComplete|textMultiLine|textPersonName"
+        android:textSize="18sp" />
 </RelativeLayout>

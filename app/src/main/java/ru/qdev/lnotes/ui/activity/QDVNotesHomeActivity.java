@@ -275,10 +275,18 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
     @UiThread
     public void initNotesList(@Nullable QDVFilterByFolderState filterByFolderState) {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, QDVNotesListFragment.newInstance(filterByFolderState),
-                        QDVNotesListFragment.FRAGMENT_TAG)
-                .commit();
+        int backStackCount = fragmentManager.getBackStackEntryCount();
+        if (backStackCount>0) {
+            for (int i = 0; i<backStackCount; i++) {
+                fragmentManager.popBackStack();
+            }
+        }
+        else {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.container, QDVNotesListFragment.newInstance(filterByFolderState),
+                            QDVNotesListFragment.FRAGMENT_TAG)
+                    .commit();
+        }
         ActionBar actionBar = getSupportActionBar();
         if (actionBar!=null) {
             actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_24dp);
@@ -290,12 +298,16 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
     @UiThread
     public void initEditNote(@NotNull QDVDbNote note) {
         navigationDrawerFragment.setActive(false);
-        QDVNoteEditorState noteEditorState = new QDVNoteEditorState();
-        noteEditorState.setState(QDVNoteEditorState.EditorMode.EDITING,
-                note.getFolderId(), note.getId());
-        Fragment fragment = new QDVNoteEditorFragment();
-        getSupportFragmentManager().beginTransaction().addToBackStack(null)
-                .replace(R.id.container, fragment, QDVNoteEditorFragment.FRAGMENT_TAG).commit();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentByTag(QDVNoteEditorFragment.FRAGMENT_TAG);
+        if (fragment==null) {
+            QDVNoteEditorState noteEditorState = new QDVNoteEditorState();
+            noteEditorState.setState(QDVNoteEditorState.EditorMode.EDITING,
+                    note.getFolderId(), note.getId());
+            fragment = new QDVNoteEditorFragment();
+            getSupportFragmentManager().beginTransaction().addToBackStack(null)
+                    .replace(R.id.container, fragment, QDVNoteEditorFragment.FRAGMENT_TAG).commit();
+        }
         ActionBar actionBar = getSupportActionBar();
         if (actionBar!=null) {
             actionBar.setHomeAsUpIndicator(null);
@@ -306,22 +318,20 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
     @UiThread
     public void initAddNote(Long folderIdForAdding) {
         navigationDrawerFragment.setActive(false);
-        QDVNoteEditorState noteEditorState = new QDVNoteEditorState();
-        noteEditorState.setState(QDVNoteEditorState.EditorMode.ADDING,
-                folderIdForAdding, null);
-        Fragment fragment = new QDVNoteEditorFragment();
-        getSupportFragmentManager().beginTransaction().addToBackStack(null)
-                .replace(R.id.container, fragment, QDVNoteEditorFragment.FRAGMENT_TAG).commit();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentByTag(QDVNoteEditorFragment.FRAGMENT_TAG);
+        if (fragment==null) {
+            QDVNoteEditorState noteEditorState = new QDVNoteEditorState();
+            noteEditorState.setState(QDVNoteEditorState.EditorMode.ADDING,
+                    folderIdForAdding, null);
+            fragment = new QDVNoteEditorFragment();
+            getSupportFragmentManager().beginTransaction().addToBackStack(null)
+                    .replace(R.id.container, fragment, QDVNoteEditorFragment.FRAGMENT_TAG).commit();
+        }
         ActionBar actionBar = getSupportActionBar();
         if (actionBar!=null) {
             actionBar.setHomeAsUpIndicator(null);
         }
-    }
-
-    @Override
-    @UiThread
-    public void goBackFragment() {
-        getSupportFragmentManager().popBackStack();
     }
 
     @Override

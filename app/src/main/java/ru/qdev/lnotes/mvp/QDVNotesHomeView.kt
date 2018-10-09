@@ -24,8 +24,5 @@ interface QDVNotesHomeView : MvpView {
     fun setNavigationDrawerFolderEnabled(enabled: Boolean = false)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun goBackFragment()
-
-    @StateStrategyType(OneExecutionStateStrategy::class)
     fun showUserRatingQuest()
 }
