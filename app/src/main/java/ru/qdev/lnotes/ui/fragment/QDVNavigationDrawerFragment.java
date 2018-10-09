@@ -49,7 +49,7 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
     @InjectPresenter
     QDVNavigationDrawerPresenter navigationDrawerPresenter;
 
-    //TODO
+    //TODO deprecated change to new implements
     private ActionBarDrawerToggle drawerToggle;
     private DrawerLayout drawerLayout;
     private ListView drawerListView;

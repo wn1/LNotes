@@ -29,6 +29,7 @@ allprojects {
         }
     }
 
+    //TODO add findbugs and pmd
 //    apply plugin: 'findbugs'
 //    findbugs {
 //        ignoreFailures = true
