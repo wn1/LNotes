@@ -24,17 +24,6 @@ class QDVNotesHomePresenter : MvpPresenter <QDVNotesHomeView> () {
     }
 
     @UiThread
-    override fun onFirstViewAttach() {
-        super.onFirstViewAttach()
-        doShowNotesList()
-    }
-
-    @UiThread
-    fun doShowNotesList() {
-        viewState.initNotesList()
-    }
-
-    @UiThread
     fun doSelectFolder (filterType: QDVFilterByFolderState.FilterType, folder: QDVDbFolder?) {
         val filterState = QDVFilterByFolderState()
         filterState.filterType = filterType

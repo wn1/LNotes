@@ -215,25 +215,14 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
     }
 
     @Override
-    @UiThread
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
-                             Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.notes_list_fragment, container, false);
-        unbinder = ButterKnife.bind(this, rootView);
-
-        if (savedInstanceState!=null) {
-            state = (QDVNotesListState) savedInstanceState.getSerializable(STATE_KEY_NAME);
-        }
-
-        if (state == null) {
-            state = new QDVNotesListState();
-        }
-
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         notesListAdapter = new QDVDbIteratorListViewAdapter <QDVDbNote> ()  {
             @Override
             public View getView(int i, View view, ViewGroup viewGroup) {
                 if (view == null) {
-                    view = inflater.inflate(R.layout.notes_list_cell, viewGroup, false);
+                    view = getLayoutInflater().inflate(
+                            R.layout.notes_list_cell, viewGroup, false);
                 }
 
                 view.setVisibility(View.VISIBLE);
@@ -272,6 +261,22 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
                 return view;
             }
         };
+    }
+
+    @Override
+    @UiThread
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             Bundle savedInstanceState) {
+        rootView = inflater.inflate(R.layout.notes_list_fragment, container, false);
+        unbinder = ButterKnife.bind(this, rootView);
+
+        if (savedInstanceState!=null) {
+            state = (QDVNotesListState) savedInstanceState.getSerializable(STATE_KEY_NAME);
+        }
+
+        if (state == null) {
+            state = new QDVNotesListState();
+        }
 
         notesList.setAdapter(notesListAdapter);
 
@@ -313,9 +318,9 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
                 if (scrollState != SCROLL_STATE_IDLE) {
-                    fab.hide();
+                    notesListPresenter.doFabVisible(false);
                 } else {
-                    fab.show();
+                    notesListPresenter.doFabVisible(true);
                 }
             }
 
@@ -373,7 +378,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
-                fab.show();
+                notesListPresenter.doFabVisible(true);
             }
         }, 200);
     }
@@ -382,7 +387,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
     @UiThread
     public void onPause() {
         super.onPause();
-        fab.hide();
+        notesListPresenter.doFabVisible(false);
     }
 
     @OnClick(R.id.buttonFindCancel)
@@ -435,7 +440,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_find_notes){
             final EditText editText = new EditText(getContext());
-            fab.hide();
+            notesListPresenter.doFabVisible(false);
             new AlertDialog.Builder(getActivity())
                     .setTitle(R.string.action_find_notes_title)
                     .setCancelable(false)
@@ -448,7 +453,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
                     new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            fab.show();
+                            notesListPresenter.doFabVisible(true);
                             notesListPresenter.onSearchText(editText.getText().toString());
                         }
                     }, 300);
@@ -460,7 +465,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
                     new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            fab.show();
+                            notesListPresenter.doFabVisible(true);
                         }
                     }, 300);
                 }
@@ -564,6 +569,16 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
             if (actionBar!=null) {
                 actionBar.setTitle(folderName);
             }
+        }
+    }
+
+    @Override
+    @UiThread
+    public void setFabVisible(boolean visible) {
+        if (visible) {
+            fab.show();
+        } else {
+            fab.hide();
         }
     }
 }

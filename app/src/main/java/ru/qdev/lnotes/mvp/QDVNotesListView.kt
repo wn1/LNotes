@@ -16,4 +16,5 @@ interface QDVNotesListView : MvpView {
     fun loadNotesList(dbIterator: CloseableIterator<QDVDbNote>)
     fun setSearchState(searchState: QDVSearchState)
     fun setFolderName(folderName: String)
+    fun setFabVisible(visible: Boolean)
 }

@@ -43,7 +43,7 @@ android {
     }
 }
 
-def butterKnife = "8.4.0"
+def butterKnife = "8.8.1"
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')

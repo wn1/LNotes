@@ -145,4 +145,9 @@ class QDVNotesListPresenter : QDVMvpDbPresenter <QDVNotesListView> () {
         database.getDaoWithIdLong(QDVDbNote::class.java).update(note)
         viewState.loadNotesList(dbIteratorNotesQuery())
     }
+
+    @UiThread
+    fun doFabVisible(visible: Boolean) {
+        viewState.setFabVisible(visible)
+    }
 }
