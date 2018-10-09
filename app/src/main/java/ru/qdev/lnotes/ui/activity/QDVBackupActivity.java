@@ -322,7 +322,6 @@ public class QDVBackupActivity extends AppCompatActivity {
         try {
             backupFile.delete();
             decryptedFile.delete();
-            dbFile.renameTo(backupFile);
             outputStream = new FileOutputStream(decryptedFile);
             boolean flag = true;
             if (isCrypted) {
@@ -335,7 +334,12 @@ public class QDVBackupActivity extends AppCompatActivity {
             outputStream.close();
             outputStream = null;
             if (flag) {
+                dbFile.renameTo(backupFile);
                 result = QDVFileUtils.copyFile(decryptedFile, dbFile, false);
+                if (!result) {
+                    dbFile.delete();
+                    backupFile.renameTo(dbFile);
+                }
             }
             Log.d("Restore db","write data");
         } catch (Exception e) {
