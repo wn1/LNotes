@@ -3,7 +3,7 @@
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT) [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme) 
 
 > Light notes in my pocket.
-> Easy and simple note editor fo Android.
+> Easy and simple note editor for Android.
 
 Light Notes is a simple and functional note editor for Android. 
 A great alternative to Notepad, organizer, etc. 
