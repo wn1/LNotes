@@ -10,7 +10,7 @@ android {
         applicationId "ru.q_dev.LNote"
         minSdkVersion 14
         targetSdkVersion 27
-        versionCode 22
+        versionCode 23
         versionName "2.0.0"
         vectorDrawables.useSupportLibrary = true
     }
