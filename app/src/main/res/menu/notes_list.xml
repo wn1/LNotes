@@ -1,0 +1,23 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="ru.qdev.lnotes.ui.activity.QDVNotesHomeActivity" >
+    <item
+        android:id="@+id/action_find_notes"
+        android:orderInCategory="101"
+        android:title="@string/action_find_notes"
+        app:showAsAction="ifRoom|withText" />
+    <item
+        android:id="@+id/action_backup_notes"
+        android:orderInCategory="102"
+        android:title="@string/action_backup" />
+    <item
+        android:id="@+id/action_about"
+        android:orderInCategory="103"
+        android:title="@string/action_about" />
+
+    <item
+        android:id="@+id/action_remove_ads"
+        android:orderInCategory="103"
+        android:title="@string/action_remove_ads" />
+</menu>

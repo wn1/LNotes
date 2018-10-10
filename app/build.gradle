@@ -1,15 +1,18 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '23.0.3'
+    compileSdkVersion 27
+    buildToolsVersion '28.0.2'
 
     defaultConfig {
-        applicationId "ru.q_dev.LNoteP"
+        applicationId "ru.q_dev.LNote"
         minSdkVersion 14
-        targetSdkVersion 23
-        versionCode 9
-        versionName "1.7"
+        targetSdkVersion 27
+        versionCode 23
+        versionName "2.0.0"
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -19,16 +22,55 @@ android {
     }
 
     lintOptions {
-        checkReleaseBuilds false
+//        checkReleaseBuilds false
         // Or, if you prefer, you can continue to check for errors in release builds,
         // but continue the build even when errors are found:
-        abortOnError false
+//        abortOnError false
+    }
+
+    flavorDimensions "dafault"
+
+    productFlavors {
+        free {
+            applicationId "ru.q_dev.LNote"
+            dimension "dafault"
+        }
+
+        plusVersion {
+            applicationId "ru.q_dev.LNoteP"
+            dimension "dafault"
+        }
     }
 }
 
+def butterKnife = "8.8.1"
+
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     //    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'org.apache.directory.studio:org.apache.commons.codec:1.8'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+
+    freeImplementation 'com.google.android.gms:play-services-ads:12.0.1'
+
+    implementation "com.j256.ormlite:ormlite-core:4.48"
+    implementation "com.j256.ormlite:ormlite-android:4.48"
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    implementation 'com.arello-mobile:moxy:1.5.5'
+    kapt 'com.arello-mobile:moxy-compiler:1.5.5'
+    implementation 'com.arello-mobile:moxy-app-compat:1.5.5'
+
+    implementation "com.jakewharton:butterknife:$butterKnife"
+    kapt "com.jakewharton:butterknife-compiler:$butterKnife"
+
+    implementation 'org.greenrobot:eventbus:3.1.1'
+
+    implementation 'com.google.code.gson:gson:2.8.5'
+
+    implementation  'com.android.support:design:27.1.1'
+}
+
+repositories {
+    mavenCentral()
 }

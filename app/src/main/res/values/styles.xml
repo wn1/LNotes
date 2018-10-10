@@ -1,8 +1,29 @@
-<resources>
-
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- the theme applied to the application or activity -->
+    <style name="QDVActionBarTheme"
+        parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:actionBarStyle">@style/QDVActionBar</item>
+        <item name="android:colorAccent" tools:targetApi="lollipop">@color/appAccentColor</item>
+        <item name="android:colorControlActivated" tools:targetApi="lollipop">@color/colorControlActivated</item>
+        <item name="android:colorControlHighlight" tools:targetApi="lollipop">@color/colorControlHighlight</item>
+        <item name="android:listSelector">@drawable/listview_item_selector</item>
+        <!-- Support library compatibility -->
+        <item name="actionBarStyle">@style/QDVActionBar</item>
+        <item name="colorAccent">@color/appAccentColor</item>
+        <item name="colorControlActivated">@color/colorControlActivated</item>
+        <item name="colorControlHighlight">@color/colorControlHighlight</item>
     </style>
 
+    <!-- ActionBar styles -->
+    <style name="QDVActionBar"
+        parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@color/appAccentColor</item>
+        <!-- Support library compatibility -->
+        <item name="background">@color/appAccentColor</item>
+    </style>
+
+    <style name="QDVActionBarTheme.Launcher">
+        <item name="android:windowBackground">@drawable/launch_screen</item>
+        <item name="colorPrimaryDark">@android:color/white</item>
+    </style>
 </resources>

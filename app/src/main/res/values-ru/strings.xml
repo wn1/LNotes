@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">LNotes+</string>
     <string name="action_add_notes">+</string>
     <string name="action_find_notes">Поиск</string>
     <string name="action_find_notes_title">Поиск</string>
+    <string name="input_password_for_backup_db_title">Введите пароль для резервной копии</string>
     <string name="action_no">Нет</string>
     <string name="action_settings">Настройки</string>
     <string name="action_yes">Да</string>
+    <string name="action_without_password">Без пароля</string>
     <string name="exit_without_save_confirm">Выйти без сохранения?</string>
     <string name="menu_delete">Удалить...</string>
     <string name="menu_move">Переместить...</string>
@@ -14,16 +15,20 @@
     <string name="menu_set_done">Указать готовность...</string>
     <string name="delete_confirm">Удалить заметку?</string>
     <string name="set_done">Готово</string>
+    <string name="set_no_needed">Не нужно</string>
     <string name="set_in_work">В работе</string>
     <string name="cancel">Отмена</string>
-    <string name="finding_label">Поиск: %s</string>
+    <string name="finding_label">Результаты поиска: %s</string>
     <string name="finding_label_count">Найдено: %s</string>
     <string name="action_ok">Ок</string>
+    <string name="action_thanks">Спасибо</string>
     <string name="action_restore">Восстановить</string>
     <string name="add_category">Добавить папку...</string>
+    <string name="folder_name_need_no_empty">Имя папки не может быть пустым</string>
     <string name="category_all">Все</string>
     <string name="category_unknown">Не выбрано</string>
     <string name="menu_rename">Переименовать...</string>
+    <string name="rename_folder_title">Переименовать</string>
     <string name="delete_folder_confirm">Удалить папку \"%s\"?</string>
     <string name="delete_folder_confirm_message">При удалении папки будут удалены все заметки в ней</string>
     <string name="error_with_id">Ошибка. Обратитесь к разработчику. ID ошибки: %s</string>
@@ -31,12 +36,35 @@
     <string name="restore_db_confirm">Восстановить заметки из разервной копии?", "Внимание! Восстановление из резервной копии удалит существующие данные!</string>
     <string name="copy_data_message">Копирование...</string>
     <string name="action_backup">Резервное копирование...</string>
+    <string name="backup_title">Резервное копирование</string>
     <string name="copy_base_from_old_lnotes">Обновление базы данных LNotes</string>
-    <string name="action_about">О проекте...</string>
-    <string name="about_message">Лёгкие заметки в моём кармане. \n\n(C) Владимир Кудашов 2015-2017</string>
+    <string name="action_about">О приложении</string>
+    <string name="about_message">\nЛёгкие заметки в моём кармане\n\nСвободная лицензия MIT\nИсходный код:\nhttps://github.com/wn1/LNotes\n\n(C) Владимир Кудашов 2015-2018</string>
     <string name="action_backup_confirm_title">Копировать все заметки?</string>
     <string name="copy">Копировать</string>
+	<string name="file_selector_not_found">Нет программы для выбора файлов. Установите файловый менеджер и попробуйте ещё раз.</string>
     <string name="need_update_lnotesync">Нужно обновить LNotesSync</string>
     <string name="navigation_drawer_close">Закрыть панель папок</string>
     <string name="navigation_drawer_open">Открыть панель папок</string>
+    <string name="input_password">Введите пароль</string>
+    <string name="backup_saved">Резервная копия успешно сохранена</string>
+    <string name="backup_saved_to">Резервная копия успешно сохранена в: </string>
+    <string name="backup_restored">База данных успешно восстановлена</string>
+    <string name="password_error">Ошибка. Возможно, вы ошиблись при вводе пароля.</string>
+    <string name="save_backup_db">Сохранить базу данных</string>
+    <string name="restore_backup_db">Восстановить базу данных</string>
+    <string name="file_create_error">Ошибка при создании файла: </string>
+    <string name="action_remove_ads">Убрать рекламу</string>
+    <string name="app_not_found">Приложение для этого действия не найдено</string>
+    <string name="like_app_quest_title">Нравится приложение?</string>
+    <string name="like_app_quest_text">Пожалуйста, поставьте оценку в Google&#160;Play. Это поможет улучшить приложение</string>
+    <string name="open_google_play">Открыть Google Play</string>
+    <string name="later">Позже</string>
+    <string name="no_but_thanks">Нет оценки, но спасибо</string>
+    <string name="rating_star_1">Звезда рейтинга 1</string>
+    <string name="rating_star_2">Звезда рейтинга 2</string>
+    <string name="rating_star_3">Звезда рейтинга 3</string>
+    <string name="rating_star_4">Звезда рейтинга 4</string>
+    <string name="rating_star_5">Звезда рейтинга 5</string>
+
 </resources>

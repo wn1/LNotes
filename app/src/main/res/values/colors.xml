@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="appAccentColor">#ff00a3a3</color>
+    <color name="listViewSelectedColor">#3c00a3a3</color>
+    <color name="colorControlActivated">#6200a3a3</color>
+    <color name="colorControlHighlight">#6200a3a3</color>
+    <color name="listViewFolderSelectedColor">#6200a3a3</color>
+    <color name="rateStarSelectedColor">#ff00a3a3</color>
+    <color name="transparentColor">#00000000</color>
+</resources>
