@@ -23,7 +23,7 @@ object QDVStatisticState {
             getPreference().edit().putLong(ADDED_NOTES_COUNT_KEY, value).apply()
         }
 
-    private val SHOW_USER_RATING_QUEST_AFTER_ADDED_NOTES_COUNT = "addedNotesCount"
+    private val SHOW_USER_RATING_QUEST_AFTER_ADDED_NOTES_COUNT = "showUserRatingQuestAfterAddedNotesCount"
     var showUserRatingQuestAfterAddedNotesCount: Long =
             getPreference().getLong(SHOW_USER_RATING_QUEST_AFTER_ADDED_NOTES_COUNT, 10)
         private set (value) {
@@ -45,7 +45,7 @@ object QDVStatisticState {
     }
 
     fun addTimeForShowUserRatingQuest(){
-        showUserRatingQuestAfterAddedNotesCount += 5
+        showUserRatingQuestAfterAddedNotesCount = addedNotesCount + 5
     }
 
     fun isTimeForShowUserRatingQuest(): Boolean {
