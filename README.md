@@ -1,9 +1,9 @@
-# Light Notes fo Android
+# Light Notes for Android
 
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT) [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme) 
 
 > Light notes in my pocket.
-> Easy and simple note editor fo Android.
+> Easy and simple note editor for Android.
 
 Light Notes is a simple and functional note editor for Android. 
 A great alternative to Notepad, organizer, etc. 
@@ -36,7 +36,6 @@ or
 - [Background](#background)
 - [Install](#install)
 - [Usage](#usage)
-
 - [Related Efforts](#related-efforts)
 - [Maintainers](#maintainers)
 - [Contribute](#contribute)
@@ -48,7 +47,7 @@ or
 
 ## Background
 
-This app developing in Android Studio 2.x. 
+This app developing in Android Studio 3.2. 
 
 Develop on Java and Kotlin languages. 
 
@@ -97,7 +96,7 @@ If you have a question, please [send me an email](v.kudashov.83@mail.ru).
 ## Contribute
 
 ### Contributors
-If you want to make a donation, please buy the app in Google Play ([Light Notes Plus] (https://play.google.com/store/apps/details?id=ru.q_dev.LNoteP)) or [contact me](v.kudashov.83@mail.ru).
+If you want to make a donation, please buy the app in Google Play ([Light Notes Plus](https://play.google.com/store/apps/details?id=ru.q_dev.LNoteP)) or [contact me](v.kudashov.83@mail.ru).
 
 ### Backers
 If you want to promote the app, please [contact me](v.kudashov.83@mail.ru).
