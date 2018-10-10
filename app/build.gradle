@@ -32,7 +32,7 @@ android {
 
     productFlavors {
         free {
-            applicationId "ru.q_dev.LNote_test"
+            applicationId "ru.q_dev.LNote"
             dimension "dafault"
         }
 
