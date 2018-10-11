@@ -30,6 +30,8 @@ or
 
 - Build project in Android Studio and install on your Android device.
 
+Support Andoid up from 4.0 (API 14) inclusive
+
 ## Table of Contents
 
 - [Version ](#version)
@@ -47,7 +49,7 @@ or
 
 ## Background
 
-This app developing in Android Studio 3.2. 
+This app developing in [Android Studio 3.2](https://developer.android.com/studio/) 
 
 Develop on Java and Kotlin languages. 
 
