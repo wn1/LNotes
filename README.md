@@ -30,7 +30,7 @@ or
 
 - Build project in Android Studio and install on your Android device.
 
-Support Andoid up from 4.0 (API 14) inclusive
+Support Andoid 4.0 (API 14) and above
 
 ## Table of Contents
 
