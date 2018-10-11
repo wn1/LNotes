@@ -100,6 +100,8 @@ If you have a question, please [send me an email](v.kudashov.83@mail.ru).
 ### Contributors
 If you want to make a donation, please buy the app in Google Play ([Light Notes Plus](https://play.google.com/store/apps/details?id=ru.q_dev.LNoteP)) or [contact me](v.kudashov.83@mail.ru).
 
+If you want to help in another way, please [contact me](v.kudashov.83@mail.ru).
+
 ### Backers
 If you want to promote the app, please [contact me](v.kudashov.83@mail.ru).
 
