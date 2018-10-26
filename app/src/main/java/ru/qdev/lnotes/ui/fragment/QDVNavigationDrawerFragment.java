@@ -400,8 +400,7 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
                                @NotNull ArrayList<QDVDbFolderOrMenuItem> itemsAddingToTop,
                                @Nullable QDVDbFolderOrMenuItem selectedFolderOrMenu) {
         this.selectedFolderOrMenu = selectedFolderOrMenu;
-        folderListAdapter.loadData(itemsAddingToTop,
-                navigationDrawerPresenter.dbIteratotorFoldersQuery());
+        folderListAdapter.loadData(itemsAddingToTop, dbIterator);
     }
 
     @Override

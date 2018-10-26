@@ -1,13 +1,15 @@
 package ru.qdev.lnotes.mvp
 
+import android.os.AsyncTask
+import android.os.Handler
+import android.os.Looper
 import android.support.annotation.AnyThread
+import android.support.annotation.MainThread
 import android.support.annotation.UiThread
 import com.arellomobile.mvp.InjectViewState
-import com.arellomobile.mvp.MvpPresenter
 import com.j256.ormlite.dao.CloseableIterator
 import com.j256.ormlite.stmt.Where
 import ru.qdev.lnotes.*
-import ru.qdev.lnotes.db.QDVDbDatabase
 import ru.qdev.lnotes.db.entity.QDVDbFolderOrMenuItem
 import ru.qdev.lnotes.db.entity.QDVDbNote
 import java.util.*
@@ -91,6 +93,16 @@ class QDVNotesListPresenter : QDVMvpDbPresenter <QDVNotesListView> () {
         }
     }
 
+    @MainThread
+    fun loadNotesListAsync() {
+        AsyncTask.execute {
+            val iteratorNotes = dbIteratorNotesQuery()
+            Handler(Looper.getMainLooper()).post {
+                viewState.loadNotesList(iteratorNotes)
+            }
+        }
+    }
+
     @UiThread
     fun initWithState(state: QDVNotesListState) {
         this.state = state
@@ -100,7 +112,7 @@ class QDVNotesListPresenter : QDVMvpDbPresenter <QDVNotesListView> () {
             state.filterByFolderState.folder =
                     noteDao.queryForId(state.filterByFolderState.folderId ?: 0)
         }
-        viewState.loadNotesList(dbIteratorNotesQuery())
+        loadNotesListAsync()
         viewState.setSearchState(state.searchState)
         viewState.setFolderName(getFolderNameForFilter())
     }
@@ -109,27 +121,27 @@ class QDVNotesListPresenter : QDVMvpDbPresenter <QDVNotesListView> () {
     fun onSearchText(text: String) {
         state.searchState.isSearchActive = true
         state.searchState.searchText = text
-        viewState.loadNotesList(dbIteratorNotesQuery())
+        loadNotesListAsync()
         viewState.setSearchState(state.searchState)
     }
 
     @UiThread
     fun onUndoSearch() {
         state.searchState.isSearchActive = false
-        viewState.loadNotesList(dbIteratorNotesQuery())
+        loadNotesListAsync()
         viewState.setSearchState(state.searchState)
     }
 
     @UiThread
     fun doUpdateNote(note: QDVDbNote) {
         database.getDaoWithIdLong(QDVDbNote::class.java).update(note)
-        viewState.loadNotesList(dbIteratorNotesQuery())
+        loadNotesListAsync()
     }
 
     @UiThread
     fun doDeleteNote(note: QDVDbNote) {
         database.getDaoWithIdLong(QDVDbNote::class.java).delete(note)
-        viewState.loadNotesList(dbIteratorNotesQuery())
+        loadNotesListAsync()
     }
 
     @UiThread
@@ -143,7 +155,7 @@ class QDVNotesListPresenter : QDVMvpDbPresenter <QDVNotesListView> () {
             note.completeTime = null
         }
         database.getDaoWithIdLong(QDVDbNote::class.java).update(note)
-        viewState.loadNotesList(dbIteratorNotesQuery())
+        loadNotesListAsync()
     }
 
     @UiThread

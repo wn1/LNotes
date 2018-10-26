@@ -48,7 +48,7 @@ public abstract class QDVDbIteratorListViewAdapterExt<T extends QDVDbEntity>
 
     @Override
     public long getItemId(int p0) {
-        return 0;
+        return (long) p0;
     }
 
     @Override

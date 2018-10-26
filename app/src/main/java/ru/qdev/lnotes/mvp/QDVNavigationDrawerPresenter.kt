@@ -1,5 +1,8 @@
 package ru.qdev.lnotes.mvp
 
+import android.os.AsyncTask
+import android.os.Handler
+import android.os.Looper
 import android.support.annotation.AnyThread
 import android.support.annotation.MainThread
 import android.support.annotation.UiThread
@@ -81,8 +84,13 @@ class QDVNavigationDrawerPresenter : QDVMvpDbPresenter <QDVNavigationDrawerView>
         if (state.selectedFolderOrMenu == null) {
             state.selectedFolderOrMenu = menuItemFolderAll
         }
-        viewState.loadFolderList(
-                dbIteratotorFoldersQuery(), itemsAddingToTop, state.selectedFolderOrMenu)
+        AsyncTask.execute {
+            val iteratorFolders = dbIteratotorFoldersQuery()
+            Handler(Looper.getMainLooper()).post {
+                viewState.loadFolderList(
+                        iteratorFolders, itemsAddingToTop, state.selectedFolderOrMenu)
+            }
+        }
     }
 
     @AnyThread
