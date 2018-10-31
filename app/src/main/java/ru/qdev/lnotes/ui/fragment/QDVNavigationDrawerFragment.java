@@ -55,18 +55,12 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
     private ListView drawerListView;
     private View fragmentContainerView;
 
-    QDVDbIteratorListViewAdapterExt<QDVDbFolderOrMenuItem> folderListAdapter;
-    private QDVDbFolderOrMenuItem selectedFolderOrMenu;
-
-    public QDVDbFolderOrMenuItem getSelectedFolderOrMenu() {
-        return selectedFolderOrMenu;
-    }
+    FolderListAdapter folderListAdapter;
 
     @UiThread
     public void setSelectedFolderOrMenu(QDVDbFolderOrMenuItem selectedFolderOrMenu) {
-        this.selectedFolderOrMenu = selectedFolderOrMenu;
         if (folderListAdapter != null){
-            folderListAdapter.notifyDataSetChanged();
+            folderListAdapter.selectedFolderOrMenu = selectedFolderOrMenu;
         }
     }
 
@@ -100,6 +94,55 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
         setHasOptionsMenu(true);
     }
 
+    static private class FolderListAdapter extends QDVDbIteratorListViewAdapterExt<QDVDbFolderOrMenuItem> {
+        public QDVDbFolderOrMenuItem getSelectedFolderOrMenu() {
+            return selectedFolderOrMenu;
+        }
+
+        public void setSelectedFolderOrMenu(QDVDbFolderOrMenuItem selectedFolderOrMenu) {
+            this.selectedFolderOrMenu = selectedFolderOrMenu;
+            notifyDataSetChanged();
+        }
+
+        private QDVDbFolderOrMenuItem selectedFolderOrMenu;
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+            QDVDbFolderOrMenuItem folderOrMenu = getItem(i);
+            if (view == null) {
+                view = LayoutInflater.from(viewGroup.getContext()).inflate(
+                        android.R.layout.simple_list_item_activated_1,
+                        viewGroup, false);
+            }
+            if (view == null) {
+                return null;
+            }
+            if (folderOrMenu == null) {
+                view.setVisibility(View.INVISIBLE);
+                return view;
+            }
+            ((TextView) view.findViewById(android.R.id.text1))
+                    .setText(folderOrMenu.getLabel());
+
+            Boolean itemChecked = false;
+            if (selectedFolderOrMenu!=null) {
+                if (folderOrMenu.menuItem ==
+                        QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_ENTITY) {
+                    if (folderOrMenu.getId() == selectedFolderOrMenu.getId()) {
+                        itemChecked = true;
+                    }
+                } else if (folderOrMenu.menuItem == selectedFolderOrMenu.menuItem) {
+                    itemChecked = true;
+                }
+            }
+
+            view.setBackgroundColor(ContextCompat.getColor(viewGroup.getContext(), itemChecked ?
+                    R.color.listViewFolderSelectedColor : R.color.transparentColor));
+
+            return view;
+        }
+    }
+
     @Override
     @UiThread
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -107,44 +150,7 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
         drawerListView = (ListView) inflater.inflate(
                 R.layout.navigation_drawer, container, false);
 
-        folderListAdapter =
-                new QDVDbIteratorListViewAdapterExt<QDVDbFolderOrMenuItem>() {
-                    @Override
-                    public View getView(int i, View view, ViewGroup viewGroup) {
-                        QDVDbFolderOrMenuItem folderOrMenu = getItem(i);
-                        if (view == null) {
-                            view = getLayoutInflater().inflate(
-                                    android.R.layout.simple_list_item_activated_1,
-                                    viewGroup, false);
-                        }
-                        if (view == null) {
-                            return null;
-                        }
-                        if (folderOrMenu == null) {
-                            view.setVisibility(View.INVISIBLE);
-                            return view;
-                        }
-                        ((TextView) view.findViewById(android.R.id.text1))
-                                .setText(folderOrMenu.getLabel());
-
-                        Boolean itemChecked = false;
-                        if (selectedFolderOrMenu!=null) {
-                            if (folderOrMenu.menuItem ==
-                                    QDVDbFolderOrMenuItem.MenuItemMarker.FOLDER_ENTITY) {
-                                if (folderOrMenu.getId() == selectedFolderOrMenu.getId()) {
-                                    itemChecked = true;
-                                }
-                            } else if (folderOrMenu.menuItem == selectedFolderOrMenu.menuItem) {
-                                itemChecked = true;
-                            }
-                        }
-
-                        view.setBackgroundColor(ContextCompat.getColor(getContext(), itemChecked ?
-                                R.color.listViewFolderSelectedColor : R.color.transparentColor));
-
-                        return view;
-                    }
-                };
+        folderListAdapter = new FolderListAdapter();
 
         drawerListView.setAdapter(folderListAdapter);
 
@@ -399,7 +405,7 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
     public void loadFolderList(@NotNull CloseableIterator<QDVDbFolderOrMenuItem> dbIterator,
                                @NotNull ArrayList<QDVDbFolderOrMenuItem> itemsAddingToTop,
                                @Nullable QDVDbFolderOrMenuItem selectedFolderOrMenu) {
-        this.selectedFolderOrMenu = selectedFolderOrMenu;
+        folderListAdapter.setSelectedFolderOrMenu(selectedFolderOrMenu);
         folderListAdapter.loadData(itemsAddingToTop, dbIterator);
     }
 
