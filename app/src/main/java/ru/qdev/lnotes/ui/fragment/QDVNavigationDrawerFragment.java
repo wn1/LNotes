@@ -217,6 +217,10 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
         Toolbar drawerToolbar = new Toolbar(getContext());
         drawerToolbar.setNavigationIcon(R.drawable.ic_drawer);
 
+        if (drawerToggle!=null) {
+            this.drawerLayout.removeDrawerListener(drawerToggle);
+        }
+
         drawerToggle = new ActionBarDrawerToggle(
                 getActivity(),
                 QDVNavigationDrawerFragment.this.drawerLayout,
@@ -231,7 +235,7 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
                     return;
                 }
 
-                getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
+                getActivity().invalidateOptionsMenu(); // calls onPrepareOptionsMenu()
             }
 
             @Override
@@ -243,7 +247,7 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
 
                 navigationDrawerPresenter.userLearned();
 
-                getActivity().supportInvalidateOptionsMenu();
+                getActivity().invalidateOptionsMenu();
             }
         };
 
@@ -254,7 +258,15 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
             }
         });
 
-        this.drawerLayout.setDrawerListener(drawerToggle);
+        this.drawerLayout.addDrawerListener(drawerToggle);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (drawerToggle!=null) {
+            this.drawerLayout.removeDrawerListener(drawerToggle);
+        }
     }
 
     @Override
