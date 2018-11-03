@@ -7,13 +7,14 @@ import android.os.Looper;
 import android.support.annotation.AnyThread;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
-import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -213,10 +214,13 @@ public class QDVNavigationDrawerFragment extends MvpAppCompatFragment
         this.drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
 
+        Toolbar drawerToolbar = new Toolbar(getContext());
+        drawerToolbar.setNavigationIcon(R.drawable.ic_drawer);
+
         drawerToggle = new ActionBarDrawerToggle(
                 getActivity(),
                 QDVNavigationDrawerFragment.this.drawerLayout,
-                R.drawable.ic_drawer,
+                drawerToolbar,
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close
         ) {
