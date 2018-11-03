@@ -54,6 +54,7 @@
     <string name="save_backup_db">Сохранить базу данных</string>
     <string name="restore_backup_db">Восстановить базу данных</string>
     <string name="file_create_error">Ошибка при создании файла: </string>
+    <string name="action_contact_developer">Написать разработчику</string>
     <string name="action_remove_ads">Убрать рекламу</string>
     <string name="app_not_found">Приложение для этого действия не найдено</string>
     <string name="like_app_quest_title">Нравится приложение?</string>
@@ -66,5 +67,6 @@
     <string name="rating_star_3">Звезда рейтинга 3</string>
     <string name="rating_star_4">Звезда рейтинга 4</string>
     <string name="rating_star_5">Звезда рейтинга 5</string>
-
+    <string name="email_to_developer_subject">Поддержка. Лёгкие заметки</string>
+    <string name="email_to_developer_text">Сообщение: \n\n\n-----------------\nИнформация о приложении:\n%s</string>
 </resources>

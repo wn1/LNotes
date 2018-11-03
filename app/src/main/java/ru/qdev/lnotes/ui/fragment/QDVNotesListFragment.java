@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -59,6 +60,7 @@ import ru.qdev.lnotes.mvp.QDVSearchState;
 import ru.qdev.lnotes.mvp.QDVStatisticState;
 import ru.qdev.lnotes.ui.view.QDVViewFabric;
 import ru.qdev.lnotes.ui.activity.QDVBackupActivity;
+import ru.qdev.lnotes.utils.QDVAppInfoKt;
 
 /**
  * Created by Vladimir Kudashov on 29.09.18.
@@ -514,8 +516,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
                     .setNeutralButton(R.string.action_thanks, null).show();
             return true;
         }
-
-        if (item.getItemId() == R.id.action_backup_notes){
+        else if (item.getItemId() == R.id.action_backup_notes){
 
             Intent sendDataActivityStartIntent = new Intent(getContext(), QDVBackupActivity.class);
             sendDataActivityStartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -523,11 +524,34 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
             //getActivity().finish();
             return true;
         }
-
-        if (item.getItemId() == R.id.action_remove_ads) {
+        else if (item.getItemId() == R.id.action_remove_ads) {
             try {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
                         "https://play.google.com/store/apps/details?id=ru.q_dev.LNoteP")));
+            }
+            catch (Exception ignored) {
+                new AlertDialog.Builder(getActivity())
+                        .setMessage(R.string.app_not_found)
+                        .setCancelable(true)
+                        .setNegativeButton(R.string.cancel, null)
+                        .show();
+            }
+        }
+        else if (item.getItemId() == R.id.action_contact_developer) {
+            try {
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/html");
+                intent.putExtra(Intent.EXTRA_EMAIL, "v.kudashov.83@yandex.ru");
+                intent.putExtra(Intent.EXTRA_SUBJECT,
+                        getString(R.string.email_to_developer_subject));
+
+                String appInfo = getString(R.string.app_name) + " v"
+                        + QDVAppInfoKt.getVersionName(getContext())
+                        + "\nAndroid " + Build.VERSION.RELEASE;
+                String mailText = String.format(
+                        getString(R.string.email_to_developer_text), appInfo);
+                intent.putExtra(Intent.EXTRA_TEXT, mailText);
+                startActivity(intent);
             }
             catch (Exception ignored) {
                 new AlertDialog.Builder(getActivity())

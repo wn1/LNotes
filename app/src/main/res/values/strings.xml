@@ -54,6 +54,7 @@
     <string name="restore_backup_db">Restore database</string>
     <string name="file_selector_not_found">File Manager for select files not found</string>
     <string name="file_create_error">Error creating file:</string>
+    <string name="action_contact_developer">E-Mail to developer</string>
     <string name="action_remove_ads">Remove ads</string>
     <string name="app_not_found">The application for this action was not found</string>
     <string name="like_app_quest_title">Like the app?</string>
@@ -66,4 +67,6 @@
     <string name="rating_star_3">Rating star 3</string>
     <string name="rating_star_4">Rating star 4</string>
     <string name="rating_star_5">Rating star 5</string>
+    <string name="email_to_developer_subject">Support. Light notes</string>
+    <string name="email_to_developer_text">Message: \n\n\n-----------------\nApplication info:\n%s</string>
 </resources>
