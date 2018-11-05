@@ -481,8 +481,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
             }
             return true;
         }
-
-        if (item.getItemId() == R.id.action_about){
+        else if (item.getItemId() == R.id.action_about){
             String lnotesNameAndVersion = getString(R.string.app_name)+" ";
             try {
                 lnotesNameAndVersion = lnotesNameAndVersion +
@@ -521,7 +520,6 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
             Intent sendDataActivityStartIntent = new Intent(getContext(), QDVBackupActivity.class);
             sendDataActivityStartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(sendDataActivityStartIntent);
-            //getActivity().finish();
             return true;
         }
         else if (item.getItemId() == R.id.action_remove_ads) {
@@ -541,7 +539,8 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
             try {
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("text/html");
-                intent.putExtra(Intent.EXTRA_EMAIL, "v.kudashov.83@yandex.ru");
+                intent.putExtra(Intent.EXTRA_EMAIL,
+                        new String[] {getString(R.string.developer_email)});
                 intent.putExtra(Intent.EXTRA_SUBJECT,
                         getString(R.string.email_to_developer_subject));
 
