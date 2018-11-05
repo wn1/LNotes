@@ -1,1 +1,4 @@
 /build
+/release/*
+/free/release/*
+/plusVersion/release/*
