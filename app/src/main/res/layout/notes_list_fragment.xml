@@ -20,6 +20,7 @@
         android:layout_alignParentTop="true"
         android:animateLayoutChanges="false"
         android:choiceMode="singleChoice"
+        android:contentDescription="@string/notes_listview_description"
         android:listSelector="@drawable/listview_item_selector" />
 
     <RelativeLayout
@@ -61,6 +62,7 @@
         android:layout_alignBottom="@+id/notesList"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
+        android:contentDescription="@string/add_note_button_description"
         android:visibility="invisible"
         app:srcCompat="@drawable/ic_add_24dp" />
 </RelativeLayout>

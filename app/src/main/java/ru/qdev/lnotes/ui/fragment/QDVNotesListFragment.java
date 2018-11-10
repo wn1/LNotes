@@ -272,6 +272,12 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
         rootView = inflater.inflate(R.layout.notes_list_fragment, container, false);
         unbinder = ButterKnife.bind(this, rootView);
 
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (actionBar!=null) {
+            actionBar.setHomeActionContentDescription(
+                    R.string.actionbar_home_folder_list_description);
+        }
+
         if (savedInstanceState!=null) {
             state = (QDVNotesListState) savedInstanceState.getSerializable(STATE_KEY_NAME);
         }

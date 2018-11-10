@@ -61,8 +61,13 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
                              @Nullable Bundle savedInstanceState) {
         editorView = inflater.inflate(
                 R.layout.note_editor_fragment, container, false);
-
         unbinder = ButterKnife.bind(this, editorView);
+
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (actionBar!=null) {
+            actionBar.setHomeActionContentDescription(
+                    R.string.actionbar_home_folder_list_description);
+        }
 
         editTextView.requestFocus();
         editTextView.requestFocusFromTouch();

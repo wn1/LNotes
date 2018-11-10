@@ -70,4 +70,12 @@
     <string name="email_to_developer_subject">Support. Light notes</string>
     <string name="developer_email" translatable="false">v.kudashov.83@yandex.ru</string>
     <string name="email_to_developer_text">Message: \n\n\n-----------------\nApplication info:\n%s</string>
+    <string name="note_edittext_description" >Edit note</string>
+    <string name="admob_description">Advertising banner</string>
+    <string name="add_note_button_description">Add note</string>
+    <string name="cell_note_description">Note</string>
+    <string name="notes_listview_description">Notes</string>
+    <string name="folder_listview_description">Notes folders</string>
+    <string name="actionbar_home_folder_list_description">Folder list show</string>
+    <string name="actionbar_home_back_description">Back</string>
 </resources>
