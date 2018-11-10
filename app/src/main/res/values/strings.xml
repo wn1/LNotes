@@ -41,7 +41,7 @@
     <string name="backup_title">Backup</string>
     <string name="copy_base_from_old_lnotes">LNotes database update</string>
     <string name="action_about">About</string>
-    <string name="about_message">\nLight notes in my pocket\n\nFree MIT License\nSource code:\nhttps://github.com/wn1/LNotes\n\n(C) Vladimir Kudashov 2015-2018</string>
+    <string name="about_message">\nLight notes in my pocket\n\nFree MIT License\nSource code:\nhttps://github.com/wn1/LNotes\n\n(C) Vladimir Kudashov, 2015-2018</string>
     <string name="action_backup_confirm_title">Copy all notes?</string>
     <string name="copy">Copy</string>
     <string name="need_update_lnotesync">Update LNotesSync needed</string>
