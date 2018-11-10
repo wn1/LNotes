@@ -108,6 +108,11 @@ If you want to promote the app, please [contact me](v.kudashov.83@mail.ru).
 ### Sponsors
 If you want to become a sponsor, please [contact me](v.kudashov.83@mail.ru).
 
+### Thanks
+Thanks to the [stackoverflow](https://stackoverflow.com) community for the knowledge base and the source of ideas for new code solutions.
+
+Thanks to the [habr](https://habr.com) community for the knowledge base and the source of ideas for new code solutions.
+
 ## License
 
 [MIT](LICENSE) © Vladimir Kudashov
