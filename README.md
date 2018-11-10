@@ -85,7 +85,7 @@ This application in google play is present in two versions:
 2. [Light Notes Plus](https://play.google.com/store/apps/details?id=ru.q_dev.LNoteP) without advertising banner, but for a small fee.
 
 ## Usage
-If you have a question, please [send me an email](v.kudashov.83@mail.ru).
+If you have a question, please [send me an email](mailto:v.kudashov.83@yandex.ru).
 
 ## Related Efforts
 
@@ -98,15 +98,15 @@ If you have a question, please [send me an email](v.kudashov.83@mail.ru).
 ## Contribute
 
 ### Contributors
-If you want to make a donation, please buy the app in Google Play ([Light Notes Plus](https://play.google.com/store/apps/details?id=ru.q_dev.LNoteP)) or [contact me](v.kudashov.83@mail.ru).
+If you want to make a donation, please buy the app in Google Play ([Light Notes Plus](https://play.google.com/store/apps/details?id=ru.q_dev.LNoteP)) or [contact me](mailto:v.kudashov.83@yandex.ru).
 
-If you want to help in another way, please [contact me](v.kudashov.83@mail.ru).
+If you want to help in another way, please [contact me](mailto:v.kudashov.83@yandex.ru).
 
 ### Backers
-If you want to promote the app, please [contact me](v.kudashov.83@mail.ru).
+If you want to promote the app, please [contact me](mailto:v.kudashov.83@yandex.ru).
 
 ### Sponsors
-If you want to become a sponsor, please [contact me](v.kudashov.83@mail.ru).
+If you want to become a sponsor, please [contact me](mailto:v.kudashov.83@yandex.ru).
 
 ### Thanks
 Thanks to the [stackoverflow](https://stackoverflow.com) community for the knowledge base and the source of ideas for new code solutions.
