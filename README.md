@@ -25,7 +25,8 @@ You can:
     [Light Notes](https://play.google.com/store/apps/details?id=ru.q_dev.LNote) with advertising banner 
     or
     [Light Notes Plus](https://play.google.com/store/apps/details?id=ru.q_dev.LNoteP) without advertising banner, but for a small fee.
-
+    or
+    [Light Notes Stand to file usage](https://play.google.com/store/apps/details?id=ru.q_dev.LNoteStand) file editor version only.
 or
 
 - Build project in Android Studio and install on your Android device.
@@ -44,21 +45,21 @@ Support Andoid 4.0 (API 14) and above
 - [License](#license)
 
 
-## Version 
+## Version
 ### 2.1.3
 
 ## Background
 
-This app developing in [Android Studio 3.2](https://developer.android.com/studio/) 
+This app developing in [Android Studio 3.2](https://developer.android.com/studio/)
 
-Develop on Java and Kotlin languages. 
+Develop on Java and Kotlin languages.
 
 Database: SQLite with [ORMLite Android](https://github.com/j256/ormlite-android)
 
 Architecture: MVP with [Moxy](https://github.com/Arello-Mobile/Moxy)
 
-Also use: 
-[Butter Knife](https://github.com/JakeWharton/butterknife), 
+Also use:
+[Butter Knife](https://github.com/JakeWharton/butterknife),
 [EventBus](https://github.com/greenrobot/EventBus),
 [Gson](https://github.com/google/gson),
 [Material Design for Android](https://developer.android.com/design/material/)
@@ -83,6 +84,8 @@ This application in google play is present in two versions:
 1. [Light Notes](https://play.google.com/store/apps/details?id=ru.q_dev.LNote) with advertising banner.
 
 2. [Light Notes Plus](https://play.google.com/store/apps/details?id=ru.q_dev.LNoteP) without advertising banner, but for a small fee.
+
+3. [Light Notes Stand to file usage](https://play.google.com/store/apps/details?id=ru.q_dev.LNoteStand) file editor version only.
 
 ## Usage
 If you have a question, please [send me an email](mailto:v.kudashov.83@yandex.ru).
