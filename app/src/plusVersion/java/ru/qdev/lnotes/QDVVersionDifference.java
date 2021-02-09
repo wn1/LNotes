@@ -6,8 +6,8 @@ package ru.qdev.lnotes;
 
 import android.support.v7.app.AppCompatActivity;
 
-public class QDVVersionDifference {
-    static public boolean isFreeVersion() { return false; }
+public class QDVVersionDifference extends QDVVersion {
+    static public boolean isFreeVersion() {  return false; }
     static public boolean adsPresent () {
         return isFreeVersion();
     }

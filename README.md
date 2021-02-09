@@ -26,7 +26,7 @@ You can:
     or
     [Light Notes Plus](https://play.google.com/store/apps/details?id=ru.q_dev.LNoteP) without advertising banner, but for a small fee.
     or
-    [Light Notes Stand to file usage](https://play.google.com/store/apps/details?id=ru.q_dev.LNoteStand) file editor version only.
+    [Light Notes Stand to file usage](https://play.google.com/store/apps/details?id=ru.q_dev.LNoteFileStand) file editor version only.
 or
 
 - Build project in Android Studio and install on your Android device.
@@ -85,7 +85,7 @@ This application in google play is present in two versions:
 
 2. [Light Notes Plus](https://play.google.com/store/apps/details?id=ru.q_dev.LNoteP) without advertising banner, but for a small fee.
 
-3. [Light Notes Stand to file usage](https://play.google.com/store/apps/details?id=ru.q_dev.LNoteStand) file editor version only.
+3. [Light Notes Stand to file usage](https://play.google.com/store/apps/details?id=ru.q_dev.LNoteFileStand) file editor version only.
 
 ## Usage
 If you have a question, please [send me an email](mailto:v.kudashov.83@yandex.ru).

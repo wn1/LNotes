@@ -36,6 +36,11 @@ android {
             dimension "dafault"
         }
 
+        forFileStand {
+            applicationId "ru.q_dev.LNoteFileStand"
+            dimension "dafault"
+        }
+
         plusVersion {
             applicationId "ru.q_dev.LNoteP"
             dimension "dafault"
@@ -49,8 +54,13 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     //    testCompile 'junit:junit:4.12'
     implementation 'com.android.support:appcompat-v7:27.1.1'
+//    freeImplementation 'com.google.firebase:firebase-ads:19.1.0'
 
     freeImplementation ('com.google.android.gms:play-services-ads:17.0.0') {
+        exclude group: 'com.android.support', module: 'customtabs'
+    }
+
+    forFileStandImplementation ('com.google.android.gms:play-services-ads:17.0.0') {
         exclude group: 'com.android.support', module: 'customtabs'
     }
 

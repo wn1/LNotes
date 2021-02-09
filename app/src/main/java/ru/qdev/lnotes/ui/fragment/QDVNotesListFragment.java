@@ -430,9 +430,19 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.notes_list, menu);
         super.onCreateOptionsMenu(menu, inflater);
-        menu.findItem(R.id.action_remove_ads).setVisible(QDVVersionDifference.isFreeVersion());
+        menu.findItem(R.id.action_remove_advertising).setVisible(
+                QDVVersionDifference.isFreeVersion()
+        );
+        menu.findItem(R.id.action_backup_notes).setVisible(
+                !QDVVersionDifference.isFileForStandVersion()
+        );
+        menu.findItem(R.id.action_open_file).setVisible(
+                QDVVersionDifference.isFileForStandVersion()
+        );
+        menu.findItem(R.id.action_save_file).setVisible(
+                QDVVersionDifference.isFileForStandVersion()
+        );
     }
-
 
     void hideKeyboard(IBinder windowToken) {
         InputMethodManager inputMethodManager = (InputMethodManager)
@@ -528,7 +538,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
             startActivity(sendDataActivityStartIntent);
             return true;
         }
-        else if (item.getItemId() == R.id.action_remove_ads) {
+        else if (item.getItemId() == R.id.action_remove_advertising) {
             try {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
                         "https://play.google.com/store/apps/details?id=ru.q_dev.LNoteP")));

@@ -78,4 +78,6 @@
     <string name="folder_listview_description">Notes folders</string>
     <string name="actionbar_home_folder_list_description">Folder list show</string>
     <string name="actionbar_home_back_description">Back</string>
+    <string name="action_save_file">Save to file</string>
+    <string name="action_open_file">Open (Read-only) file</string>
 </resources>

@@ -10,7 +10,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
-public class QDVVersionDifference {
+public class QDVVersionDifference extends QDVVersion {
     static public boolean isFreeVersion() { return true; }
 
     static public boolean adsPresent () {
