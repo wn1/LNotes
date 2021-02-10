@@ -1,5 +1,6 @@
 package ru.qdev.lnotes.ui.fragment;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -46,6 +47,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import ru.qdev.lnotes.*;
+import ru.qdev.lnotes.R;
 import ru.qdev.lnotes.db.QDVDbIteratorListViewAdapter;
 import ru.qdev.lnotes.db.QDVDbIteratorListViewAdapterExt;
 import ru.qdev.lnotes.db.entity.QDVDbFolder;
@@ -58,6 +60,7 @@ import ru.qdev.lnotes.mvp.QDVNotesListState;
 import ru.qdev.lnotes.mvp.QDVNotesListView;
 import ru.qdev.lnotes.mvp.QDVSearchState;
 import ru.qdev.lnotes.mvp.QDVStatisticState;
+import ru.qdev.lnotes.ui.fragment.mvvm.QDVFileStandViewModel;
 import ru.qdev.lnotes.ui.view.QDVViewFabric;
 import ru.qdev.lnotes.ui.activity.QDVBackupActivity;
 import ru.qdev.lnotes.utils.QDVAppInfoKt;
@@ -66,12 +69,15 @@ import ru.qdev.lnotes.utils.QDVAppInfoKt;
  * Created by Vladimir Kudashov on 29.09.18.
  */
 
-public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNotesListView {
+public class QDVNotesListFragment extends MvpAppCompatFragment
+        implements QDVNotesListView, QDVFileStandViewModel.QDVFileStandView {
     public static final String FRAGMENT_TAG = "notesListFragment";
     public static final String ARG_FILTER_BY_FOLDER = "filterByFolder";
     private static final String STATE_KEY_NAME = "state";
 
     private Unbinder unbinder;
+
+    private QDVFileStandViewModel notesListViewModel = null;
 
     @BindView(R.id.notesList)
     ListView notesList;
@@ -219,6 +225,10 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        notesListViewModel = ViewModelProviders.of(this).get(QDVFileStandViewModel.class);
+        notesListViewModel.bind(this);
+
         notesListAdapter = new QDVDbIteratorListViewAdapter <QDVDbNote> ()  {
             @Override
             public View getView(int i, View view, ViewGroup viewGroup) {
@@ -576,7 +586,12 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
                         .show();
             }
         }
-
+        else if (item.getItemId() == R.id.action_open_file){
+            notesListViewModel.openFile();
+        }
+        else if (item.getItemId() == R.id.action_save_file){
+            notesListViewModel.saveBackup();
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -619,5 +634,13 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
         } else {
             fab.hide();
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        //Если больше 1 модели, то нужно хранить идентификатор модели активности
+        notesListViewModel.onActivityResult(requestCode, resultCode, data);
     }
 }
