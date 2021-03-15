@@ -226,8 +226,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        notesListViewModel = ViewModelProviders.of(this).get(QDVFileStandViewModel.class);
-        notesListViewModel.bind(this);
+
 
         notesListAdapter = new QDVDbIteratorListViewAdapter <QDVDbNote> ()  {
             @Override
@@ -281,6 +280,9 @@ public class QDVNotesListFragment extends MvpAppCompatFragment
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.notes_list_fragment, container, false);
         unbinder = ButterKnife.bind(this, rootView);
+
+        notesListViewModel = ViewModelProviders.of(this).get(QDVFileStandViewModel.class);
+        notesListViewModel.bind(this, this);
 
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar!=null) {
@@ -425,6 +427,7 @@ public class QDVNotesListFragment extends MvpAppCompatFragment
     @UiThread
     public void onDestroyView() {
         super.onDestroyView();
+        notesListViewModel.unbind();
         unbinder.unbind();
     }
 
