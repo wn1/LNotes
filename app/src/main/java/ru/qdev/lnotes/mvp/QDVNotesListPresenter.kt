@@ -93,12 +93,27 @@ class QDVNotesListPresenter : QDVMvpDbPresenter <QDVNotesListView> () {
         }
     }
 
+    private var isReloadState: Boolean = false
+
     @MainThread
     fun loadNotesListAsync() {
+        if (isReloadState) {
+            return
+        }
+        isReloadState = true
         AsyncTask.execute {
-            val iteratorNotes = dbIteratorNotesQuery()
-            Handler(Looper.getMainLooper()).post {
-                viewState.loadNotesList(iteratorNotes)
+            try {
+                val iteratorNotes = dbIteratorNotesQuery()
+                Handler(Looper.getMainLooper()).post {
+                    isReloadState = false
+                    viewState.loadNotesList(iteratorNotes)
+                }
+            } catch (e: Exception) {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    loadNotesListAsync()
+                }, 1000)
+                e.printStackTrace()
+                return@execute
             }
         }
     }

@@ -19,12 +19,20 @@ abstract class QDVDbIteratorListViewAdapter <T: QDVDbEntity> : BaseAdapter() {
             notifyDataSetChanged()
         }
 
-    override fun getItem(p0: Int): T? {
-        try {
-            (dbIterator!!.rawResults as AndroidDatabaseResults).moveAbsolute(p0)
-            return dbIterator!!.current()
-        } catch (e: SQLException) {
-            e.printStackTrace()
+    private var lastIteratorPosition: Int? = null
+
+    override fun getItem(position: Int): T? {
+        synchronized(this) {
+            try {
+                if (position==lastIteratorPosition) {
+                    return dbIterator!!.current()
+                }
+                dbIterator!!.moveRelative(position-lastIteratorPosition!!)
+                lastIteratorPosition = position
+                return dbIterator!!.current()
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            }
         }
         return null
     }
@@ -36,7 +44,8 @@ abstract class QDVDbIteratorListViewAdapter <T: QDVDbEntity> : BaseAdapter() {
     override fun getCount(): Int {
         try {
             return if (dbIterator == null) 0 else {
-                (dbIterator!!.rawResults as AndroidDatabaseResults).count
+               val count = (dbIterator!!.rawResults as AndroidDatabaseResults).count
+                count
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -46,6 +55,7 @@ abstract class QDVDbIteratorListViewAdapter <T: QDVDbEntity> : BaseAdapter() {
 
     fun loadDbIterator (newDbIterator: CloseableIterator<T>?) {
         dbIterator = newDbIterator
-        notifyDataSetChanged()
+        dbIterator!!.first()
+        lastIteratorPosition = 0
     }
 }
