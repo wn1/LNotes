@@ -9,6 +9,7 @@ android {
     defaultConfig {
         applicationId "ru.q_dev.LNote"
         minSdkVersion 14
+        //TODO Error fix: update to target 29
         targetSdkVersion 27
         versionCode 30
         versionName "2.1.6"
