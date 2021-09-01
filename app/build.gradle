@@ -3,14 +3,13 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 30
     buildToolsVersion '28.0.3'
 
     defaultConfig {
         applicationId "ru.q_dev.LNote"
-        minSdkVersion 14
-        //TODO Error fix: update to target 29
-        targetSdkVersion 27
+        minSdkVersion 23
+        targetSdkVersion 30
         versionCode 30
         versionName "2.1.6"
         vectorDrawables.useSupportLibrary = true
