@@ -234,7 +234,7 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
     @UiThread
     protected void onStart() {
         super.onStart();
-        TextView buyPlusVersion = rootLayout.findViewById(R.id.buyPlusVersion);
+        TextView buyPlusVersion = QDVVersionDifference.getLabelBuyPlusVersion(rootLayout);
         if (buyPlusVersion != null) {
             buyPlusVersion.setOnClickListener(v -> {
                 try {
