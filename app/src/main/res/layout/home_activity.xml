@@ -17,6 +17,16 @@
         ads:adSize="BANNER"
         ads:adUnitId="@string/admob_banner_id" />
 
+    <TextView
+        android:id="@+id/buyPlusVersion"
+        android:layout_width="match_parent"
+        android:layout_height="37dp"
+        android:gravity="center"
+        android:text="@string/action_buy_plus_version"
+        android:textAllCaps="false"
+        android:textColor="@android:color/primary_text_light"
+        android:textSize="20sp" />
+
     <android.support.v4.widget.DrawerLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"

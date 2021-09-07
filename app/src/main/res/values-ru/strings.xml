@@ -55,7 +55,8 @@
     <string name="restore_backup_db">Восстановить базу данных</string>
     <string name="file_create_error">Ошибка при создании файла: </string>
     <string name="action_contact_developer">Написать разработчику</string>
-    <string name="action_remove_ads">Убрать рекламу</string>
+    <string name="action_remove_ads">Купить плюс версию</string>
+    <string name="action_buy_plus_version">Купить Лёгкие заметки плюс</string>
     <string name="app_not_found">Приложение для этого действия не найдено</string>
     <string name="like_app_quest_title">Нравится приложение?</string>
     <string name="like_app_quest_text">Пожалуйста, поставьте оценку в Google&#160;Play. Это поможет улучшить приложение</string>

@@ -55,7 +55,8 @@
     <string name="file_selector_not_found">File Manager for select files not found</string>
     <string name="file_create_error">Error creating file:</string>
     <string name="action_contact_developer">E-Mail to developer</string>
-    <string name="action_remove_ads">Remove ads</string>
+    <string name="action_remove_ads">Buy plus version</string>
+    <string name="action_buy_plus_version">Buy Light notes plus</string>
     <string name="app_not_found">The application for this action was not found</string>
     <string name="like_app_quest_title">Like the app?</string>
     <string name="like_app_quest_text">Please, rate us on Google&#160;Play. This will help us to improve the app</string>
