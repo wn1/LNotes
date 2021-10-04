@@ -8,6 +8,7 @@ import android.support.annotation.UiThread;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatButton;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -26,6 +27,11 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,6 +53,9 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
 
     @BindView(R.id.editText)
     EditText editTextView;
+
+    @BindView(R.id.timestampAddingAction)
+    AppCompatButton timestampAddingAction;
 
     @InjectPresenter
     QDVNoteEditorPresenter noteEditorPresenter;
@@ -108,6 +117,20 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
                 if (editTextViewChangesNotifyEnable)  {
                     noteEditorPresenter.onEditorInputChanges();
                 }
+            }
+        });
+
+        timestampAddingAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int st = editTextView.getSelectionStart();
+                int end = editTextView.getSelectionEnd();
+                Editable text = editTextView.getText();
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd.HH:mm",
+                        Locale.getDefault());
+                String timestamp = dateFormat.format(new Date());
+                timestamp = "\n\n*" + timestamp + "*\n";
+                text.insert(st, timestamp);
             }
         });
 
