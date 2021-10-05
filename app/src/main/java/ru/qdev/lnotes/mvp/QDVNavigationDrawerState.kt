@@ -2,7 +2,7 @@ package ru.qdev.lnotes.mvp
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.support.annotation.AnyThread
+import androidx.annotation.AnyThread
 import com.google.gson.GsonBuilder
 import ru.qdev.lnotes.ThisApp
 import ru.qdev.lnotes.db.entity.QDVDbFolderOrMenuItem

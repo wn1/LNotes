@@ -1,8 +1,8 @@
 package ru.qdev.lnotes.mvp
 
 import android.os.Looper
-import android.support.annotation.AnyThread
-import android.support.annotation.UiThread
+import androidx.annotation.AnyThread
+import androidx.annotation.UiThread
 import com.arellomobile.mvp.MvpPresenter
 import com.arellomobile.mvp.MvpView
 import org.greenrobot.eventbus.EventBus

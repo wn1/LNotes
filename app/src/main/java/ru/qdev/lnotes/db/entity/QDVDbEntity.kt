@@ -1,6 +1,6 @@
 package ru.qdev.lnotes.db.entity
 
-import android.support.annotation.AnyThread
+import androidx.annotation.AnyThread
 import com.j256.ormlite.field.DataType
 import com.j256.ormlite.field.DatabaseField
 import java.io.Serializable

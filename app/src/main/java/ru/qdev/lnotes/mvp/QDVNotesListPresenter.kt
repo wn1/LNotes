@@ -3,9 +3,9 @@ package ru.qdev.lnotes.mvp
 import android.os.AsyncTask
 import android.os.Handler
 import android.os.Looper
-import android.support.annotation.AnyThread
-import android.support.annotation.MainThread
-import android.support.annotation.UiThread
+import androidx.annotation.AnyThread
+import androidx.annotation.MainThread
+import androidx.annotation.UiThread
 import com.arellomobile.mvp.InjectViewState
 import com.j256.ormlite.dao.CloseableIterator
 import com.j256.ormlite.stmt.Where

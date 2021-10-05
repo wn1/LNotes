@@ -1,7 +1,7 @@
 package ru.qdev.lnotes.db;
 
-import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 
 import com.j256.ormlite.dao.CloseableIterator;
 

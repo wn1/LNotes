@@ -4,13 +4,16 @@ package ru.qdev.lnotes;
  * Created by Vladimir Kudashov on 31.03.18.
  */
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -22,7 +25,16 @@ public class QDVVersionDifference {
     }
 
     static public void loadAd (AppCompatActivity activity) {
-        MobileAds.initialize(activity, activity.getString(R.string.admob_app_id));
+        MobileAds.initialize(activity,
+                new OnInitializationCompleteListener () {
+
+                    @Override
+                    public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {
+
+                    }
+
+                });
+
         AdRequest adRequest = new AdRequest.Builder().build();
         AdView adView = activity.findViewById(R.id.adView);
         adView.loadAd(adRequest);

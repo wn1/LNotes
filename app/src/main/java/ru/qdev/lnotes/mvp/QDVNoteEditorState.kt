@@ -2,7 +2,7 @@ package ru.qdev.lnotes.mvp
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.support.annotation.AnyThread
+import androidx.annotation.AnyThread
 import ru.qdev.lnotes.ThisApp
 import java.io.Serializable
 

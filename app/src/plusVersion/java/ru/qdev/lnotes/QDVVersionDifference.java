@@ -4,7 +4,7 @@ package ru.qdev.lnotes;
  * Created by Vladimir Kudashov on 31.03.18.
  */
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.ViewGroup;
 import android.widget.TextView;
 

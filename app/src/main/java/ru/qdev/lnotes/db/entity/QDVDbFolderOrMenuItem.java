@@ -1,7 +1,7 @@
 package ru.qdev.lnotes.db.entity;
 
-import android.support.annotation.AnyThread;
-import android.support.annotation.Nullable;
+import androidx.annotation.AnyThread;
+import androidx.annotation.Nullable;
 
 import com.j256.ormlite.table.DatabaseTable;
 
