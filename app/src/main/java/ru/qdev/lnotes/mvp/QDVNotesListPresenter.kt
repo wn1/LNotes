@@ -6,9 +6,9 @@ import android.os.Looper
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import androidx.annotation.UiThread
-import com.arellomobile.mvp.InjectViewState
 import com.j256.ormlite.dao.CloseableIterator
 import com.j256.ormlite.stmt.Where
+import moxy.InjectViewState
 import ru.qdev.lnotes.*
 import ru.qdev.lnotes.db.entity.QDVDbFolderOrMenuItem
 import ru.qdev.lnotes.db.entity.QDVDbNote

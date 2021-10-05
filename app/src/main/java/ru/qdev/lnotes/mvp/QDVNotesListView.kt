@@ -1,9 +1,10 @@
 package ru.qdev.lnotes.mvp
 
 import androidx.annotation.UiThread
-import com.arellomobile.mvp.MvpView
-import com.arellomobile.mvp.viewstate.strategy.*
 import com.j256.ormlite.dao.CloseableIterator
+import moxy.MvpView
+import moxy.viewstate.strategy.AddToEndSingleStrategy
+import moxy.viewstate.strategy.StateStrategyType
 import ru.qdev.lnotes.db.entity.QDVDbNote
 
 /**

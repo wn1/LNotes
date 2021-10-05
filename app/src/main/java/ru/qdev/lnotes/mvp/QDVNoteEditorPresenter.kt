@@ -2,7 +2,7 @@ package ru.qdev.lnotes.mvp
 
 import androidx.annotation.AnyThread
 import androidx.annotation.UiThread
-import com.arellomobile.mvp.InjectViewState
+import moxy.InjectViewState
 import ru.qdev.lnotes.*
 import ru.qdev.lnotes.db.entity.QDVDbFolder
 import ru.qdev.lnotes.db.entity.QDVDbNote

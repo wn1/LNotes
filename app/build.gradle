@@ -59,13 +59,13 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    implementation 'com.arello-mobile:moxy:1.5.5'
-    kapt 'com.arello-mobile:moxy-compiler:1.5.5'
-    implementation 'com.arello-mobile:moxy-app-compat:1.5.5'
-    implementation 'tech.schoolhelper:moxy-x-androidx:1.7.0'
+    implementation "com.github.moxy-community:moxy:2.2.2"
+    annotationProcessor "com.github.moxy-community:moxy-compiler:2.2.2"
+//    implementation "com.github.moxy-community:moxy-app-compat:2.2.2"
+    implementation "com.github.moxy-community:moxy-androidx:2.2.2"
 
     implementation 'com.jakewharton:butterknife:10.2.3'
-    kapt 'com.jakewharton:butterknife-compiler:10.2.3'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.3'
 
     implementation 'org.greenrobot:eventbus:3.1.1'
 

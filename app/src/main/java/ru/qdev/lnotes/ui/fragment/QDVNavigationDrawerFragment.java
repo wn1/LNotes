@@ -27,14 +27,14 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.arellomobile.mvp.MvpAppCompatFragment;
-import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.j256.ormlite.dao.CloseableIterator;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
+import moxy.MvpAppCompatFragment;
+import moxy.presenter.InjectPresenter;
 import ru.qdev.lnotes.*;
 import ru.qdev.lnotes.db.QDVDbIteratorListViewAdapterExt;
 import ru.qdev.lnotes.db.entity.QDVDbFolderOrMenuItem;

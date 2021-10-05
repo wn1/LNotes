@@ -22,9 +22,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.arellomobile.mvp.MvpAppCompatFragment;
-import com.arellomobile.mvp.presenter.InjectPresenter;
-
 import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,6 +33,8 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import moxy.MvpAppCompatFragment;
+import moxy.presenter.InjectPresenter;
 import ru.qdev.lnotes.*;
 import ru.qdev.lnotes.mvp.QDVNoteEditorPresenter;
 import ru.qdev.lnotes.mvp.QDVNoteEditorState;

@@ -6,7 +6,8 @@ import android.os.Looper
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import androidx.annotation.UiThread
-import com.arellomobile.mvp.InjectViewState
+import moxy.InjectViewState
+
 import com.j256.ormlite.dao.CloseableIterator
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe

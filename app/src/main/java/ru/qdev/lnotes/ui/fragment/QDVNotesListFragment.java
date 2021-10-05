@@ -29,8 +29,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.arellomobile.mvp.MvpAppCompatFragment;
-import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.j256.ormlite.dao.CloseableIterator;
 
 import org.greenrobot.eventbus.EventBus;
@@ -45,6 +43,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import moxy.MvpAppCompatFragment;
+import moxy.presenter.InjectPresenter;
 import ru.qdev.lnotes.*;
 import ru.qdev.lnotes.db.QDVDbIteratorListViewAdapter;
 import ru.qdev.lnotes.db.QDVDbIteratorListViewAdapterExt;

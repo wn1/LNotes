@@ -15,9 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.arellomobile.mvp.MvpAppCompatActivity;
-import com.arellomobile.mvp.presenter.InjectPresenter;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,6 +26,8 @@ import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import moxy.MvpAppCompatActivity;
+import moxy.presenter.InjectPresenter;
 import ru.qdev.lnotes.*;
 import ru.qdev.lnotes.db.QDVDbDatabase;
 import ru.qdev.lnotes.db.entity.QDVDbNote;
@@ -231,22 +230,22 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
     @UiThread
     protected void onStart() {
         super.onStart();
-//        ViewGroup rootLayout = (ViewGroup) findByViewId(R.id.rootLayout);
-//        TextView buyPlusVersion = QDVVersionDifference.getLabelBuyPlusVersion(rootLayout);
-//        if (buyPlusVersion != null) {
-//            buyPlusVersion.setOnClickListener(v -> {
-//                try {
-//                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
-//                            "https://play.google.com/store/apps/details?id=ru.q_dev.LNoteP")));
-//                } catch (Exception ignored) {
-//                    new AlertDialog.Builder(this)
-//                            .setMessage(R.string.app_not_found)
-//                            .setCancelable(true)
-//                            .setNegativeButton(R.string.cancel, null)
-//                            .show();
-//                }
-//            });
-//        }
+        ViewGroup rootLayout = findViewById(R.id.rootLayout);
+        TextView buyPlusVersion = QDVVersionDifference.getLabelBuyPlusVersion(rootLayout);
+        if (buyPlusVersion != null) {
+            buyPlusVersion.setOnClickListener(v -> {
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
+                            "https://play.google.com/store/apps/details?id=ru.q_dev.LNoteP")));
+                } catch (Exception ignored) {
+                    new AlertDialog.Builder(this)
+                            .setMessage(R.string.app_not_found)
+                            .setCancelable(true)
+                            .setNegativeButton(R.string.cancel, null)
+                            .show();
+                }
+            });
+        }
 
         boolean needReloadDb = getIntent().getBooleanExtra(NEED_RELOAD_DB_FLAG, false);
         if (needReloadDb){
