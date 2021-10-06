@@ -74,6 +74,9 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
 
     QDVNavigationDrawerFragment navigationDrawerFragment;
 
+    @BindView(R.id.rootLayout)
+    ViewGroup rootLayout;
+
     @Override
     @UiThread
     protected void onCreate(Bundle savedInstanceState) {
@@ -226,13 +229,10 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
         }
     }
 
-    Boolean isFirstStart = true;
-
     @Override
     @UiThread
     protected void onStart() {
         super.onStart();
-        ViewGroup rootLayout = findViewById(R.id.rootLayout);
         TextView buyPlusVersion = QDVVersionDifference.getLabelBuyPlusVersion(rootLayout);
         if (buyPlusVersion != null) {
             buyPlusVersion.setOnClickListener(v -> {
@@ -253,10 +253,6 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
         if (needReloadDb){
             reloadDataDb();
             return;
-        }
-        if (isFirstStart){
-            isFirstStart = false;
-            reloadDataDb();
         }
         oldDbUpdateIfNeeded();
     }
