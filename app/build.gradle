@@ -60,9 +60,9 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     implementation "com.github.moxy-community:moxy:2.2.2"
-    annotationProcessor "com.github.moxy-community:moxy-compiler:2.2.2"
 //    implementation "com.github.moxy-community:moxy-app-compat:2.2.2"
     implementation "com.github.moxy-community:moxy-androidx:2.2.2"
+    annotationProcessor "com.github.moxy-community:moxy-compiler:2.2.2"
 
     implementation 'com.jakewharton:butterknife:10.2.3'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.3'

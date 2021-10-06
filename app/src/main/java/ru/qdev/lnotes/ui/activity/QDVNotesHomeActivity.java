@@ -226,6 +226,8 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
         }
     }
 
+    Boolean isFirstStart = true;
+
     @Override
     @UiThread
     protected void onStart() {
@@ -251,6 +253,10 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
         if (needReloadDb){
             reloadDataDb();
             return;
+        }
+        if (isFirstStart){
+            isFirstStart = false;
+            reloadDataDb();
         }
         oldDbUpdateIfNeeded();
     }
