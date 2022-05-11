@@ -125,7 +125,7 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
                 int st = editTextView.getSelectionStart();
                 int end = editTextView.getSelectionEnd();
                 Editable text = editTextView.getText();
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd.HH:mm",
+                DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm",
                         Locale.getDefault());
                 String timestamp = dateFormat.format(new Date());
                 timestamp = "\n\n*" + timestamp + "*\n";
