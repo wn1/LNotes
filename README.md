@@ -45,7 +45,7 @@ Support Andoid 4.0 (API 14) and above
 
 
 ## Version 
-### 2.2.1
+### 2.2.2
 
 ## Background
 
