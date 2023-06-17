@@ -2,7 +2,7 @@ package ru.qdev.lnotes.db
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
-import android.support.annotation.AnyThread
+import androidx.annotation.AnyThread
 import com.j256.ormlite.android.apptools.OpenHelperManager
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper
 import com.j256.ormlite.support.ConnectionSource

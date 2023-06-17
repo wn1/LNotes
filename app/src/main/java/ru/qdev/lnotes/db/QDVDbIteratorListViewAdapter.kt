@@ -1,6 +1,6 @@
 package ru.qdev.lnotes.db
 
-import android.support.annotation.UiThread
+import androidx.annotation.UiThread
 import android.widget.BaseAdapter
 import com.j256.ormlite.android.AndroidDatabaseResults
 import com.j256.ormlite.dao.CloseableIterator

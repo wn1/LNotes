@@ -1,6 +1,6 @@
 package ru.qdev.lnotes.mvp
 
-import android.support.annotation.AnyThread
+import androidx.annotation.AnyThread
 import ru.qdev.lnotes.db.entity.QDVDbFolder
 import java.io.Serializable
 

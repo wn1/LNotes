@@ -1,10 +1,10 @@
 package ru.qdev.lnotes.mvp
 
-import android.support.annotation.AnyThread
-import android.support.annotation.MainThread
-import android.support.annotation.UiThread
-import com.arellomobile.mvp.InjectViewState
-import com.arellomobile.mvp.MvpPresenter
+import androidx.annotation.AnyThread
+import androidx.annotation.MainThread
+import androidx.annotation.UiThread
+import moxy.InjectViewState
+import moxy.MvpPresenter
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -16,7 +16,7 @@ import ru.qdev.lnotes.db.entity.QDVDbNote
  */
 
 @InjectViewState
-class QDVNotesHomePresenter : MvpPresenter <QDVNotesHomeView> () {
+class QDVNotesHomePresenter : MvpPresenter<QDVNotesHomeView>() {
     private val state: QDVNotesHomeState = QDVNotesHomeState()
     var editNoteFilterState = QDVFilterByFolderState()
 

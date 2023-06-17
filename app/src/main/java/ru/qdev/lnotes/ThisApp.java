@@ -2,7 +2,7 @@ package ru.qdev.lnotes;
 
 import android.app.Application;
 import android.content.Context;
-import android.support.annotation.AnyThread;
+import androidx.annotation.AnyThread;
 
 /**
  * Created by Vladimir Kudashov on 13.04.17.

@@ -3,11 +3,12 @@ package ru.qdev.lnotes.ui.fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -21,15 +22,19 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.arellomobile.mvp.MvpAppCompatFragment;
-import com.arellomobile.mvp.presenter.InjectPresenter;
-
 import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import moxy.MvpAppCompatFragment;
+import moxy.presenter.InjectPresenter;
 import ru.qdev.lnotes.*;
 import ru.qdev.lnotes.mvp.QDVNoteEditorPresenter;
 import ru.qdev.lnotes.mvp.QDVNoteEditorState;
@@ -47,6 +52,9 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
 
     @BindView(R.id.editText)
     EditText editTextView;
+
+    @BindView(R.id.timestampAddingAction)
+    AppCompatButton timestampAddingAction;
 
     @InjectPresenter
     QDVNoteEditorPresenter noteEditorPresenter;
@@ -108,6 +116,20 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
                 if (editTextViewChangesNotifyEnable)  {
                     noteEditorPresenter.onEditorInputChanges();
                 }
+            }
+        });
+
+        timestampAddingAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int st = editTextView.getSelectionStart();
+                int end = editTextView.getSelectionEnd();
+                Editable text = editTextView.getText();
+                DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm",
+                        Locale.getDefault());
+                String timestamp = dateFormat.format(new Date());
+                timestamp = "\n\n*" + timestamp + "*\n";
+                text.insert(st, timestamp);
             }
         });
 

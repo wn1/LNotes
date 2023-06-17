@@ -2,7 +2,7 @@ package ru.qdev.lnotes.utils;
 
 import java.io.*;
 
-import android.support.annotation.AnyThread;
+import androidx.annotation.AnyThread;
 import android.util.*;
 
 @AnyThread

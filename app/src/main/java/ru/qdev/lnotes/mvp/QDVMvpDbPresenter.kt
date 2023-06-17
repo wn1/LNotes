@@ -1,10 +1,10 @@
 package ru.qdev.lnotes.mvp
 
 import android.os.Looper
-import android.support.annotation.AnyThread
-import android.support.annotation.UiThread
-import com.arellomobile.mvp.MvpPresenter
-import com.arellomobile.mvp.MvpView
+import androidx.annotation.AnyThread
+import androidx.annotation.UiThread
+import moxy.MvpPresenter
+import moxy.MvpView
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -15,7 +15,7 @@ import ru.qdev.lnotes.db.QDVDbDatabase
  */
 
 @AnyThread
-abstract class QDVMvpDbPresenter<T: MvpView> : MvpPresenter<T> () {
+abstract class QDVMvpDbPresenter<T: MvpView> : MvpPresenter<T>() {
     private var databaseObj: QDVDbDatabase? = null
 
     var database: QDVDbDatabase

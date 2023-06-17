@@ -1,6 +1,6 @@
 package ru.qdev.lnotes.mvp
 
-import android.support.annotation.AnyThread
+import androidx.annotation.AnyThread
 
 /**
  * Created by Vladimir Kudashov on 04.10.18.

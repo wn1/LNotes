@@ -17,7 +17,7 @@
         android:orientation="horizontal"
         tools:ignore="UselessParent">
 
-        <android.support.v7.widget.AppCompatImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/star1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -27,7 +27,7 @@
             android:contentDescription="@string/rating_star_1"
             app:srcCompat="@drawable/ic_grade_24dp" />
 
-        <android.support.v7.widget.AppCompatImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/star2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
             android:contentDescription="@string/rating_star_2"
             app:srcCompat="@drawable/ic_grade_24dp" />
 
-        <android.support.v7.widget.AppCompatImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/star3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -47,7 +47,7 @@
             android:contentDescription="@string/rating_star_3"
             app:srcCompat="@drawable/ic_grade_24dp" />
 
-        <android.support.v7.widget.AppCompatImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/star4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
             android:contentDescription="@string/rating_star_4"
             app:srcCompat="@drawable/ic_grade_24dp" />
 
-        <android.support.v7.widget.AppCompatImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/star5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
