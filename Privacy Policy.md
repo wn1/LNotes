@@ -1,16 +1,16 @@
 **Privacy Policy**
 
-Vladimir Kudashov built the Лёгкие заметки (Light notes) app as a Free app. This SERVICE is provided by Vladimir Kudashov at no cost and is intended for use as is.
+Vladimir Kudashov built the Легкие заметки плюс (Light notes plus) app as a Commercial app. This SERVICE is provided by Vladimir Kudashov and is intended for use as is.
 
 This page is used to inform visitors regarding my policies with the collection, use, and disclosure of Personal Information if anyone decided to use my Service.
 
 If you choose to use my Service, then you agree to the collection and use of information in relation to this policy. The Personal Information that I collect is used for providing and improving the Service. I will not use or share your information with anyone except as described in this Privacy Policy.
 
-The terms used in this Privacy Policy have the same meanings as in our Terms and Conditions, which are accessible at Лёгкие заметки unless otherwise defined in this Privacy Policy.
+The terms used in this Privacy Policy have the same meanings as in our Terms and Conditions, which are accessible at Легкие заметки плюс (Light notes plus) unless otherwise defined in this Privacy Policy.
 
 **Information Collection and Use**
 
-For a better experience, while using our Service, I may require you to provide us with certain personally identifiable information, including but not limited to No collect. The information that I request will be retained on your device and is not collected by me in any way.
+The information that I request will be retained on your device and is not collected by me in any way.
 
 The app does use third-party services that may collect information used to identify you.
 
@@ -42,7 +42,7 @@ I want to inform users of this Service that these third parties have access to t
 
 **Security**
 
-I value your trust in providing us your Personal Information, thus we are striving to use commercially acceptable means of protecting it. 
+I value your trust in providing us your Personal Information, thus we are striving to use commercially acceptable means of protecting it.
 
 **Links to Other Sites**
 
