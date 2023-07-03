@@ -10,6 +10,7 @@ import java.util.concurrent.Executors
 class QDVTempFileSendUtils (val context: Context) {
     private val sendDirName = "send"
     private val executor = Executors.newSingleThreadExecutor()
+    private val deleteAfterHours = 48
 
     private fun getSendTempDir() : File {
         val tempDir = context.cacheDir
@@ -28,7 +29,7 @@ class QDVTempFileSendUtils (val context: Context) {
             try {
                 val filesDir = getSendTempDir()
                 val dateForDelete = Calendar.getInstance()
-                dateForDelete.add(Calendar.HOUR, -3)
+                dateForDelete.add(Calendar.HOUR, -deleteAfterHours)
 
                 filesDir.listFiles()?.forEach {
                     val time = Date(it.lastModified())
