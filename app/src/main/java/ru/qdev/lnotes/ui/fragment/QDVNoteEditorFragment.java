@@ -128,7 +128,7 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
                 DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm",
                         Locale.getDefault());
                 String timestamp = dateFormat.format(new Date());
-                timestamp = "\n\n*" + timestamp + "*\n";
+                timestamp = "\n*" + timestamp + "* ";
                 text.insert(st, timestamp);
             }
         });
