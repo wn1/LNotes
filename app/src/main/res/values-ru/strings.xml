@@ -49,11 +49,14 @@
     <string name="input_password">Введите пароль</string>
     <string name="backup_saved">Резервная копия успешно сохранена</string>
     <string name="backup_saved_to">Резервная копия успешно сохранена в: </string>
+    <string name="backup_send_title">Отправить резервную копию</string>
+    <string name="backup_sent">Резервная копия отправлена</string>
     <string name="backup_restored">База данных успешно восстановлена</string>
     <string name="password_error">Ошибка. Возможно, вы ошиблись при вводе пароля.</string>
     <string name="save_backup_db">Сохранить базу данных</string>
     <string name="restore_backup_db">Восстановить базу данных</string>
     <string name="file_create_error">Ошибка при создании файла: </string>
+    <string name="db_backup_error">Ошибка при создании резервной копии: %s</string>
     <string name="action_contact_developer">Написать разработчику</string>
     <string name="action_remove_ads">Купить плюс версию</string>
     <string name="action_buy_plus_version">Купить Лёгкие заметки плюс</string>

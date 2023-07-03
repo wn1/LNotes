@@ -1,5 +1,7 @@
 package ru.qdev.lnotes.ui.activity;
 
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -7,41 +9,47 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.InputType;
+import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.Toast;
+
 import androidx.annotation.AnyThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import android.text.InputType;
-import android.util.Log;
-import android.view.inputmethod.InputMethodManager;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import android.widget.*;
-import android.view.View.*;
-import android.view.*;
-import java.text.*;
-
-import android.content.*;
+import androidx.core.content.FileProvider;
 
 import com.scottyab.aescrypt.AESCrypt;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-import ru.qdev.lnotes.*;
+import ru.qdev.lnotes.R;
+import ru.qdev.lnotes.ThisApp;
 import ru.qdev.lnotes.db.QDVDbDatabase;
 import ru.qdev.lnotes.utils.QDVFileUtils;
+import ru.qdev.lnotes.utils.QDVTempFileSendUtils;
 
 /**
  * Created by Vladimir Kudashov on 27.04.17.
  */
 
 public class QDVBackupActivity extends AppCompatActivity {
+	private static final String LOG_TAG = "QDVBackupActivity";
 	private static final int SELECTFILE_RESTORE_DB_RESULT_CODE = 1;
 	private static final int SELECTFILE_SAVE_DB_RESULT_CODE = 2;
     private static final int SELECTFILE_RESTORE_DB_OLD_OS_RESULT_CODE = 3;
@@ -170,62 +178,58 @@ public class QDVBackupActivity extends AppCompatActivity {
 		
 		DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmm-ss");
 		String fileNameString = dateFormat.format(new Date())+(passwordForBackup.length()==0 ? ".db" :".dbcr");
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.KITKAT) {
-		//for old version
-            File dbBackupFile = null;
-            File storageBackupDir = getSaveBackupDirForOldOs();
-            if (storageBackupDir != null) {
-                dbBackupFile = new File(storageBackupDir.getAbsolutePath() + "/"  + fileNameString);
-            }
-            if (dbBackupFile==null) {
-                new AlertDialog.Builder(QDVBackupActivity.this).
-                        setMessage(getString(R.string.file_create_error) + dbBackupFile.getAbsolutePath())
-                        .setCancelable(true)
-                        .setPositiveButton(R.string.cancel, null).show();
-                return;
-            }
-            dbBackupFile.getParentFile().mkdirs();
 
-            try {
-                boolean result = saveBackup(new FileOutputStream(dbBackupFile), true);
-                if (result) {
-                    new AlertDialog.Builder(QDVBackupActivity.this).
-                            setMessage(getString(R.string.backup_saved_to) + dbBackupFile.getAbsolutePath())
-                            .setCancelable(true)
-                            .setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    Intent intent = new Intent(QDVBackupActivity.this, QDVNotesHomeActivity.class);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                    startActivity(intent);
-                                }
-                            }).show();
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+        try {
+            QDVTempFileSendUtils fileSend = new QDVTempFileSendUtils(this);
+            File dbBackupFile = fileSend.getTempFile(fileNameString);
+
+            boolean result = saveBackup(
+                    new FileOutputStream(dbBackupFile),
+                    true,
+                    false
+            );
+
+            if (result) {
+                Intent sendFileIntent = new Intent(Intent.ACTION_SEND);
+                sendFileIntent.setType("application/octet-stream");
+
+                sendFileIntent.putExtra(
+                        Intent.EXTRA_SUBJECT,
+                        getString(R.string.backup_send_title)
+                );
+
+                sendFileIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                Uri sendFileURI = FileProvider.getUriForFile(
+                        this,
+                        getApplicationContext().getPackageName() + ".provider",
+                        dbBackupFile
+                );
+                sendFileIntent.putExtra(Intent.EXTRA_STREAM, sendFileURI);
+
+                startActivity(Intent.createChooser(
+                        sendFileIntent,
+                        getString(R.string.backup_send_title))
+                );
+            }
+            else {
                 new AlertDialog.Builder(QDVBackupActivity.this).
-                        setMessage(getString(R.string.file_create_error) + dbBackupFile.getAbsolutePath())
+                        setMessage(getString(R.string.db_backup_error, "file send error"))
                         .setCancelable(true)
                         .setPositiveButton(R.string.cancel, null).show();
             }
         }
-        else {
-            try {
-                Intent i = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-                i.addCategory(Intent.CATEGORY_OPENABLE);
-                i.setType("*/*");
-                i.putExtra( "android.content.extra.SHOW_ADVANCED", true);
-                i.putExtra(Intent.EXTRA_TITLE, fileNameString);
-                startActivityForResult(i, SELECTFILE_SAVE_DB_RESULT_CODE);
-            } catch (Exception ignore) {
-                new AlertDialog.Builder(this).setMessage(R.string.file_selector_not_found)
-                        .setCancelable(true).setNegativeButton(R.string.cancel, null).show();
-            }
+        catch (Throwable e) {
+            Log.e(LOG_TAG, "saveBackup file error: " + e, e);
+            new AlertDialog.Builder(QDVBackupActivity.this).
+                        setMessage(getString(R.string.db_backup_error, e.getLocalizedMessage()))
+                        .setCancelable(true)
+                        .setPositiveButton(R.string.cancel, null).show();
         }
-	}
+    }
 
     @UiThread
-    private boolean saveBackup (OutputStream os, boolean withoutCloseActivity) {
+    private boolean saveBackup (OutputStream os, boolean withoutCloseActivity, boolean withMessage) {
         File dbFile = new QDVDbDatabase(this).getFileDB();
 
         InputStream is = null;
@@ -259,16 +263,17 @@ public class QDVBackupActivity extends AppCompatActivity {
         }
 
         passwordForBackup = null;
-        if (result){
-            Toast.makeText(this, R.string.backup_saved, Toast.LENGTH_LONG).show();
-        }
-        else
-        {
-            new AlertDialog.Builder(QDVBackupActivity.this).
-                    setMessage(String.format(getString(R.string.error_with_id), "300"))
-                    .setCancelable(true)
-                    .setPositiveButton(R.string.cancel, null).show();
-            return false;
+
+        if (withMessage) {
+            if (result) {
+                Toast.makeText(this, R.string.backup_saved, Toast.LENGTH_LONG).show();
+            } else {
+                new AlertDialog.Builder(QDVBackupActivity.this).
+                        setMessage(String.format(getString(R.string.error_with_id), "300"))
+                        .setCancelable(true)
+                        .setPositiveButton(R.string.cancel, null).show();
+                return false;
+            }
         }
 
         if (!withoutCloseActivity) {
@@ -474,7 +479,7 @@ public class QDVBackupActivity extends AppCompatActivity {
                         return;
                     }
 
-                    saveBackup(os, false);
+                    saveBackup(os, false, true);
                 }
 				break;
 		}
