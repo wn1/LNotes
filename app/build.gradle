@@ -3,7 +3,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 33
 //    remove for update Android Gradle Plugin to 7.0.1.
 //    buildToolsVersion '28.0.3'
 
