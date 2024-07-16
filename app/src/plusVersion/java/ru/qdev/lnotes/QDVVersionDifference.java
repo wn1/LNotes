@@ -12,10 +12,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class QDVVersionDifference {
     static public boolean isFreeVersion() { return false; }
-    static public boolean adsPresent () {
-        return isFreeVersion();
-    }
-    static public void loadAd (AppCompatActivity activity) { }
 
     @Nullable
     static public TextView getLabelBuyPlusVersion (ViewGroup rootLayout) {

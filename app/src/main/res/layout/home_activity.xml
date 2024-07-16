@@ -8,15 +8,6 @@
     android:animateLayoutChanges="true"
     android:id="@+id/rootLayout">
 
-    <com.google.android.gms.ads.AdView
-        android:id="@+id/adView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="3dp"
-        android:contentDescription="@string/admob_description"
-        ads:adSize="BANNER"
-        ads:adUnitId="@string/admob_banner_id" />
-
     <TextView
         android:id="@+id/buyPlusVersion"
         android:layout_width="match_parent"
