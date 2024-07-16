@@ -3,17 +3,18 @@ package ru.qdev.lnotes.ui.activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import androidx.annotation.AnyThread;
-import androidx.annotation.UiThread;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import android.os.Bundle;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.drawerlayout.widget.DrawerLayout;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.AnyThread;
+import androidx.annotation.UiThread;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +29,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import moxy.MvpAppCompatActivity;
 import moxy.presenter.InjectPresenter;
-import ru.qdev.lnotes.*;
+import ru.qdev.lnotes.QDVVersionDifference;
+import ru.qdev.lnotes.R;
+import ru.qdev.lnotes.ThisApp;
 import ru.qdev.lnotes.db.QDVDbDatabase;
 import ru.qdev.lnotes.db.entity.QDVDbNote;
 import ru.qdev.lnotes.mvp.QDVFilterByFolderState;
@@ -36,10 +39,11 @@ import ru.qdev.lnotes.mvp.QDVNoteEditorState;
 import ru.qdev.lnotes.mvp.QDVNotesHomePresenter;
 import ru.qdev.lnotes.mvp.QDVNotesHomeView;
 import ru.qdev.lnotes.mvp.QDVStatisticState;
-import ru.qdev.lnotes.ui.view.QDVViewFabric;
 import ru.qdev.lnotes.ui.fragment.QDVNavigationDrawerFragment;
 import ru.qdev.lnotes.ui.fragment.QDVNoteEditorFragment;
 import ru.qdev.lnotes.ui.fragment.QDVNotesListFragment;
+import ru.qdev.lnotes.ui.view.QDVViewFabric;
+import ru.qdev.lnotes.utils.QDVTempFileSendUtils;
 
 /**
  * Created by Vladimir Kudashov on 11.03.17.
@@ -50,6 +54,8 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
 
     static private String OLD_DB_FILE_NAME = "data.db";
     static private String OLD_DB_FOLDER_NAME = "data";
+
+    private QDVTempFileSendUtils tempFileSendUtils = null;
 
     @AnyThread
     public enum OldDbUpdateError {
@@ -102,6 +108,17 @@ public class QDVNotesHomeActivity extends MvpAppCompatActivity implements QDVNot
         navigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (tempFileSendUtils == null) {
+            tempFileSendUtils = new QDVTempFileSendUtils(this);
+        }
+
+        tempFileSendUtils.deleteUnusedFiles();
     }
 
     @AnyThread
