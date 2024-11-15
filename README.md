@@ -30,6 +30,11 @@ or
 
 - Build project in Android Studio and install on your Android device.
 
+or
+
+- Use link for apk:
+  https://disk.yandex.ru/d/UoBq4AorUMeZHw
+
 Support Andoid 4.0 (API 14) and above
 
 ## Table of Contents
