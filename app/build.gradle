@@ -9,7 +9,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 35
 //    remove for update Android Gradle Plugin to 7.0.1.
 //    buildToolsVersion '28.0.3'
 
@@ -25,6 +25,14 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    kotlin {
+        jvmToolchain(8)
     }
 
     buildTypes {
