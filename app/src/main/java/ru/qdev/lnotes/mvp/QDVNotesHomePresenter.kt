@@ -105,12 +105,7 @@ class QDVNotesHomePresenter : MvpPresenter<QDVNotesHomeView>() {
         EventBus.getDefault().post(QDVNavigationDrawerPresenter.DoDrawerOpenOrClose())
     }
 
-    @AnyThread
-    fun doReloadDb() {
-        QDVNavigationDrawerState().selectedFolderOrMenu = null
-        EventBus.getDefault().post(QDVMvpDbPresenter.DoCloseDatabase())
-        EventBus.getDefault().post(QDVMvpDbPresenter.DoReloadDatabase())
-    }
+
 
     @AnyThread
     override fun onDestroy() {

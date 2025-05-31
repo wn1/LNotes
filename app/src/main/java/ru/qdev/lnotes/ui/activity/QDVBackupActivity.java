@@ -38,11 +38,12 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import ru.qdev.lnotes.R;
 import ru.qdev.lnotes.ThisApp;
 import ru.qdev.lnotes.db.QDVDbDatabase;
+import ru.qdev.lnotes.ui.activity.notes.QDVNotesHomeActivity;
 import ru.qdev.lnotes.utils.QDVFileUtils;
 import ru.qdev.lnotes.utils.QDVTempFileSendUtils;
+import src.R;
 
 /**
  * Created by Vladimir Kudashov on 27.04.17.
@@ -382,6 +383,8 @@ public class QDVBackupActivity extends AppCompatActivity {
 	@Override
     @UiThread
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
 		switch(requestCode){
 			case SELECTFILE_RESTORE_DB_RESULT_CODE:
             case SELECTFILE_RESTORE_DB_OLD_OS_RESULT_CODE:

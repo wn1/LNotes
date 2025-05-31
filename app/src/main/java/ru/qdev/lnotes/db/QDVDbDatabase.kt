@@ -9,7 +9,6 @@ import com.j256.ormlite.support.ConnectionSource
 import com.j256.ormlite.dao.Dao
 import ru.qdev.lnotes.ThisApp
 import ru.qdev.lnotes.db.entity.QDVDbNote
-import ru.qdev.lnotes.ui.activity.QDVNotesHomeActivity
 import java.io.File
 import java.lang.Exception
 import java.sql.SQLException
