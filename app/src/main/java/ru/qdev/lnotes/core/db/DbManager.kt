@@ -45,10 +45,45 @@ class DbManager (val context: Context) {
     companion object {
         const val TAG = "DbManager"
 
+//        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS notes (id INTEGER PRIMARY KEY, content, create_time_u INTEGER DEFAULT NULL, isready INT DEFAULT 0, folder_id INTEGER DEFAULT NULL, complete_time_u INTEGER DEFAULT NULL, update_time_u INTEGER DEFAULT NULL)")
+//        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY, label)")
+//        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS conf (id INTEGER PRIMARY KEY, vers INTEGER DEFAULT 0)")
+
         private val MIGRATION_7_8 = object : Migration(7, 8) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 Log.i(TAG, "MIGRATION_7_8")
-                // Empty implementation, because the schema isn't changing.
+                //notes
+                var updateQuery = "DROP TABLE IF EXISTS notestmp"
+                db.execSQL(updateQuery)
+
+                updateQuery = "CREATE TABLE IF NOT EXISTS notestmp (id INTEGER PRIMARY KEY, content TEXT, create_time_u INTEGER, isready INTEGER NOT NULL, folder_id INTEGER, complete_time_u INTEGER, update_time_u INTEGER)"
+                db.execSQL(updateQuery)
+
+                updateQuery = "INSERT INTO notestmp(id, content, create_time_u, isready, folder_id, complete_time_u, update_time_u) SELECT id, content, create_time_u, isready, folder_id, complete_time_u, update_time_u FROM notes"
+                db.execSQL(updateQuery)
+
+                updateQuery = "DROP TABLE IF EXISTS notes"
+                db.execSQL(updateQuery)
+
+                updateQuery = "ALTER TABLE notestmp RENAME TO notes"
+                db.execSQL(updateQuery)
+
+                //categories
+                updateQuery = "DROP TABLE IF EXISTS categoriestmp"
+                db.execSQL(updateQuery)
+
+                updateQuery = "CREATE TABLE IF NOT EXISTS categoriestmp (id INTEGER PRIMARY KEY, label TEXT DEFAULT NULL)"
+                db.execSQL(updateQuery)
+
+                updateQuery = "INSERT INTO categoriestmp(id, label) SELECT id, label FROM categories"
+                db.execSQL(updateQuery)
+
+                updateQuery = "DROP TABLE IF EXISTS categories"
+                db.execSQL(updateQuery)
+
+                updateQuery = "ALTER TABLE categoriestmp RENAME TO categories"
+                db.execSQL(updateQuery)
+
             }
         }
 
