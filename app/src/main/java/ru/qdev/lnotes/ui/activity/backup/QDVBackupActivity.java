@@ -1,4 +1,6 @@
-package ru.qdev.lnotes.ui.activity;
+package ru.qdev.lnotes.ui.activity.backup;
+
+import static ru.qdev.lnotes.core.events.DbManager.NOTES_DATABASE_NAME;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -39,7 +41,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import ru.qdev.lnotes.ThisApp;
-import ru.qdev.lnotes.db.QDVDbDatabase;
 import ru.qdev.lnotes.ui.activity.notes.QDVNotesHomeActivity;
 import ru.qdev.lnotes.utils.QDVFileUtils;
 import ru.qdev.lnotes.utils.QDVTempFileSendUtils;
@@ -229,9 +230,13 @@ public class QDVBackupActivity extends AppCompatActivity {
         }
     }
 
+    private File getFileDB() {
+        return getDatabasePath(NOTES_DATABASE_NAME);
+    }
+
     @UiThread
     private boolean saveBackup (OutputStream os, boolean withoutCloseActivity, boolean withMessage) {
-        File dbFile = new QDVDbDatabase(this).getFileDB();
+        File dbFile = getFileDB();
 
         InputStream is = null;
         boolean result = false;
@@ -320,7 +325,7 @@ public class QDVBackupActivity extends AppCompatActivity {
             return;
         }
 
-        File dbFile = new QDVDbDatabase(this).getFileDB();
+        File dbFile = getFileDB();
         OutputStream outputStream = null;
         boolean result = false;
         File backupFile = new File(dbFile.toString()+".bak");

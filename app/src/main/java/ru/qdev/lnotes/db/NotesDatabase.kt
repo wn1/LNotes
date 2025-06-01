@@ -1,7 +1,11 @@
 package ru.qdev.lnotes.db
 
+import android.content.Context
 import androidx.room.Database
+import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import ru.qdev.lnotes.db.dao.FolderDao
 import ru.qdev.lnotes.db.dao.NotesDao
 import ru.qdev.lnotes.db.entity.ConfigEntry
@@ -14,3 +18,4 @@ abstract class NotesDatabase : RoomDatabase() {
     abstract fun notesDao(): NotesDao
     abstract fun folderDao(): FolderDao
 }
+

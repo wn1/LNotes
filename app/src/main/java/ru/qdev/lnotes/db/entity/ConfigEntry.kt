@@ -9,5 +9,6 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "conf")
 data class ConfigEntry(
+    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") val uid: Long?,
     @ColumnInfo(name = "vers") val version: String?, //Deprecated, не используется
 )

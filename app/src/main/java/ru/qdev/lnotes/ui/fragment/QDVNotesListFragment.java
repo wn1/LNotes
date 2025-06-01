@@ -1,66 +1,10 @@
 package ru.qdev.lnotes.ui.fragment;
 
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Looper;
-import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
-
-import com.j256.ormlite.dao.CloseableIterator;
-
-import org.greenrobot.eventbus.EventBus;
-import org.jetbrains.annotations.NotNull;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Locale;
-
 //import butterknife.BindView;
 //import butterknife.ButterKnife;
 //import butterknife.OnClick;
 //import butterknife.Unbinder;
 import moxy.MvpAppCompatFragment;
-import moxy.presenter.InjectPresenter;
-import ru.qdev.lnotes.*;
-import ru.qdev.lnotes.db.QDVDbIteratorListViewAdapter;
-import ru.qdev.lnotes.db.QDVDbIteratorListViewAdapterExt;
-import ru.qdev.lnotes.db.entity.QDVDbFolder;
-import ru.qdev.lnotes.db.entity.QDVDbFolderOrMenuItem;
-import ru.qdev.lnotes.db.entity.QDVDbNote;
-import ru.qdev.lnotes.mvp.QDVFilterByFolderState;
-import ru.qdev.lnotes.mvp.QDVNotesHomePresenter;
-import ru.qdev.lnotes.mvp.QDVNotesListPresenter;
-import ru.qdev.lnotes.mvp.QDVNotesListState;
-import ru.qdev.lnotes.mvp.QDVNotesListView;
-import ru.qdev.lnotes.mvp.QDVSearchState;
-import ru.qdev.lnotes.mvp.QDVStatisticState;
-import ru.qdev.lnotes.ui.view.QDVViewFabric;
-import ru.qdev.lnotes.ui.activity.QDVBackupActivity;
-import src.R;
 
 /**
  * Created by Vladimir Kudashov on 29.09.18.
