@@ -1,6 +1,7 @@
 package ru.qdev.lnotes.core.events
 
 import android.content.Context
+import android.util.Log
 import androidx.annotation.AnyThread
 import androidx.room.Room
 import androidx.room.migration.Migration
@@ -28,7 +29,7 @@ class DbManager (val context: Context) {
                     context,
                     NotesDatabase::class.java, NOTES_DATABASE_NAME
                 )
-                .addMigrations(MIGRATION_1_2).build()
+                .addMigrations(MIGRATION_7_8).build()
         }
     }
 
@@ -42,8 +43,11 @@ class DbManager (val context: Context) {
     }
 
     companion object {
-        private val MIGRATION_1_2 = object : Migration(1, 2) {
+        const val TAG = "DbManager"
+
+        private val MIGRATION_7_8 = object : Migration(7, 8) {
             override fun migrate(db: SupportSQLiteDatabase) {
+                Log.i(TAG, "MIGRATION_7_8")
                 // Empty implementation, because the schema isn't changing.
             }
         }
