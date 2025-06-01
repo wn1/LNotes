@@ -65,8 +65,10 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.activity:activity:1.10.1'
     def nav_version = "2.9.0"
+    def room_version = "2.7.1"
+
+    implementation 'androidx.activity:activity:1.10.1'
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     //    testCompile 'junit:junit:4.12'
@@ -97,6 +99,20 @@ dependencies {
     implementation 'androidx.compose.runtime:runtime-livedata'
 
     implementation "androidx.navigation:navigation-compose:$nav_version"
+    //
+
+    //Room
+    implementation "androidx.room:room-runtime:$room_version"
+
+    // If this project uses any Kotlin source, use Kotlin Symbol Processing (KSP)
+    // See KSP Quickstart to add KSP to your build
+    ksp "androidx.room:room-compiler:$room_version"
+
+    // optional - Test helpers
+    testImplementation "androidx.room:room-testing:$room_version"
+
+    // optional - Paging 3 Integration
+    implementation "androidx.room:room-paging:$room_version"
     //
 
 

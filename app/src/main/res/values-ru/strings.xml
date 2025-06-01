@@ -36,7 +36,7 @@
     <string name="restore_db_confirm">Восстановить заметки из разервной копии?", "Внимание! Восстановление из резервной копии удалит существующие данные!</string>
     <string name="copy_data_message">Копирование...</string>
     <string name="action_backup">Резервное копирование...</string>
-    <string name="action_backup_restore">Резервное копирование и восстановление...</string>
+    <string name="action_backup_restore">Резервное копирование и восстановление</string>
     <string name="backup_title">Резервное копирование</string>
     <string name="copy_base_from_old_lnotes">Обновление базы данных LNotes</string>
     <string name="action_about">О приложении</string>

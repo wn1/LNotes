@@ -38,7 +38,7 @@
     <string name="restore_db_confirm">Restore notes from backup?", "Attention! After restore current data will be lost!</string>
     <string name="copy_data_message">Copy...</string>
     <string name="action_backup">Backup...</string>
-    <string name="action_backup_restore">Backup and restore...</string>
+    <string name="action_backup_restore">Backup and restore</string>
     <string name="backup_title">Backup</string>
     <string name="copy_base_from_old_lnotes">LNotes database update</string>
     <string name="action_about">About</string>
