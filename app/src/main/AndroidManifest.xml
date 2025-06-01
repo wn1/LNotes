@@ -1,60 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" >
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <supports-screens android:resizeable="true"
-    android:smallScreens="true"
-    android:normalScreens="true"
-    android:largeScreens="true"
-    android:xlargeScreens="true"
-    android:anyDensity="true"/>
-    <!--android:requiresSmallestWidthDp="integer"-->
-    <!--android:compatibleWidthLimitDp="integer"-->
-    <!--android:largestWidthLimitDp="integer"/>-->
-
-	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="18"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="18"/>
-
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:resizeable="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true" /> <!-- android:requiresSmallestWidthDp="integer" -->
+    <!-- android:compatibleWidthLimitDp="integer" -->
+    <!-- android:largestWidthLimitDp="integer"/> -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="18" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="18" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name="ru.qdev.lnotes.ThisApp"
         android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/QDVActionBarTheme"
-        android:fullBackupContent="@xml/backup_rules">
+        android:theme="@style/QDVActionBarTheme">
+
         <activity
-            android:name="ru.qdev.lnotes.ui.activity.notes.QDVNotesHomeActivity"
+            android:name="ru.qdev.lnotes.ui.activity.splash.SplashActivity"
             android:exported="true"
-            android:label="@string/app_name"
-            android:configChanges="keyboardHidden|orientation|screenSize|screenLayout"
-            android:launchMode="singleTop"
-            android:theme="@style/QDVActionBarTheme.Launcher">
+            android:configChanges="keyboardHidden|orientation|screenSize|screenLayout">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
+            android:name="ru.qdev.lnotes.ui.activity.notes.QDVNotesHomeActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize|screenLayout"
             android:exported="false"
+            android:launchMode="singleTop"
+            android:theme="@style/QDVActionBarTheme.Launcher">
+
+        </activity>
+
+        <activity
             android:name="ru.qdev.lnotes.ui.activity.QDVBackupActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|screenLayout"
-            android:label="@string/app_name" >
-        </activity>
+            android:exported="false"
+            android:label="@string/app_name" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">
-
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths_for_provider" />
         </provider>
-
     </application>
 
 </manifest>
