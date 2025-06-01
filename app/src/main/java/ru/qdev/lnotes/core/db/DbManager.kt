@@ -16,20 +16,20 @@ class DbManager (val context: Context) {
     var notesDatabase: NotesDatabase? = null
         private set
 
-    @AnyThread
     fun doReloadDb() {
-        QDVNavigationDrawerState().selectedFolderOrMenu = null
-        EventBus.getDefault().post(QDVMvpDbPresenter.DoCloseDatabase())
-        EventBus.getDefault().post(QDVMvpDbPresenter.DoReloadDatabase())
+        closeNotesDb()
+        openNotesDb()
     }
 
     fun openNotesDb() {
-        notesDatabase = Room
-            .databaseBuilder(
-                context,
-                NotesDatabase::class.java, NOTES_DATABASE_NAME
-            )
-            .addMigrations(MIGRATION_1_2).build()
+        if(notesDatabase == null || notesDatabase?.isOpen == false) {
+            notesDatabase = Room
+                .databaseBuilder(
+                    context,
+                    NotesDatabase::class.java, NOTES_DATABASE_NAME
+                )
+                .addMigrations(MIGRATION_1_2).build()
+        }
     }
 
     fun closeNotesDb() {

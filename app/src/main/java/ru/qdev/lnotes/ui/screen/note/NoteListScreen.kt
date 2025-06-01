@@ -19,19 +19,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.reply.ui.theme.AppTheme
+import ru.qdev.lnotes.db.entity.NotesEntry
 import ru.qdev.lnotes.ui.screen.note.NoteListScreenViewModel
 
 @ExperimentalMaterial3Api
 @Composable
 fun NoteListScreen(viewModel: NoteListScreenViewModel = viewModel()) {
     BaseScreen(baseViewModel = viewModel) {
-        ScreenContent()
+        ScreenContent(
+            test = viewModel.testS.value
+        )
     }
 }
 
 @ExperimentalMaterial3Api
 @Composable
-private fun ScreenContent() {
+private fun ScreenContent(test: List<NotesEntry>) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -50,13 +53,17 @@ private fun ScreenContent() {
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.secondaryContainer)
         ){
-            NotesList(modifier = Modifier.fillMaxSize())
+            NotesList(modifier = Modifier.fillMaxSize(), test = test)
         }
     }
 }
 
 @Composable
-private fun NotesList(modifier: Modifier) {
+private fun NotesList(modifier: Modifier,
+                      test: List<NotesEntry>) {
+    test.forEach {
+        Text(text = it.content ?: "")
+    }
 //    Button(onClick = {}) { }
 //    Text(text = "test", color = Color.Blue, fontSize = 14.sp)
 }
@@ -73,6 +80,8 @@ private fun NotesList(modifier: Modifier) {
 )
 private fun ScreenContentPreview() {
     AppTheme {
-        ScreenContent()
+        ScreenContent(
+            test = listOf()
+        )
     }
 }
