@@ -20,8 +20,9 @@ class NoteListScreenViewModel @Inject constructor(
 
     init {
         dbManager.openNotesDb()
-        fillTest()
         notesDao = dbManager.notesDatabase!!.notesDao()
+
+        fillTest()
     }
 
     val testS = mutableStateOf<List<NotesEntry>>(listOf())

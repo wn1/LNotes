@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.reply.ui.theme.AppTheme
 import ru.qdev.lnotes.db.entity.NotesEntry
@@ -24,7 +25,7 @@ import ru.qdev.lnotes.ui.screen.note.NoteListScreenViewModel
 
 @ExperimentalMaterial3Api
 @Composable
-fun NoteListScreen(viewModel: NoteListScreenViewModel = viewModel()) {
+fun NoteListScreen(viewModel: NoteListScreenViewModel = hiltViewModel()) {
     BaseScreen(baseViewModel = viewModel) {
         ScreenContent(
             test = viewModel.testS.value
