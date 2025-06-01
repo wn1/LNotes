@@ -4,11 +4,13 @@ import android.app.Application;
 import android.content.Context;
 import androidx.annotation.AnyThread;
 
+import dagger.hilt.android.HiltAndroidApp;
+
 /**
  * Created by Vladimir Kudashov on 13.04.17.
  */
 
-@AnyThread
+@HiltAndroidApp
 public class ThisApp extends Application {
     public static Context getContext() {
         return thisApp.getApplicationContext();

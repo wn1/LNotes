@@ -6,6 +6,7 @@ import moxy.InjectViewState
 import ru.qdev.lnotes.*
 import ru.qdev.lnotes.db.entity.QDVDbFolder
 import ru.qdev.lnotes.db.entity.QDVDbNote
+import src.R
 import java.util.*
 
 /**

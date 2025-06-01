@@ -7,7 +7,7 @@ import org.greenrobot.eventbus.EventBus
 import ru.qdev.lnotes.mvp.QDVMvpDbPresenter
 import ru.qdev.lnotes.mvp.QDVNavigationDrawerState
 
-class DbManager (@ApplicationContext val context: Context) {
+class DbManager (val context: Context) {
 
     @AnyThread
     fun doReloadDb() {

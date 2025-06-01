@@ -14,6 +14,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import ru.qdev.lnotes.*
 import ru.qdev.lnotes.db.entity.QDVDbFolderOrMenuItem
+import src.R
 import java.util.ArrayList
 
 /**

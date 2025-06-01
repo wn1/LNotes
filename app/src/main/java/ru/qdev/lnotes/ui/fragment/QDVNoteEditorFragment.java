@@ -30,9 +30,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
+//import butterknife.BindView;
+//import butterknife.ButterKnife;
+//import butterknife.Unbinder;
 import moxy.MvpAppCompatFragment;
 import moxy.presenter.InjectPresenter;
 import ru.qdev.lnotes.*;
@@ -45,10 +45,13 @@ import ru.qdev.lnotes.mvp.QDVNotesHomePresenter;
  * Created by Vladimir Kudashov on 30.03.17.
  */
 
-public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNoteEditorView {
+public class QDVNoteEditorFragment extends MvpAppCompatFragment /*implements QDVNoteEditorView*/ {
     public static final String FRAGMENT_TAG = "notesEditorFragment";
 
-    private Unbinder unbinder;
+//    private Unbinder unbinder;
+
+    //TODO
+    /*
 
     @BindView(R.id.editText)
     EditText editTextView;
@@ -249,4 +252,5 @@ public class QDVNoteEditorFragment extends MvpAppCompatFragment implements QDVNo
             goBack();
         }
     }
+     */
 }

@@ -11,7 +11,7 @@ import androidx.activity.viewModels
 import androidx.annotation.AnyThread
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AlertDialog
-import butterknife.ButterKnife
+//import butterknife.ButterKnife
 import dagger.hilt.android.AndroidEntryPoint
 import ru.qdev.lnotes.mvp.QDVStatisticState.addTimeForShowUserRatingQuest
 import ru.qdev.lnotes.mvp.QDVStatisticState.userRatingQuestShownNoNeed
@@ -59,9 +59,9 @@ class QDVNotesHomeActivity : ComponentActivity() {
 
         }
 
-        setContentView(R.layout.home_activity)
+//        setContentView(R.layout.home_activity)
 
-        ButterKnife.bind(this)
+//        ButterKnife.bind(this)
 
 //        val actionBar = supportActionBar
 //        if (actionBar != null) {

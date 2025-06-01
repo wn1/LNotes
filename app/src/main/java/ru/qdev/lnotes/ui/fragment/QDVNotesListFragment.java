@@ -39,10 +39,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.Unbinder;
+//import butterknife.BindView;
+//import butterknife.ButterKnife;
+//import butterknife.OnClick;
+//import butterknife.Unbinder;
 import moxy.MvpAppCompatFragment;
 import moxy.presenter.InjectPresenter;
 import ru.qdev.lnotes.*;
@@ -60,19 +60,21 @@ import ru.qdev.lnotes.mvp.QDVSearchState;
 import ru.qdev.lnotes.mvp.QDVStatisticState;
 import ru.qdev.lnotes.ui.view.QDVViewFabric;
 import ru.qdev.lnotes.ui.activity.QDVBackupActivity;
-import ru.qdev.lnotes.utils.QDVAppInfoKt;
+import src.R;
 
 /**
  * Created by Vladimir Kudashov on 29.09.18.
  */
 
-public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNotesListView {
+public class QDVNotesListFragment extends MvpAppCompatFragment /*implements QDVNotesListView*/ {
     public static final String FRAGMENT_TAG = "notesListFragment";
     public static final String ARG_FILTER_BY_FOLDER = "filterByFolder";
     private static final String STATE_KEY_NAME = "state";
 
-    private Unbinder unbinder;
+//    private Unbinder unbinder;
 
+    //TODO
+/*
     @BindView(R.id.notesList)
     ListView notesList;
     @BindView(R.id.findTextViewLabel)
@@ -610,4 +612,5 @@ public class QDVNotesListFragment extends MvpAppCompatFragment implements QDVNot
             fab.hide();
         }
     }
+ */
 }

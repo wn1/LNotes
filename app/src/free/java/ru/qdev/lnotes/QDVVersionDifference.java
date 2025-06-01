@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import org.jetbrains.annotations.Nullable;
 
+import src.R;
+
 public class QDVVersionDifference {
     static public boolean isFreeVersion() { return true; }
 

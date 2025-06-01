@@ -15,7 +15,7 @@ import androidx.appcompat.widget.AppCompatImageView;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import ru.qdev.lnotes.R;
+import src.R;
 
 /**
  * Created by Vladimir Kudashov on 09.10.18.

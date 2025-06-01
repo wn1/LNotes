@@ -40,6 +40,7 @@ import ru.qdev.lnotes.db.QDVDbIteratorListViewAdapterExt;
 import ru.qdev.lnotes.db.entity.QDVDbFolderOrMenuItem;
 import ru.qdev.lnotes.mvp.QDVNavigationDrawerPresenter;
 import ru.qdev.lnotes.mvp.QDVNavigationDrawerView;
+import src.R;
 
 /**
  * Created by Vladimir Kudashov on 11.03.17.
