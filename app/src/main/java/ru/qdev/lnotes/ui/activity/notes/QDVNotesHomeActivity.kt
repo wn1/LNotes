@@ -4,29 +4,20 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.annotation.AnyThread
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AlertDialog
 //import butterknife.ButterKnife
 import dagger.hilt.android.AndroidEntryPoint
 import ru.qdev.lnotes.mvp.QDVStatisticState.addTimeForShowUserRatingQuest
 import ru.qdev.lnotes.mvp.QDVStatisticState.userRatingQuestShownNoNeed
-import ru.qdev.lnotes.ui.fragment.QDVNoteEditorFragment
-import ru.qdev.lnotes.ui.fragment.QDVNotesListFragment
+import ru.qdev.lnotes.ui.navigation.Navigator
+import ru.qdev.lnotes.ui.navigation.route.note.NoteListRoute
 import ru.qdev.lnotes.ui.view.QDVViewFabric
-import ru.qdev.lnotes.ui.view.dialog.Dialog
-import ru.qdev.lnotes.ui.view.dialog.DialogButton
 import ru.qdev.lnotes.utils.QDVTempFileSendUtils
 import src.R
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileNotFoundException
-import java.io.FileOutputStream
-import java.io.IOException
 import javax.inject.Inject
 
 /**
@@ -39,6 +30,9 @@ class QDVNotesHomeActivity : ComponentActivity() {
     private val viewModel: QDVNotesHomeViewModel by viewModels<QDVNotesHomeViewModel>()
 
     private var tempFileSendUtils: QDVTempFileSendUtils? = null
+
+    @Inject
+    lateinit var navigator: Navigator
 
 //    @JvmField
 //    @InjectPresenter
@@ -56,7 +50,7 @@ class QDVNotesHomeActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-
+            navigator.NavigationView(startDestination = NoteListRoute())
         }
 
 //        setContentView(R.layout.home_activity)

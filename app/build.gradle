@@ -3,6 +3,7 @@ plugins {
     id 'com.google.devtools.ksp'
     id 'com.google.dagger.hilt.android'
     id 'org.jetbrains.kotlin.plugin.compose'
+    id 'kotlinx-serialization'
 }
 
 apply plugin: 'com.android.application'
@@ -64,6 +65,8 @@ android {
 }
 
 dependencies {
+    def nav_version = "2.9.0"
+
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     //    testCompile 'junit:junit:4.12'
 
@@ -91,6 +94,8 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.9.0'
     // Optional - Integration with LiveData
     implementation 'androidx.compose.runtime:runtime-livedata'
+
+    implementation "androidx.navigation:navigation-compose:$nav_version"
     //
 
 
