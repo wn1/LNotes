@@ -76,11 +76,13 @@ class NoteListScreenViewModel @Inject constructor(
                 )
             )
 
-            folderList = folderList.plus(
-                folderDao.getAllOrderByLabel().map {
-                    Folder.from(it)
-                }
-            )
+            withContext(Dispatchers.IO) {
+                folderList = folderList.plus(
+                    folderDao.getAllOrderByLabel().map {
+                        Folder.from(it)
+                    }
+                )
+            }
 
             folderListS.value = folderList
 
