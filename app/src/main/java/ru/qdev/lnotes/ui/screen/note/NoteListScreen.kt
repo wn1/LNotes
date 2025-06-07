@@ -2,32 +2,55 @@ package ru.qdev.lnotes.ui.screen.base
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.reply.ui.theme.AppTheme
+import kotlinx.coroutines.launch
 import ru.qdev.lnotes.db.entity.NotesEntry
+import ru.qdev.lnotes.model.Folder
+import ru.qdev.lnotes.ui.screen.note.NoteListScreenListener
 import ru.qdev.lnotes.ui.screen.note.NoteListScreenViewModel
+import ru.qdev.lnotes.ui.theme.dp40
+import ru.qdev.lnotes.ui.theme.dp8
+import src.R
 
 @ExperimentalMaterial3Api
 @Composable
 fun NoteListScreen(viewModel: NoteListScreenViewModel = hiltViewModel()) {
     BaseScreen(baseViewModel = viewModel) {
         ScreenContent(
+            listener = viewModel,
+            folderList = viewModel.folderListS.value,
             test = viewModel.testS.value
         )
     }
@@ -35,7 +58,14 @@ fun NoteListScreen(viewModel: NoteListScreenViewModel = hiltViewModel()) {
 
 @ExperimentalMaterial3Api
 @Composable
-private fun ScreenContent(test: List<NotesEntry>) {
+private fun ScreenContent(
+    listener: NoteListScreenListener?,
+    folderList: List<Folder>,
+    test: List<NotesEntry>
+) {
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -45,16 +75,65 @@ private fun ScreenContent(test: List<NotesEntry>) {
                     titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
                 title = {
-                    Text("Small Top App Bar")
+                    Row {
+                        Icon(
+                            modifier = Modifier.size(dp40).clip(RoundedCornerShape(dp8)).clickable {
+                                scope.launch {
+                                    if (drawerState.isOpen) {
+                                        drawerState.close()
+                                    } else {
+                                        drawerState.open()
+                                    }
+                                    listener?.onFolderMenuClick()
+                                }
+                            },
+                            painter = painterResource(R.drawable.ic_menu_24dp),
+                            contentDescription = stringResource(R.string.folder_listview_description)
+                        )
+                        Text("Small Top App Bar")
+                    }
                 }
             )
         },
     ) { innerPadding ->
-        Column (modifier = Modifier.padding(top = innerPadding.calculateTopPadding())
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.secondaryContainer)
-        ){
-            NotesList(modifier = Modifier.fillMaxSize(), test = test)
+
+        ModalNavigationDrawer (
+            modifier = Modifier.padding(top = innerPadding.calculateTopPadding()),
+            drawerState = drawerState,
+            drawerContent = {
+                ModalDrawerSheet {
+                    FolderList(
+                        modifier = Modifier,
+                        folders = folderList
+                    )
+                }
+            },
+        ) {
+            Column (modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.secondaryContainer)
+            ){
+                NotesList(modifier = Modifier.fillMaxSize(), test = test)
+            }
+
+//            Text(text = "test 2")
+//            Scaffold(
+//                floatingActionButton = {
+//                    ExtendedFloatingActionButton(
+//                        text = { Text("Show drawer") },
+//                        icon = { Icon(Icons.Filled.Add, contentDescription = "") },
+//                        onClick = {
+//                            scope.launch {
+//                                drawerState.apply {
+//                                    if (isClosed) open() else close()
+//                                }
+//                            }
+//                        }
+//                    )
+//                }
+//            ) { contentPadding ->
+//                // Screen content
+//            }
         }
     }
 }
@@ -64,6 +143,16 @@ private fun NotesList(modifier: Modifier,
                       test: List<NotesEntry>) {
     test.forEach {
         Text(text = it.content ?: "")
+    }
+//    Button(onClick = {}) { }
+//    Text(text = "test", color = Color.Blue, fontSize = 14.sp)
+}
+
+@Composable
+private fun FolderList(modifier: Modifier,
+                      folders: List<Folder>) {
+    folders.forEach {
+        Text(text = it.title)
     }
 //    Button(onClick = {}) { }
 //    Text(text = "test", color = Color.Blue, fontSize = 14.sp)
@@ -80,8 +169,11 @@ private fun NotesList(modifier: Modifier,
     name = "DefaultPreviewLight"
 )
 private fun ScreenContentPreview() {
+    val context = LocalContext.current
     AppTheme {
         ScreenContent(
+            listener = null,
+            folderList = Folder.makeTestList(context),
             test = listOf()
         )
     }

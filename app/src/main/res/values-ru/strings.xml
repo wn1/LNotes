@@ -27,6 +27,7 @@
     <string name="folder_name_need_no_empty">Имя папки не может быть пустым</string>
     <string name="category_all">Все</string>
     <string name="category_unknown">Не выбрано</string>
+    <string name="menu_cd">Меню</string>
     <string name="menu_rename">Переименовать...</string>
     <string name="rename_folder_title">Переименовать</string>
     <string name="delete_folder_confirm">Удалить папку \"%s\"?</string>

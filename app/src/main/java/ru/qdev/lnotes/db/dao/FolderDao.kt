@@ -9,8 +9,8 @@ import ru.qdev.lnotes.db.entity.NotesEntry
 
 @Dao
 interface FolderDao {
-    @Query("SELECT * FROM categories")
-    fun getAll(): List<FolderEntry>
+    @Query("SELECT * FROM categories ORDER BY label")
+    fun getAllOrderByLabel(): List<FolderEntry>
 
 //    @Query("SELECT * FROM notes WHERE uid IN (:userIds)")
 //    fun loadAllByIds(userIds: IntArray): List<User>
