@@ -102,6 +102,10 @@ dependencies {
     implementation "androidx.navigation:navigation-compose:$nav_version"
     //
 
+    //Paging
+    implementation "androidx.paging:paging-runtime-ktx:3.3.6"
+    implementation "androidx.paging:paging-compose:3.3.6"
+
     //Room
     implementation "androidx.room:room-runtime:$room_version"
 

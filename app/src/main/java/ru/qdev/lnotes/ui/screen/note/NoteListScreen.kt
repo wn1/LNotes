@@ -3,13 +3,15 @@ package ru.qdev.lnotes.ui.screen.base
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -25,16 +27,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.PagingData
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.reply.ui.theme.AppTheme
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import ru.qdev.lnotes.db.entity.NotesEntry
 import ru.qdev.lnotes.model.Folder
@@ -51,7 +54,7 @@ fun NoteListScreen(viewModel: NoteListScreenViewModel = hiltViewModel()) {
         ScreenContent(
             listener = viewModel,
             folderList = viewModel.folderListS.value,
-            test = viewModel.testS.value
+            notesFlow = viewModel.notesPagingFlow
         )
     }
 }
@@ -61,10 +64,12 @@ fun NoteListScreen(viewModel: NoteListScreenViewModel = hiltViewModel()) {
 private fun ScreenContent(
     listener: NoteListScreenListener?,
     folderList: List<Folder>,
-    test: List<NotesEntry>
+    notesFlow: Flow<PagingData<NotesEntry>>,
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    val notes = notesFlow.collectAsLazyPagingItems()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -113,7 +118,24 @@ private fun ScreenContent(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.secondaryContainer)
             ){
-                NotesList(modifier = Modifier.fillMaxSize(), test = test)
+
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(
+                        count = notes.itemCount,
+                        key = { index -> notes[index]?.uid ?: index }
+                    ) { index ->
+                        notes[index]?.let {
+                            NotesItem(modifier = Modifier.fillMaxSize(), note = it)
+                        }
+                    }
+
+                }
+
+
             }
 
 //            Text(text = "test 2")
@@ -139,13 +161,9 @@ private fun ScreenContent(
 }
 
 @Composable
-private fun NotesList(modifier: Modifier,
-                      test: List<NotesEntry>) {
-    test.forEach {
-        Text(text = it.content ?: "")
-    }
-//    Button(onClick = {}) { }
-//    Text(text = "test", color = Color.Blue, fontSize = 14.sp)
+private fun NotesItem(modifier: Modifier,
+                      note: NotesEntry) {
+    Text(text = note.content ?: "")
 }
 
 @Composable
@@ -174,7 +192,7 @@ private fun ScreenContentPreview() {
         ScreenContent(
             listener = null,
             folderList = Folder.makeTestList(context),
-            test = listOf()
+            notesFlow = flowOf(PagingData.from(NotesEntry.makeTestList()))
         )
     }
 }

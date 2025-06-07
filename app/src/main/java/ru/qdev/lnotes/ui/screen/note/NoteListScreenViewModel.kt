@@ -4,10 +4,15 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.qdev.lnotes.core.events.DbManager
@@ -40,6 +45,22 @@ class NoteListScreenViewModel @Inject constructor(
     val reloadNotesEvent = mutableStateOf<LiveEvent<Boolean>?>(null)
 
     private var fillFolderJob: Job? = null
+    private var selectedFolderIdForPager: Long? = null
+
+    private fun makeNotesPagingFlow(): Flow<PagingData<NotesEntry>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 20,
+                enablePlaceholders = false,
+                initialLoadSize = 40
+            ),
+            pagingSourceFactory = { notesDao.getNotesByFolderIdPagingSource(
+                folderId = selectedFolderIdForPager
+            ) }
+        ).flow
+    }
+
+    val notesPagingFlow = makeNotesPagingFlow().cachedIn(viewModelScope)
 
     override fun provideContext(): Context {
         return context
@@ -50,19 +71,7 @@ class NoteListScreenViewModel @Inject constructor(
         notesDao = dbManager.notesDatabase!!.notesDao()
         folderDao = dbManager.notesDatabase!!.folderDao()
 
-        fillTest()
         fillFolder()
-    }
-
-    val testS = mutableStateOf<List<NotesEntry>>(listOf())
-
-    private fun fillTest() {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                val entries = notesDao.getAll()
-                testS.value = entries
-            }
-        }
     }
 
     private fun fillFolder() {
@@ -96,8 +105,13 @@ class NoteListScreenViewModel @Inject constructor(
                 }
             }
 
-            reloadNotesEvent.value = LiveEvent(true)
+            reloadNotes()
         }
+    }
+
+    fun reloadNotes() {
+        selectedFolderIdForPager = selectedFolderS.value?.id?.toLongOrNull()
+        reloadNotesEvent.value = LiveEvent(true)
     }
 
     override fun onFolderMenuClick(){
