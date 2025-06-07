@@ -29,6 +29,7 @@ import javax.inject.Inject
 
 interface NoteListScreenListener {
     fun onFolderMenuClick()
+    fun onSelectFolder(folder: Folder)
 }
 
 @HiltViewModel
@@ -42,7 +43,8 @@ class NoteListScreenViewModel @Inject constructor(
 
     val selectedFolderS = mutableStateOf<Folder?>(null)
     val folderListS = mutableStateOf<List<Folder>>(listOf())
-    val reloadNotesEvent = mutableStateOf<LiveEvent<Boolean>?>(null)
+    val reloadNotesAndGoToFirstEvent = mutableStateOf<LiveEvent<Boolean>?>(null)
+    val drawerHideEvent = mutableStateOf<LiveEvent<Boolean>?>(null)
 
     private var fillFolderJob: Job? = null
     private var selectedFolderIdForPager: Long? = null
@@ -72,6 +74,7 @@ class NoteListScreenViewModel @Inject constructor(
         folderDao = dbManager.notesDatabase!!.folderDao()
 
         fillFolder()
+        reloadNotesAndGoToFirst()
     }
 
     private fun fillFolder() {
@@ -104,19 +107,31 @@ class NoteListScreenViewModel @Inject constructor(
                     folderId == it.id
                 }
             }
-
-            reloadNotes()
         }
     }
 
-    fun reloadNotes() {
+    fun reloadNotesAndGoToFirst() {
         selectedFolderIdForPager = selectedFolderS.value?.id?.toLongOrNull()
-        reloadNotesEvent.value = LiveEvent(true)
+        reloadNotesAndGoToFirstEvent.value = LiveEvent(true)
     }
 
     override fun onFolderMenuClick(){
         Log.i(TAG, "onFolderMenuClick")
 
+    }
+
+    override fun onSelectFolder(folder: Folder) {
+        Log.i(TAG, "onSelectFolder: ${folder.id}")
+        when (folder.type) {
+            FolderType.AddFolderItem -> {
+                //todo
+                return
+            }
+            else -> {}
+        }
+        selectedFolderS.value = folder
+        reloadNotesAndGoToFirst()
+        drawerHideEvent.value = LiveEvent(true)
     }
 
     companion object {

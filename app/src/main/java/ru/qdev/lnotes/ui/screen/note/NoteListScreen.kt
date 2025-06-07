@@ -7,10 +7,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,6 +48,7 @@ import ru.qdev.lnotes.ui.screen.note.NoteListScreenListener
 import ru.qdev.lnotes.ui.screen.note.NoteListScreenViewModel
 import ru.qdev.lnotes.ui.theme.dp40
 import ru.qdev.lnotes.ui.theme.dp8
+import ru.qdev.lnotes.utils.live_data.LiveEvent
 import src.R
 
 @ExperimentalMaterial3Api
@@ -54,7 +58,9 @@ fun NoteListScreen(viewModel: NoteListScreenViewModel = hiltViewModel()) {
         ScreenContent(
             listener = viewModel,
             folderList = viewModel.folderListS.value,
-            notesFlow = viewModel.notesPagingFlow
+            notesFlow = viewModel.notesPagingFlow,
+            reloadNotesAndGoToFirstEvent = viewModel.reloadNotesAndGoToFirstEvent.value,
+            drawerHideEvent = viewModel.drawerHideEvent.value
         )
     }
 }
@@ -65,11 +71,27 @@ private fun ScreenContent(
     listener: NoteListScreenListener?,
     folderList: List<Folder>,
     notesFlow: Flow<PagingData<NotesEntry>>,
+    reloadNotesAndGoToFirstEvent: LiveEvent<Boolean>? = null,
+    drawerHideEvent: LiveEvent<Boolean>? = null
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
     val notes = notesFlow.collectAsLazyPagingItems()
+    val notesColumnState = rememberLazyListState()
+
+    reloadNotesAndGoToFirstEvent?.getEventAndReset()?.let {
+        scope.launch {
+            notesColumnState.scrollToItem(0)
+            notes.refresh()
+        }
+    }
+
+    drawerHideEvent?.getEventAndReset()?.let {
+        scope.launch {
+            drawerState.close()
+        }
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -109,7 +131,10 @@ private fun ScreenContent(
                 ModalDrawerSheet {
                     FolderList(
                         modifier = Modifier,
-                        folders = folderList
+                        folders = folderList,
+                        onFolderClick = {
+                            listener?.onSelectFolder(it)
+                        }
                     )
                 }
             },
@@ -122,7 +147,8 @@ private fun ScreenContent(
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    state = notesColumnState
                 ) {
                     items(
                         count = notes.itemCount,
@@ -168,9 +194,18 @@ private fun NotesItem(modifier: Modifier,
 
 @Composable
 private fun FolderList(modifier: Modifier,
-                      folders: List<Folder>) {
+                       folders: List<Folder>,
+                       onFolderClick: (Folder) -> Unit) {
     folders.forEach {
-        Text(text = it.title)
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = dp40)
+                .clickable {
+                onFolderClick(it)
+            },
+            text = it.title
+        )
     }
 //    Button(onClick = {}) { }
 //    Text(text = "test", color = Color.Blue, fontSize = 14.sp)
