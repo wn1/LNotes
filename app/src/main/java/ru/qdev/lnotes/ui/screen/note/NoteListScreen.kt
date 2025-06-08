@@ -72,7 +72,8 @@ private fun ScreenContent(
     folderList: List<Folder>,
     notesFlow: Flow<PagingData<NotesEntry>>,
     reloadNotesAndGoToFirstEvent: LiveEvent<Boolean>? = null,
-    drawerHideEvent: LiveEvent<Boolean>? = null
+    drawerHideEvent: LiveEvent<Boolean>? = null,
+    drawerShowEvent: LiveEvent<Boolean>? = null
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -90,6 +91,12 @@ private fun ScreenContent(
     drawerHideEvent?.getEventAndReset()?.let {
         scope.launch {
             drawerState.close()
+        }
+    }
+
+    drawerShowEvent?.getEventAndReset()?.let {
+        scope.launch {
+            drawerState.open()
         }
     }
 
@@ -128,15 +135,13 @@ private fun ScreenContent(
             modifier = Modifier.padding(top = innerPadding.calculateTopPadding()),
             drawerState = drawerState,
             drawerContent = {
-                ModalDrawerSheet {
-                    FolderList(
-                        modifier = Modifier,
-                        folders = folderList,
-                        onFolderClick = {
-                            listener?.onSelectFolder(it)
-                        }
-                    )
-                }
+                FolderListDrawer(
+                    modifier = Modifier,
+                    folders = folderList,
+                    onFolderClick = {
+                        listener?.onSelectFolder(it)
+                    }
+                )
             },
         ) {
             Column (modifier = Modifier
@@ -193,19 +198,23 @@ private fun NotesItem(modifier: Modifier,
 }
 
 @Composable
-private fun FolderList(modifier: Modifier,
-                       folders: List<Folder>,
-                       onFolderClick: (Folder) -> Unit) {
-    folders.forEach {
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .defaultMinSize(minHeight = dp40)
-                .clickable {
-                onFolderClick(it)
-            },
-            text = it.title
-        )
+private fun FolderListDrawer(modifier: Modifier,
+                             folders: List<Folder>,
+                             onFolderClick: (Folder) -> Unit) {
+    ModalDrawerSheet {
+        Column {
+            folders.forEach {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .defaultMinSize(minHeight = dp40)
+                        .clickable {
+                            onFolderClick(it)
+                        },
+                    text = it.title
+                )
+            }
+        }
     }
 //    Button(onClick = {}) { }
 //    Text(text = "test", color = Color.Blue, fontSize = 14.sp)
@@ -229,5 +238,29 @@ private fun ScreenContentPreview() {
             folderList = Folder.makeTestList(context),
             notesFlow = flowOf(PagingData.from(NotesEntry.makeTestList()))
         )
+    }
+}
+
+@ExperimentalMaterial3Api
+@Composable
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "DefaultPreviewDark",
+    showBackground = true
+)
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    name = "DefaultPreviewLight",
+    showBackground = true
+)
+private fun ScreenContentPreviewDrawer() {
+    val context = LocalContext.current
+    AppTheme {
+        FolderListDrawer(
+            modifier = Modifier,
+            folders = Folder.makeTestList(context)
+        ) {
+
+        }
     }
 }
