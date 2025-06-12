@@ -180,8 +180,6 @@ private fun ScreenContent(
                     }
 
                 }
-
-
             }
 
 //            Text(text = "test 2")

@@ -7,4 +7,5 @@ enum class DialogButtonStyle {
 
 data class DialogButton(val title: String,
                         val style: DialogButtonStyle = DialogButtonStyle.Secondary,
-                        val id: String = "")
+                        val id: String = "") {
+}
