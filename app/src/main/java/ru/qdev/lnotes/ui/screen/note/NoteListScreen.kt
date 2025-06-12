@@ -22,14 +22,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -46,8 +47,12 @@ import ru.qdev.lnotes.db.entity.NotesEntry
 import ru.qdev.lnotes.model.Folder
 import ru.qdev.lnotes.ui.screen.note.NoteListScreenListener
 import ru.qdev.lnotes.ui.screen.note.NoteListScreenViewModel
+import ru.qdev.lnotes.ui.theme.contentHPaddingDp
 import ru.qdev.lnotes.ui.theme.dp40
 import ru.qdev.lnotes.ui.theme.dp8
+import ru.qdev.lnotes.ui.view.spacer.HSpacer
+import ru.qdev.lnotes.ui.view.spacer.VSpacer
+import ru.qdev.lnotes.ui.view.text.SText
 import ru.qdev.lnotes.utils.live_data.LiveEvent
 import src.R
 
@@ -58,6 +63,7 @@ fun NoteListScreen(viewModel: NoteListScreenViewModel = hiltViewModel()) {
         ScreenContent(
             listener = viewModel,
             folderList = viewModel.folderListS.value,
+            selectedFolder = viewModel.selectedFolderS.value,
             notesFlow = viewModel.notesPagingFlow,
             reloadNotesAndGoToFirstEvent = viewModel.reloadNotesAndGoToFirstEvent.value,
             drawerHideEvent = viewModel.drawerHideEvent.value
@@ -70,6 +76,7 @@ fun NoteListScreen(viewModel: NoteListScreenViewModel = hiltViewModel()) {
 private fun ScreenContent(
     listener: NoteListScreenListener?,
     folderList: List<Folder>,
+    selectedFolder: Folder?,
     notesFlow: Flow<PagingData<NotesEntry>>,
     reloadNotesAndGoToFirstEvent: LiveEvent<Boolean>? = null,
     drawerHideEvent: LiveEvent<Boolean>? = null,
@@ -124,7 +131,14 @@ private fun ScreenContent(
                             painter = painterResource(R.drawable.ic_menu_24dp),
                             contentDescription = stringResource(R.string.folder_listview_description)
                         )
-                        Text("Small Top App Bar")
+
+                        HSpacer(dp8)
+
+                        SText(
+                            modifier = Modifier.align(Alignment.CenterVertically),
+                            text = selectedFolder?.title ?: "",
+                            color = MaterialTheme.colorScheme.primary
+                        )
                     }
                 }
             )
@@ -138,6 +152,7 @@ private fun ScreenContent(
                 FolderListDrawer(
                     modifier = Modifier,
                     folders = folderList,
+                    selectedFolder = selectedFolder,
                     onFolderClick = {
                         listener?.onSelectFolder(it)
                     }
@@ -194,25 +209,45 @@ private fun ScreenContent(
 @Composable
 private fun NotesItem(modifier: Modifier,
                       note: NotesEntry) {
-    Text(text = note.content ?: "")
+    SText(text = note.content ?: "")
 }
 
 @Composable
 private fun FolderListDrawer(modifier: Modifier,
                              folders: List<Folder>,
+                             selectedFolder: Folder?,
                              onFolderClick: (Folder) -> Unit) {
     ModalDrawerSheet {
         Column {
             folders.forEach {
-                Text(
+                val textColor: Color
+                val selectedM = if (selectedFolder?.id == it.id && selectedFolder?.id != null) {
+                    textColor = MaterialTheme.colorScheme.primary
+                    Modifier.background(MaterialTheme.colorScheme.primaryContainer)
+                }
+                else {
+                    textColor = MaterialTheme.colorScheme.secondary
+                    Modifier.background(MaterialTheme.colorScheme.secondaryContainer)
+                }
+
+                Row (
                     modifier = Modifier
                         .fillMaxWidth()
                         .defaultMinSize(minHeight = dp40)
                         .clickable {
                             onFolderClick(it)
-                        },
-                    text = it.title
-                )
+                        }
+                        .then(selectedM)
+                        .padding(contentHPaddingDp),
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    SText(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        text = it.title,
+                        color = textColor
+                    )
+                }
             }
         }
     }
@@ -232,10 +267,12 @@ private fun FolderListDrawer(modifier: Modifier,
 )
 private fun ScreenContentPreview() {
     val context = LocalContext.current
+    val folders = Folder.makeTestList(context)
     AppTheme {
         ScreenContent(
             listener = null,
-            folderList = Folder.makeTestList(context),
+            selectedFolder = folders.getOrNull(1),
+            folderList = folders,
             notesFlow = flowOf(PagingData.from(NotesEntry.makeTestList()))
         )
     }
@@ -255,10 +292,12 @@ private fun ScreenContentPreview() {
 )
 private fun ScreenContentPreviewDrawer() {
     val context = LocalContext.current
+    val folders = Folder.makeTestList(context)
     AppTheme {
         FolderListDrawer(
             modifier = Modifier,
-            folders = Folder.makeTestList(context)
+            folders = folders,
+            selectedFolder = folders.getOrNull(1)
         ) {
 
         }
