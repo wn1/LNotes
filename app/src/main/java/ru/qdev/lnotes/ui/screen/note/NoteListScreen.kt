@@ -3,6 +3,7 @@ package ru.qdev.lnotes.ui.screen.base
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -157,6 +158,9 @@ private fun ScreenContent(
                     selectedFolder = selectedFolder,
                     onFolderClick = {
                         listener?.onSelectFolder(it)
+                    },
+                    onFolderLongClick = {
+                        listener?.onFolderLongClick(it)
                     }
                 )
             },
@@ -216,7 +220,8 @@ private fun NotesItem(modifier: Modifier,
 private fun FolderListDrawer(modifier: Modifier,
                              folders: List<Folder>,
                              selectedFolder: Folder?,
-                             onFolderClick: (Folder) -> Unit) {
+                             onFolderClick: (Folder) -> Unit,
+                             onFolderLongClick: (Folder) -> Unit) {
     ModalDrawerSheet {
         Column (modifier = Modifier.verticalScroll(rememberScrollState())){
             folders.forEach {
@@ -234,9 +239,14 @@ private fun FolderListDrawer(modifier: Modifier,
                     modifier = Modifier
                         .fillMaxWidth()
                         .defaultMinSize(minHeight = dp40)
-                        .clickable {
-                            onFolderClick(it)
-                        }
+                        .combinedClickable (
+                            onClick = {
+                                onFolderClick(it)
+                            },
+                            onLongClick = {
+                                onFolderLongClick(it)
+                            }
+                        )
                         .then(selectedM)
                         .padding(contentHPaddingDp),
                     verticalAlignment = Alignment.CenterVertically
@@ -297,9 +307,9 @@ private fun ScreenContentPreviewDrawer() {
         FolderListDrawer(
             modifier = Modifier,
             folders = folders,
-            selectedFolder = folders.getOrNull(1)
-        ) {
-
-        }
+            selectedFolder = folders.getOrNull(1),
+            onFolderClick = {},
+            onFolderLongClick = {}
+        )
     }
 }

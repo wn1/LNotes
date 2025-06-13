@@ -5,7 +5,6 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import ru.qdev.lnotes.db.entity.FolderEntry
-import ru.qdev.lnotes.db.entity.NotesEntry
 
 @Dao
 interface FolderDao {
@@ -24,4 +23,7 @@ interface FolderDao {
 
     @Delete
     fun delete(user: FolderEntry)
+
+    @Query("DELETE FROM categories WHERE id = :id")
+    fun deleteById(id: Long)
 }

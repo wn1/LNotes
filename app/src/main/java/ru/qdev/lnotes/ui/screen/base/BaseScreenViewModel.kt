@@ -9,7 +9,7 @@ import ru.qdev.lnotes.ui.view.menu.DialogMenuItem
 import src.R
 
 interface BaseScreenViewModelListener {
-    fun hideDialogMenu(index: Int)
+    fun hideDialogOrMenu(index: Int)
     fun onDialogMenuItemClick(dialog: Dialog, dialogMenuItem: DialogMenuItem)
     fun onDialogButtonClick(dialog: Dialog, dialogButton: DialogButton, inputText: String)
 }
@@ -19,11 +19,11 @@ abstract class BaseScreenViewModel : ViewModel(), BaseScreenViewModelListener {
 
     val dialogMenuS = mutableStateOf<List<Dialog>>(listOf())
 
-    fun showDialogMenu(menu: Dialog) {
+    fun showDialogOrMenu(menu: Dialog) {
         dialogMenuS.value = dialogMenuS.value.plus(menu)
     }
 
-    fun hideDialogMenu(menu: Dialog) {
+    fun hideDialogOrMenu(menu: Dialog) {
         dialogMenuS.value = dialogMenuS.value.mapNotNull {
             if (it === menu) return@mapNotNull null
             return@mapNotNull it
@@ -31,7 +31,7 @@ abstract class BaseScreenViewModel : ViewModel(), BaseScreenViewModelListener {
     }
 
     fun showError(message: String) {
-        showDialogMenu(
+        showDialogOrMenu(
             menu = Dialog(
                 title = provideContext().getString(R.string.error_title),
                 message = message,
@@ -44,7 +44,7 @@ abstract class BaseScreenViewModel : ViewModel(), BaseScreenViewModelListener {
         )
     }
 
-    override fun hideDialogMenu(index: Int) {
+    override fun hideDialogOrMenu(index: Int) {
         dialogMenuS.value = dialogMenuS.value.mapIndexedNotNull { inx, item ->
             if (index == inx) return@mapIndexedNotNull null
             return@mapIndexedNotNull item
@@ -55,12 +55,12 @@ abstract class BaseScreenViewModel : ViewModel(), BaseScreenViewModelListener {
         dialog: Dialog,
         dialogMenuItem: DialogMenuItem
     ) {
-        hideDialogMenu(dialog)
+        hideDialogOrMenu(dialog)
     }
 
     override fun onDialogButtonClick(dialog: Dialog,
                                      dialogButton: DialogButton,
                                      inputText: String) {
-        hideDialogMenu(dialog)
+        hideDialogOrMenu(dialog)
     }
 }

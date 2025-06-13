@@ -12,7 +12,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -28,6 +27,7 @@ import ru.qdev.lnotes.ui.screen.base.BaseScreenViewModel
 import ru.qdev.lnotes.ui.view.dialog.Dialog
 import ru.qdev.lnotes.ui.view.dialog.DialogButton
 import ru.qdev.lnotes.ui.view.dialog.DialogType
+import ru.qdev.lnotes.ui.view.menu.DialogMenuItem
 import ru.qdev.lnotes.utils.LoadingUtils.loading
 import ru.qdev.lnotes.utils.live_data.LiveEvent
 import src.R
@@ -36,6 +36,7 @@ import javax.inject.Inject
 interface NoteListScreenListener {
     fun onFolderMenuClick()
     fun onSelectFolder(folder: Folder)
+    fun onFolderLongClick(folder: Folder)
 }
 
 @HiltViewModel
@@ -53,8 +54,11 @@ class NoteListScreenViewModel @Inject constructor(
     val drawerHideEvent = mutableStateOf<LiveEvent<Boolean>?>(null)
     val folderLoading = mutableStateOf(false)
 
+    private var folderForMenu: Folder? = null
+
     private var fillFolderJob: Job? = null
     private var addFolderJob: Job? = null
+    private var removeFolderJob: Job? = null
     private var selectedFolderIdForPager: Long? = null
 
     private fun makeNotesPagingFlow(): Flow<PagingData<NotesEntry>> {
@@ -143,9 +147,88 @@ class NoteListScreenViewModel @Inject constructor(
         drawerHideEvent.value = LiveEvent(true)
     }
 
+    override fun onFolderLongClick(folder: Folder) {
+        Log.i(TAG, "onFolderLongClick: ${folder.id}")
+
+        if (folder.type != FolderType.Folder) {
+            return
+        }
+
+        folderForMenu = folder
+        showDialogOrMenu(
+            Dialog(
+                title = folder.title,
+                message = "",
+                dialogType = DialogType.Menu,
+                buttons = listOf(),
+                menuList = listOf(
+                    DialogMenuItem(
+                        title = context.getString(R.string.menu_delete),
+                        id = MENU_FOLDER_DELETE
+                    ),
+                    DialogMenuItem(
+                        title = context.getString(R.string.menu_move),
+                        id = MENU_FOLDER_MOVE
+                    ),
+                )
+            )
+        )
+    }
+
+    override fun onDialogButtonClick(dialog: Dialog,
+                                     dialogButton: DialogButton,
+                                     inputText: String) {
+        super.onDialogButtonClick(dialog, dialogButton, inputText)
+
+        when (dialogButton.id) {
+            ADD_FOLDER_OK_B -> {
+                addFolder(inputText)
+                return
+            }
+
+            FOLDER_DELETE_CONFIRM_B -> {
+                folderForMenu?.let {
+                    deleteFolder(it)
+                }
+            }
+        }
+    }
+
+    override fun onDialogMenuItemClick(dialog: Dialog, dialogMenuItem: DialogMenuItem) {
+        super.onDialogMenuItemClick(dialog, dialogMenuItem)
+
+        val folder = folderForMenu
+
+        if (folder == null) {
+            Log.e(TAG, "onDialogMenuItemClick: folder is empty")
+            return
+        }
+
+        when(dialogMenuItem.id) {
+            MENU_FOLDER_DELETE -> {
+                showDialogOrMenu(
+                    Dialog(
+                        title = context.getString(R.string.delete_folder_confirm_message),
+                        message = context.getString(R.string.delete_folder_confirm, folder.title),
+                        dialogType = DialogType.Dialog,
+                        buttons = Dialog.makeOkCancelButtons(
+                            context = context,
+                            onButtonId = FOLDER_DELETE_CONFIRM_B
+                        ),
+                    )
+                )
+
+            }
+
+            MENU_FOLDER_MOVE -> {
+                //TODO
+            }
+        }
+    }
+
     fun addFolderClick() {
         Log.i(TAG, "addFolderClick")
-        showDialogMenu(
+        showDialogOrMenu(
             menu = Dialog(
                 dialogType = DialogType.InputText,
                 title = context.getString(R.string.add_category),
@@ -153,7 +236,7 @@ class NoteListScreenViewModel @Inject constructor(
                 buttons = listOf(
                     DialogButton(
                         title = context.getString(R.string.action_ok),
-                        id = ADD_FOLDER_OK_BUTTON
+                        id = ADD_FOLDER_OK_B
                     ),
                     DialogButton(
                         title = context.getString(R.string.cancel)
@@ -188,21 +271,33 @@ class NoteListScreenViewModel @Inject constructor(
         }
     }
 
-    override fun onDialogButtonClick(dialog: Dialog,
-                                     dialogButton: DialogButton,
-                                     inputText: String) {
-        super.onDialogButtonClick(dialog, dialogButton, inputText)
+    private fun deleteFolder(folder: Folder) {
+        val logStr = "deleteFolder"
+        Log.i(TAG, logStr)
 
-        when (dialogButton.id) {
-            ADD_FOLDER_OK_BUTTON -> {
-                addFolder(inputText)
-                return
+        removeFolderJob?.cancel()
+        removeFolderJob = viewModelScope.launch {
+            loading(folderLoading) {
+                val id = folder.id?.toLongOrNull()
+                if (id == null) {
+                    Log.e(TAG, "$logStr id is null")
+                    return@loading
+                }
+
+                withContext(Dispatchers.IO) {
+                    folderDao.deleteById(id)
+                }
+
+                fillFolder()
             }
         }
     }
 
     companion object {
         private const val TAG = "NoteListScreenViewModel"
-        private const val ADD_FOLDER_OK_BUTTON = "ADD_FOLDER_OK"
+        private const val ADD_FOLDER_OK_B = "ADD_FOLDER_OK"
+        private const val MENU_FOLDER_DELETE = "MENU_FOLDER_DELETE"
+        private const val FOLDER_DELETE_CONFIRM_B = "FOLDER_DELETE_CONFIRM_B"
+        private const val MENU_FOLDER_MOVE = "MENU_FOLDER_MOVE"
     }
 }

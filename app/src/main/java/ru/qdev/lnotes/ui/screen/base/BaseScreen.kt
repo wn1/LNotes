@@ -24,7 +24,7 @@ private fun BaseScreenContent(
         DialogView(
             dialog = dialog,
             onDismiss = {
-                listener?.hideDialogMenu(index)
+                listener?.hideDialogOrMenu(index)
             },
             onMenuItemClick = {
                 listener?.onDialogMenuItemClick(
