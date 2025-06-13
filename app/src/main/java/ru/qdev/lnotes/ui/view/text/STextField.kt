@@ -38,6 +38,7 @@ fun TextFieldBorderedColors(): TextFieldColors {
         focusedIndicatorColor = Color.Transparent,
         unfocusedIndicatorColor = Color.Transparent,
         disabledIndicatorColor = Color.Transparent,
+        cursorColor = MaterialTheme.colorScheme.tertiary
     )
 }
 
