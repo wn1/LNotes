@@ -24,7 +24,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -108,7 +110,13 @@ fun DialogView (dialog: Dialog,
 
                         DialogHeader(dialog)
 
-                        val inputV = remember { mutableStateOf("") }
+                        val textV = dialog.inputText ?: ""
+                        val inputV = remember { mutableStateOf(
+                            TextFieldValue(
+                                textV,
+                                selection = TextRange(textV.length)
+                            )
+                        )}
                         if (dialog.dialogType == DialogType.InputText) {
                             val focusRequester = remember { FocusRequester() }
 
@@ -122,12 +130,18 @@ fun DialogView (dialog: Dialog,
                                 value = inputV.value,
                                 onValueChange = {
                                     val str = if (dialog.inputMaxLen != null) {
-                                        it.take(dialog.inputMaxLen)
+                                        it.text.take(dialog.inputMaxLen)
                                     } else {
-                                        it
+                                        it.text
                                     }
 
-                                    inputV.value = str
+                                    var start = it.selection.start
+                                    var end = it.selection.end
+                                    if (start > str.length) start = str.length
+                                    if (end > str.length) end = str.length
+
+                                    val selection = TextRange(start = start, end= end)
+                                    inputV.value = it.copy(text = str, selection = selection)
                                 },
                             )
 
@@ -140,7 +154,7 @@ fun DialogView (dialog: Dialog,
 
                         DialogButtons(
                             dialog = dialog,
-                            inputText = inputV.value,
+                            inputText = inputV.value.text,
                             onButtonClick = { button, inputText ->
                                 onButtonClick(button, inputText)
                             }

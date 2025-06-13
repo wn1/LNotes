@@ -11,6 +11,7 @@ data class Dialog(val title: String,
                   val menuList: List<DialogMenuItem> = listOf(),
                   val id: String = "",
                   val inputMaxLen: Int? = null,
+                  val inputText: String? = null,
                   val dialogButtonLayoutType: DialogButtonLayoutType =
                       DialogButtonLayoutType.Horizontal,
                   val dialogType: DialogType = DialogType.Dialog) {

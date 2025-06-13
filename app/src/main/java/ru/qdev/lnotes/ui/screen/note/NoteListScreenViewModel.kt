@@ -57,6 +57,7 @@ class NoteListScreenViewModel @Inject constructor(
     private var folderForMenu: Folder? = null
 
     private var fillFolderJob: Job? = null
+    private var moveFolderJob: Job? = null
     private var addFolderJob: Job? = null
     private var removeFolderJob: Job? = null
     private var selectedFolderIdForPager: Long? = null
@@ -167,8 +168,8 @@ class NoteListScreenViewModel @Inject constructor(
                         id = MENU_FOLDER_DELETE
                     ),
                     DialogMenuItem(
-                        title = context.getString(R.string.menu_move),
-                        id = MENU_FOLDER_MOVE
+                        title = context.getString(R.string.menu_rename),
+                        id = MENU_FOLDER_RENAME
                     ),
                 )
             )
@@ -183,6 +184,13 @@ class NoteListScreenViewModel @Inject constructor(
         when (dialogButton.id) {
             ADD_FOLDER_OK_B -> {
                 addFolder(inputText)
+                return
+            }
+
+            RENAME_FOLDER_OK_B -> {
+                folderForMenu?.let {
+                    renameFolder(it, inputText)
+                }
                 return
             }
 
@@ -201,6 +209,11 @@ class NoteListScreenViewModel @Inject constructor(
 
         if (folder == null) {
             Log.e(TAG, "onDialogMenuItemClick: folder is empty")
+            return
+        }
+
+        if (dialog.id == NOTE_MOVE_SELECT_DIALOG){
+            //TODO
             return
         }
 
@@ -225,8 +238,57 @@ class NoteListScreenViewModel @Inject constructor(
 
             }
 
-            MENU_FOLDER_MOVE -> {
-                //TODO
+            MENU_FOLDER_RENAME -> {
+                showDialogOrMenu(
+                    dialog = Dialog(
+                        dialogType = DialogType.InputText,
+                        title = context.getString(R.string.rename_folder_title),
+                        inputText = folder.title,
+                        message = "",
+                        buttons = listOf(
+                            DialogButton(
+                                title = context.getString(R.string.action_ok),
+                                id = RENAME_FOLDER_OK_B
+                            ),
+                            DialogButton(
+                                title = context.getString(R.string.cancel)
+                            )
+                        )
+                    )
+                )
+            }
+        }
+    }
+
+    private fun moveNoteMenuPrepare() {
+        moveFolderJob?.cancel()
+        moveFolderJob = viewModelScope.launch {
+            loading(folderLoading) {
+                val itemList = mutableListOf<DialogMenuItem>()
+
+                withContext(Dispatchers.IO) {
+                    itemList.addAll(
+                        folderDao.getAllOrderByLabel().map {
+                            DialogMenuItem(
+                                title = it.label ?: "",
+                                id = it.uid?.toString() ?: ""
+                            )
+                        }
+                    )
+                }
+
+                folderForMenu?.let { folder ->
+                    showDialogOrMenu(
+                        Dialog(
+                            title = folder.title,
+                            message = "",
+                            dialogType = DialogType.Menu,
+                            buttons = listOf(),
+                            menuList = itemList,
+                            id = NOTE_MOVE_SELECT_DIALOG
+                        )
+                    )
+                }
             }
         }
     }
@@ -234,7 +296,7 @@ class NoteListScreenViewModel @Inject constructor(
     fun addFolderClick() {
         Log.i(TAG, "addFolderClick")
         showDialogOrMenu(
-            menu = Dialog(
+            dialog = Dialog(
                 dialogType = DialogType.InputText,
                 title = context.getString(R.string.add_category),
                 message = "",
@@ -298,11 +360,54 @@ class NoteListScreenViewModel @Inject constructor(
         }
     }
 
+    private fun renameFolder(folder: Folder, newName: String) {
+        val logStr = "renameFolder"
+        Log.i(TAG, logStr)
+
+        if (newName.isEmpty()){
+            showError(context.getString(R.string.folder_name_need_no_empty))
+            return
+        }
+
+        removeFolderJob?.cancel()
+        removeFolderJob = viewModelScope.launch {
+            loading(folderLoading) {
+                val id = folder.id?.toLongOrNull()
+                if (id == null) {
+                    Log.e(TAG, "$logStr id is null")
+                    return@loading
+                }
+
+                var isError = false
+
+                withContext(Dispatchers.IO) {
+                    val editFolder = folderDao.getById(id).firstOrNull()
+                    if (editFolder == null) {
+                        withContext(Dispatchers.Main) {
+                            val errStr = context.getString(R.string.folder_not_found)
+                            Log.e(TAG, errStr)
+                            showError(errStr)
+                            isError = true
+                        }
+                        return@withContext
+                    }
+
+                    editFolder.label = newName
+                    folderDao.insertAll(editFolder)
+                }
+
+                fillFolder()
+            }
+        }
+    }
+
     companion object {
         private const val TAG = "NoteListScreenViewModel"
         private const val ADD_FOLDER_OK_B = "ADD_FOLDER_OK"
+        private const val RENAME_FOLDER_OK_B = "RENAME_FOLDER_OK_B"
         private const val MENU_FOLDER_DELETE = "MENU_FOLDER_DELETE"
         private const val FOLDER_DELETE_CONFIRM_B = "FOLDER_DELETE_CONFIRM_B"
-        private const val MENU_FOLDER_MOVE = "MENU_FOLDER_MOVE"
+        private const val MENU_FOLDER_RENAME = "MENU_FOLDER_MOVE"
+        private const val NOTE_MOVE_SELECT_DIALOG = "NOTE_MOVE_SELECT_DIALOG"
     }
 }

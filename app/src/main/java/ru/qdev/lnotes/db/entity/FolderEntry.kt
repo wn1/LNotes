@@ -10,5 +10,5 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "categories")
 data class FolderEntry(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") val uid: Long?, //TODO проверить autoGenerate
-    @ColumnInfo(name = "label") val label: String?,
+    @ColumnInfo(name = "label") var label: String?,
 )

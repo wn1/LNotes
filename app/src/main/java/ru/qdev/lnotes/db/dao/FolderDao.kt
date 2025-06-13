@@ -3,6 +3,7 @@ package ru.qdev.lnotes.db.dao
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import ru.qdev.lnotes.db.entity.FolderEntry
 
@@ -18,7 +19,7 @@ interface FolderDao {
 //            "last_name LIKE :last LIMIT 1")
 //    fun findByName(first: String, last: String): User
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg users: FolderEntry)
 
     @Delete
@@ -26,4 +27,7 @@ interface FolderDao {
 
     @Query("DELETE FROM categories WHERE id = :id")
     fun deleteById(id: Long)
+
+    @Query("SELECT * FROM categories WHERE id = :id")
+    fun getById(id: Long) : List<FolderEntry>
 }
