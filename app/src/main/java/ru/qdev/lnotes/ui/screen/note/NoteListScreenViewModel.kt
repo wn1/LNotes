@@ -211,10 +211,15 @@ class NoteListScreenViewModel @Inject constructor(
                         title = context.getString(R.string.delete_folder_confirm_message),
                         message = context.getString(R.string.delete_folder_confirm, folder.title),
                         dialogType = DialogType.Dialog,
-                        buttons = Dialog.makeOkCancelButtons(
-                            context = context,
-                            onButtonId = FOLDER_DELETE_CONFIRM_B
-                        ),
+                        buttons = listOf(
+                            DialogButton(
+                                title = context.getString(R.string.delete_button),
+                                id = FOLDER_DELETE_CONFIRM_B
+                            ),
+                            DialogButton(
+                                title = context.getString(R.string.cancel),
+                            )
+                        )
                     )
                 )
 

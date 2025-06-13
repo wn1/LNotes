@@ -16,10 +16,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -107,11 +110,14 @@ fun DialogView (dialog: Dialog,
 
                         val inputV = remember { mutableStateOf("") }
                         if (dialog.dialogType == DialogType.InputText) {
+                            val focusRequester = remember { FocusRequester() }
+
                             STextField(
                                 modifier = TextFieldBorderedModifier(
                                     Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = contentHPaddingDp)
+                                        .focusRequester(focusRequester)
                                 ),
                                 value = inputV.value,
                                 onValueChange = {
@@ -124,6 +130,10 @@ fun DialogView (dialog: Dialog,
                                     inputV.value = str
                                 },
                             )
+
+                            LaunchedEffect ("Input text"){
+                                focusRequester.requestFocus()
+                            }
 
                             VSpacer(dp8)
                         }

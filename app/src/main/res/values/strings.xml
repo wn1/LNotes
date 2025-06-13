@@ -26,6 +26,7 @@
     <string name="finding_label_count">Count: %s</string>
     <string name="action_ok">Ok</string>
     <string name="action_thanks">Thanks</string>
+    <string name="delete_button">Delete</string>
     <string name="action_restore">Restore</string>
     <string name="add_category">Add folder...</string>
     <string name="folder_name_need_no_empty">Folder name need no empty</string>

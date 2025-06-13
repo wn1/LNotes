@@ -22,6 +22,7 @@
     <string name="finding_label_count">Найдено: %s</string>
     <string name="action_ok">Ок</string>
     <string name="action_thanks">Спасибо</string>
+    <string name="delete_button">Удалить</string>
     <string name="action_restore">Восстановить</string>
     <string name="add_category">Добавить папку...</string>
     <string name="folder_name_need_no_empty">Имя папки не может быть пустым</string>
