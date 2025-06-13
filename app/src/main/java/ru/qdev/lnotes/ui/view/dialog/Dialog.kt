@@ -29,5 +29,20 @@ data class Dialog(val title: String,
                 dialogType = DialogType.InputText
             )
         }
+
+        fun makeDialog(context: Context) : Dialog {
+            return Dialog(
+                title = "Dialog title",
+                message = "Message",
+                buttons = listOf(
+                    DialogButton(
+                        title = context.getString(R.string.action_ok)
+                    ),
+                    DialogButton(
+                        title = context.getString(R.string.cancel)
+                    ),
+                ),
+            )
+        }
     }
 }

@@ -166,6 +166,11 @@ class NoteListScreenViewModel @Inject constructor(
     private fun addFolder(folderName: String) {
         Log.i(TAG, "addFolder")
 
+        if (folderName.isEmpty()){
+            showError(context.getString(R.string.folder_name_need_no_empty))
+            return
+        }
+
         addFolderJob?.cancel()
         addFolderJob = viewModelScope.launch {
             loading(folderLoading) {

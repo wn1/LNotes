@@ -35,6 +35,7 @@
     <string name="delete_folder_confirm">Delete folder \"%s\"?</string>
     <string name="delete_folder_confirm_message">Delete all notes in folder</string>
     <string name="error_with_id">Error. Contact to developer. Error id: %s</string>
+    <string name="error_title">Error</string>
     <string name="error_lnotesync_not_found">Application LNotesSync not found</string>
     <string name="restore_db_confirm">Restore notes from backup?", "Attention! After restore current data will be lost!</string>
     <string name="copy_data_message">Copy...</string>

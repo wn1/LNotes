@@ -59,24 +59,7 @@ fun DialogView (dialog: Dialog,
                     ) {
                         VSpacer(dp8)
 
-                        if (dialog.title.isNotEmpty()) {
-                            SText(
-                                modifier = Modifier.fillMaxWidth(),
-                                text = dialog.title,
-                                textAlign = TextAlign.Center,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = sp16
-                            )
-                        }
-                        if (dialog.message.isNotEmpty()) {
-                            SText(
-                                modifier = Modifier.fillMaxWidth(),
-                                text = dialog.message,
-                                textAlign = TextAlign.Center
-                            )
-                        }
-
-                        VSpacer(dp8)
+                        DialogHeader(dialog)
 
                         dialog.menuList.forEach {
                             Row(
@@ -105,24 +88,7 @@ fun DialogView (dialog: Dialog,
                     ) {
                         VSpacer(dp8)
 
-                        if (dialog.title.isNotEmpty()) {
-                            SText(
-                                modifier = Modifier.fillMaxWidth(),
-                                text = dialog.title,
-                                textAlign = TextAlign.Center,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = sp16
-                            )
-                        }
-                        if (dialog.message.isNotEmpty()) {
-                            SText(
-                                modifier = Modifier.fillMaxWidth(),
-                                text = dialog.message,
-                                textAlign = TextAlign.Center
-                            )
-                        }
-
-                        VSpacer(dp8)
+                        DialogHeader(dialog)
 
                         val inputV = remember { mutableStateOf("") }
                         if (dialog.dialogType == DialogType.InputText) {
@@ -161,6 +127,35 @@ fun DialogView (dialog: Dialog,
             }
         }
     )
+}
+
+@Composable
+private fun DialogHeader(dialog: Dialog) {
+    var withText = false
+    Column {
+        if (dialog.title.isNotEmpty()) {
+            withText = true
+            SText(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = contentHPaddingDp),
+                text = dialog.title,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                fontSize = sp16
+            )
+        }
+        if (dialog.message.isNotEmpty()) {
+            withText = true
+            SText(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = contentHPaddingDp),
+                text = dialog.message,
+                textAlign = TextAlign.Center
+            )
+        }
+
+        if (withText) {
+            VSpacer(dp8)
+        }
+    }
 }
 
 @Composable
@@ -224,6 +219,31 @@ private fun DialogViewPreviewInputText() {
     AppTheme {
         DialogView(
             dialog = Dialog.makeTestInputText(context),
+            onDismiss = {
+
+            },
+            onButtonClick = { dialogButton, input ->
+
+            },
+            onMenuItemClick = {
+
+            }
+        )
+    }
+}
+
+@Composable
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+)
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+)
+private fun DialogViewPreview() {
+    val context = LocalContext.current
+    AppTheme {
+        DialogView(
+            dialog = Dialog.makeDialog(context),
             onDismiss = {
 
             },

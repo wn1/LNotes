@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import ru.qdev.lnotes.ui.view.dialog.Dialog
 import ru.qdev.lnotes.ui.view.dialog.DialogButton
 import ru.qdev.lnotes.ui.view.menu.DialogMenuItem
+import src.R
 
 interface BaseScreenViewModelListener {
     fun hideDialogMenu(index: Int)
@@ -27,6 +28,20 @@ abstract class BaseScreenViewModel : ViewModel(), BaseScreenViewModelListener {
             if (it === menu) return@mapNotNull null
             return@mapNotNull it
         }
+    }
+
+    fun showError(message: String) {
+        showDialogMenu(
+            menu = Dialog(
+                title = provideContext().getString(R.string.error_title),
+                message = message,
+                buttons = listOf(
+                    DialogButton(
+                        title = provideContext().getString(R.string.action_ok)
+                    )
+                )
+            )
+        )
     }
 
     override fun hideDialogMenu(index: Int) {
