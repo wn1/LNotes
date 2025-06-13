@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextField
@@ -27,6 +28,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.reply.ui.theme.AppTheme
 import ru.qdev.lnotes.ui.theme.contentHPaddingDp
+import ru.qdev.lnotes.ui.theme.dp10
 import ru.qdev.lnotes.ui.theme.dp14
 import ru.qdev.lnotes.ui.theme.dp40
 import ru.qdev.lnotes.ui.theme.dp8
@@ -55,7 +57,11 @@ fun DialogView (dialog: Dialog,
             when (dialog.dialogType) {
                 DialogType.Menu -> {
                     Column(
-                        modifier = Modifier.background(MaterialTheme.colorScheme.secondaryContainer)
+                        modifier = Modifier
+                            .background(
+                                MaterialTheme.colorScheme.secondaryContainer,
+                                RoundedCornerShape(dp10)
+                            )
                     ) {
                         VSpacer(dp8)
 
@@ -83,7 +89,10 @@ fun DialogView (dialog: Dialog,
                 DialogType.InputText, DialogType.Dialog -> {
                     Column(
                         modifier = Modifier
-                            .background(MaterialTheme.colorScheme.secondaryContainer)
+                            .background(
+                                MaterialTheme.colorScheme.secondaryContainer,
+                                RoundedCornerShape(dp10)
+                            )
                             .width(intrinsicSize = IntrinsicSize.Max),
                     ) {
                         VSpacer(dp8)
