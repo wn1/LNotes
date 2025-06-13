@@ -74,6 +74,9 @@ class NoteListScreenViewModel @Inject constructor(
                     FolderType.AllFolder -> {
                         return@Pager notesDao.getNotesAllPagingSource()
                     }
+                    FolderType.UnknownFolder -> {
+                        return@Pager notesDao.getNotesWithUnknownFolderPagingSource()
+                    }
                     else -> {
                         notesDao.getNotesByFolderIdPagingSource(
                             folderId = selectedFolderForPager?.id?.toLongOrNull()

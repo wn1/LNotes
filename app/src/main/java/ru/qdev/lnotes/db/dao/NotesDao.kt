@@ -25,6 +25,9 @@ interface NotesDao {
     @Query("SELECT * FROM notes ORDER BY (isready > 0), complete_time_u DESC, update_time_u DESC")
     fun getNotesAllPagingSource(): PagingSource<Int, NotesEntry>
 
+    @Query("SELECT * FROM notes WHERE folder_id is NULL OR folder_id is 0 ORDER BY (isready > 0), complete_time_u DESC, update_time_u DESC")
+    fun getNotesWithUnknownFolderPagingSource(): PagingSource<Int, NotesEntry>
+
     @Insert
     fun insertAll(vararg users: NotesEntry)
 
