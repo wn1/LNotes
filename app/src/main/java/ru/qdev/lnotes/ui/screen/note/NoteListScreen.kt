@@ -43,6 +43,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.reply.ui.theme.AppTheme
+import drawVerticalScrollbar
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
@@ -223,7 +224,11 @@ private fun FolderListDrawer(modifier: Modifier,
                              onFolderClick: (Folder) -> Unit,
                              onFolderLongClick: (Folder) -> Unit) {
     ModalDrawerSheet {
-        Column (modifier = Modifier.verticalScroll(rememberScrollState())){
+        val vScrollState = rememberScrollState()
+        Column (modifier = Modifier
+            .drawVerticalScrollbar(vScrollState)
+            .verticalScroll(vScrollState)
+        ){
             folders.forEach {
                 val textColor: Color
                 val selectedM = if (selectedFolder?.id == it.id && selectedFolder?.id != null) {
