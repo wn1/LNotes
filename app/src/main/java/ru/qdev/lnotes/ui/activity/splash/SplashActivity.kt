@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +26,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.qdev.lnotes.ui.activity.backup.QDVBackupActivity
 import ru.qdev.lnotes.ui.activity.notes.QDVNotesHomeActivity
+import ru.qdev.lnotes.ui.theme.dp14
+import ru.qdev.lnotes.ui.view.button.MainButtonContent
+import ru.qdev.lnotes.ui.view.button.SButton
 import src.R
 
 class SplashActivity : AppCompatActivity() {
@@ -54,14 +59,17 @@ class SplashActivity : AppCompatActivity() {
                 contentDescription = stringResource(R.string.app_name)
             )
 
-            Button(
-                modifier = Modifier.align(Alignment.BottomCenter).zIndex(10f),
+            SButton (
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .zIndex(10f)
+                    .padding(bottom = dp14)
+                    .navigationBarsPadding(),
                 onClick = {
                     startBackupActivity()
-                }
-            ) {
-                Text(text = stringResource(R.string.action_backup_restore))
-            }
+                },
+                content = MainButtonContent(stringResource(R.string.action_backup_restore))
+            )
         }
     }
 
@@ -107,7 +115,9 @@ class SplashActivity : AppCompatActivity() {
         name = "DefaultPreviewLight"
     )
     private fun ActivityContentPreview() {
-        ActivityContent()
+        AppTheme {
+            ActivityContent()
+        }
     }
 }
 

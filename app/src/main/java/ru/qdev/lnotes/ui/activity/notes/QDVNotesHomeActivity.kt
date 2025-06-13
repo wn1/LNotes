@@ -96,8 +96,8 @@ class QDVNotesHomeActivity : ComponentActivity() {
 
         tempFileSendUtils!!.deleteUnusedFiles()
 
-        //Test TODO потестировать AlertDialog
-        showUserRatingQuest()
+        //Test
+//        showUserRatingQuest()
     }
 
     @UiThread
