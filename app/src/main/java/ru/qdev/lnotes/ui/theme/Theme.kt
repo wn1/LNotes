@@ -29,19 +29,24 @@ private val DarkColorScheme = darkColorScheme(
 //    secondary = Color(0xFFFFFFFF),
     primary = Color(0xFFFFFFFF),
     primaryContainer = Color(0xff00a3a3),
+
     secondary = Color(0xFFFFFFFF),
     secondaryContainer = Color(0xFF000000),
 
-    tertiary = Pink80
+    tertiary = Color(0xff00a3a3),
+    tertiaryContainer = Color(0xFFFFFFFF)
 )
 
 private val LightColorScheme = lightColorScheme(
 //    primary = Purple40,
     primary = Color(0xFFFFFFFF),
     primaryContainer = Color(0xff00a3a3),
+
     secondary = Color(0xFF000000),
     secondaryContainer = Color(0xFFFFFFFF),
-    tertiary = Pink40
+
+    tertiary = Color(0xff00a3a3),
+    tertiaryContainer = Color(0xFFFFFFFF)
 )
 
 @Composable

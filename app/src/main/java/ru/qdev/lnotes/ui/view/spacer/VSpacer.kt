@@ -1,5 +1,6 @@
 package ru.qdev.lnotes.ui.view.spacer
 
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
@@ -15,4 +16,9 @@ fun VSpacer (height: Dp) {
 @Composable
 fun HSpacer (width: Dp) {
     Spacer(Modifier.width(width))
+}
+
+@Composable
+fun RowScope.HSpacerWeight (weight: Float = 1f) {
+    Spacer(Modifier.weight(weight))
 }
