@@ -49,6 +49,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import ru.qdev.lnotes.db.entity.NotesEntry
 import ru.qdev.lnotes.model.Folder
+import ru.qdev.lnotes.model.FolderType
 import ru.qdev.lnotes.ui.screen.note.NoteListScreenListener
 import ru.qdev.lnotes.ui.screen.note.NoteListScreenViewModel
 import ru.qdev.lnotes.ui.theme.contentHPaddingDp
@@ -231,7 +232,22 @@ private fun FolderListDrawer(modifier: Modifier,
         ){
             folders.forEach {
                 val textColor: Color
-                val selectedM = if (selectedFolder?.id == it.id && selectedFolder?.id != null) {
+                val isSelected = if (selectedFolder?.type == FolderType.Folder) {
+                    if (selectedFolder.id == it.id && selectedFolder.id != null) {
+                        true
+                    }
+                    else {
+                        false
+                    }
+                }
+                else if (selectedFolder?.type == it.type) {
+                    true
+                }
+                else {
+                    false
+                }
+
+                val selectedM = if (isSelected) {
                     textColor = MaterialTheme.colorScheme.primary
                     Modifier.background(MaterialTheme.colorScheme.primaryContainer)
                 }

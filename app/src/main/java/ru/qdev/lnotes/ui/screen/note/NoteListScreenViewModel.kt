@@ -60,7 +60,7 @@ class NoteListScreenViewModel @Inject constructor(
     private var moveFolderJob: Job? = null
     private var addFolderJob: Job? = null
     private var removeFolderJob: Job? = null
-    private var selectedFolderIdForPager: Long? = null
+    private var selectedFolderForPager: Folder? = null
 
     private fun makeNotesPagingFlow(): Flow<PagingData<NotesEntry>> {
         return Pager(
@@ -69,9 +69,18 @@ class NoteListScreenViewModel @Inject constructor(
                 enablePlaceholders = false,
                 initialLoadSize = 40
             ),
-            pagingSourceFactory = { notesDao.getNotesByFolderIdPagingSource(
-                folderId = selectedFolderIdForPager
-            ) }
+            pagingSourceFactory = {
+                when (selectedFolderForPager?.type){
+                    FolderType.AllFolder -> {
+                        return@Pager notesDao.getNotesAllPagingSource()
+                    }
+                    else -> {
+                        notesDao.getNotesByFolderIdPagingSource(
+                            folderId = selectedFolderForPager?.id?.toLongOrNull()
+                        )
+                    }
+                }
+            }
         ).flow
     }
 
@@ -99,6 +108,16 @@ class NoteListScreenViewModel @Inject constructor(
                         id = null,
                         title = context.getString(R.string.add_category),
                         type = FolderType.AddFolderItem
+                    ),
+                    Folder(
+                        id = null,
+                        title = context.getString(R.string.category_all),
+                        type = FolderType.AllFolder
+                    ),
+                    Folder(
+                        id = null,
+                        title = context.getString(R.string.category_unknown),
+                        type = FolderType.UnknownFolder
                     )
                 )
 
@@ -125,7 +144,7 @@ class NoteListScreenViewModel @Inject constructor(
     }
 
     fun reloadNotesAndGoToFirst() {
-        selectedFolderIdForPager = selectedFolderS.value?.id?.toLongOrNull()
+        selectedFolderForPager = selectedFolderS.value
         reloadNotesAndGoToFirstEvent.value = LiveEvent(true)
     }
 
@@ -352,6 +371,7 @@ class NoteListScreenViewModel @Inject constructor(
                 }
 
                 withContext(Dispatchers.IO) {
+                    notesDao.deleteByFolderId(folderId = id)
                     folderDao.deleteById(id)
                 }
 

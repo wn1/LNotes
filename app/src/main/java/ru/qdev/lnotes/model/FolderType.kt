@@ -2,5 +2,7 @@ package ru.qdev.lnotes.model
 
 enum class FolderType {
     Folder,
-    AddFolderItem
+    AddFolderItem,
+    AllFolder,
+    UnknownFolder
 }
