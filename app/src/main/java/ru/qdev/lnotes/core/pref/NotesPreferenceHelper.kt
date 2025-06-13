@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.GsonBuilder
 import ru.qdev.lnotes.db.entity.QDVDbFolderOrMenuItem
+import ru.qdev.lnotes.model.Folder
+import ru.qdev.lnotes.model.FolderType
 
 class NotesPreferenceHelper (private val context: Context) {
 
@@ -65,4 +67,29 @@ class NotesPreferenceHelper (private val context: Context) {
         set (value) {
             getPreferences().edit().putString(PREFERENCE_SELECTED_FOLDER_ID, value).apply()
         }
+
+    fun saveSelectedFolderToPref(folder: Folder?) {
+        if (folder == null) {
+            selectedFolderId = null
+            return
+        }
+
+        val fId = folder.id ?: ""
+        val type = folder.type.id
+        val folderStr = "$fId||$type"
+        selectedFolderId = folderStr
+    }
+
+    fun getSelectedFolderFromPref(): Pair<String?, FolderType>? {
+        val folderId = selectedFolderId?.split("||")
+        if (folderId == null) {
+            return null
+        } else {
+            var fId = folderId.getOrNull(0)
+            if (fId?.isEmpty() == true) fId = null
+            val type = FolderType.fromId(folderId.getOrNull(1) ?: "")
+            if (type == null) return null
+            return Pair(fId, type)
+        }
+    }
 }

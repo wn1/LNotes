@@ -22,6 +22,9 @@ interface FolderDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg users: FolderEntry)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(user: FolderEntry) : Long
+
     @Delete
     fun delete(user: FolderEntry)
 

@@ -134,13 +134,16 @@ class NoteListScreenViewModel @Inject constructor(
 
                 folderListS.value = folderList
 
-                val folderId = notesPreferenceHelper.selectedFolderId
+                val folderId = notesPreferenceHelper.getSelectedFolderFromPref()
                 if (folderId == null) {
                     selectedFolderS.value = null
                 } else {
-                    selectedFolderS.value = folderList.firstOrNull {
-                        folderId == it.id
+                    val fId = folderId.first
+                    val type = folderId.second
+                    val folder = folderList.firstOrNull {
+                        it.type == type && it.id == fId
                     }
+                    selectedFolderS.value = folder
                 }
             }
         }
@@ -165,6 +168,7 @@ class NoteListScreenViewModel @Inject constructor(
             }
             else -> {}
         }
+        notesPreferenceHelper.saveSelectedFolderToPref(folder)
         selectedFolderS.value = folder
         reloadNotesAndGoToFirst()
         drawerHideEvent.value = LiveEvent(true)
@@ -351,10 +355,13 @@ class NoteListScreenViewModel @Inject constructor(
                     label = folderName
                 )
 
-                withContext(Dispatchers.IO) {
-                    folderDao.insertAll(folderEntry)
+                val newEntry = withContext(Dispatchers.IO) {
+                    folderDao.insert(folderEntry)
                 }
 
+                notesPreferenceHelper.saveSelectedFolderToPref(
+                    Folder(id = newEntry.toString(), title = folderEntry.label ?: "")
+                )
                 fillFolder()
             }
         }
@@ -371,6 +378,14 @@ class NoteListScreenViewModel @Inject constructor(
                 if (id == null) {
                     Log.e(TAG, "$logStr id is null")
                     return@loading
+                }
+
+                if (folder.id == selectedFolderS.value?.id) {
+                    val newFolder = folderListS.value.firstOrNull {
+                        it.type == FolderType.UnknownFolder
+                    }
+                    notesPreferenceHelper.saveSelectedFolderToPref(newFolder)
+                    selectedFolderS.value = newFolder
                 }
 
                 withContext(Dispatchers.IO) {
