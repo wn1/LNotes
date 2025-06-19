@@ -37,6 +37,7 @@
     <string name="delete_folder_confirm_message">Delete all notes in folder</string>
     <string name="error_with_id">Error. Contact to developer. Error id: %s</string>
     <string name="error_title">Error</string>
+    <string name="error_s">Error: %s</string>
     <string name="error_lnotesync_not_found">Application LNotesSync not found</string>
     <string name="restore_db_confirm">Restore notes from backup?", "Attention! After restore current data will be lost!</string>
     <string name="copy_data_message">Copy...</string>
@@ -88,4 +89,5 @@
     <string name="actionbar_home_back_description">Back</string>
     <string name="add_time_text"><u>Write time</u></string>
     <string name="folder_not_found">Folder not found</string>
+    <string name="note_not_found">Note not found</string>
 </resources>

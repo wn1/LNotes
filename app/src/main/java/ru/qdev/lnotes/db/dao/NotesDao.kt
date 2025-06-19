@@ -12,6 +12,9 @@ interface NotesDao {
     @Query("SELECT * FROM notes")
     fun getAll(): List<NotesEntry>
 
+    @Query("SELECT * FROM notes WHERE id == :uid")
+    fun getById(uid: Long): List<NotesEntry>
+
 //    @Query("SELECT * FROM notes WHERE uid IN (:userIds)")
 //    fun loadAllByIds(userIds: IntArray): List<User>
 

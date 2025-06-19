@@ -35,6 +35,7 @@
     <string name="delete_folder_confirm_message">При удалении папки будут удалены все заметки в ней</string>
     <string name="error_with_id">Ошибка. Обратитесь к разработчику. ID ошибки: %s</string>
     <string name="error_title">Ошибка</string>
+    <string name="error_s">Ошибка: %s</string>
     <string name="error_lnotesync_not_found">Приложение LNotesSync не установлено</string>
     <string name="restore_db_confirm">Восстановить заметки из разервной копии?", "Внимание! Восстановление из резервной копии удалит существующие данные!</string>
     <string name="copy_data_message">Копирование...</string>
@@ -87,4 +88,5 @@
     <string name="actionbar_home_back_description">Назад</string>
     <string name="add_time_text"><u>Вписать время</u></string>
     <string name="folder_not_found">Папка не найдена</string>
+    <string name="note_not_found">Заметка не найдена</string>
 </resources>

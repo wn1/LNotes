@@ -19,7 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.qdev.lnotes.mvp.QDVStatisticState.addTimeForShowUserRatingQuest
 import ru.qdev.lnotes.mvp.QDVStatisticState.userRatingQuestShownNoNeed
 import ru.qdev.lnotes.ui.navigation.Navigator
-import ru.qdev.lnotes.ui.navigation.route.note.NoteListRoute
+import ru.qdev.lnotes.ui.navigation.route.note.NoteListScreenRoute
 import ru.qdev.lnotes.ui.view.QDVViewFabric
 import ru.qdev.lnotes.utils.QDVTempFileSendUtils
 import src.R
@@ -59,7 +59,7 @@ class QDVNotesHomeActivity : ComponentActivity() {
             AppTheme {
                 navigator.NavigationView(
                     modifier = Modifier.background(MaterialTheme.colorScheme.secondaryContainer),
-                    startDestination = NoteListRoute()
+                    startDestination = NoteListScreenRoute()
                 )
             }
         }

@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 import ru.qdev.lnotes.ui.navigation.route.base.BaseRoute
 
 @Serializable
-class NoteListRoute: BaseRoute(
+class NoteListScreenRoute: BaseRoute(
     screenUid = "NoteListRoute"
 )

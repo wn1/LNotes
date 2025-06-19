@@ -1,0 +1,193 @@
+package ru.qdev.lnotes.ui.screen.note_edit
+
+import android.content.Context
+import android.util.Log
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.SavedStateHandle
+import androidx.navigation.toRoute
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import ru.qdev.lnotes.core.events.DbManager
+import ru.qdev.lnotes.core.pref.NotesPreferenceHelper
+import ru.qdev.lnotes.db.dao.FolderDao
+import ru.qdev.lnotes.db.dao.NotesDao
+import ru.qdev.lnotes.ui.navigation.Navigator
+import ru.qdev.lnotes.ui.navigation.route.note.NoteEditScreenRoute
+import ru.qdev.lnotes.ui.screen.base.BaseScreenViewModel
+import ru.qdev.lnotes.ui.view.dialog.Dialog
+import ru.qdev.lnotes.ui.view.dialog.DialogButton
+import ru.qdev.lnotes.utils.coroutine.CoroutineUtils.throwIfCancel
+import src.R
+import javax.inject.Inject
+
+interface NoteEditScreenViewModelListener {
+    fun onBackClick()
+    fun onSaveClick()
+    fun onTextChange(newText: String)
+}
+
+@HiltViewModel
+class NoteEditScreenViewModel @Inject constructor(
+    private val dbManager: DbManager,
+    @ApplicationContext private val context: Context,
+    private val notesPreferenceHelper: NotesPreferenceHelper,
+    private val navigator: Navigator,
+    private val savedStateHandle: SavedStateHandle
+): BaseScreenViewModel(), NoteEditScreenViewModelListener {
+    private lateinit var notesDao: NotesDao
+    private lateinit var folderDao: FolderDao
+
+    private val route = savedStateHandle.toRoute<NoteEditScreenRoute>()
+
+    val textS = mutableStateOf("")
+
+    override fun provideContext(): Context {
+        return context
+    }
+
+    override fun provideSavedStateHandle(): SavedStateHandle {
+        return savedStateHandle
+    }
+
+    init {
+        dbManager.openNotesDb()
+        notesDao = dbManager.notesDatabase!!.notesDao()
+        folderDao = dbManager.notesDatabase!!.folderDao()
+
+        fillEdit()
+    }
+
+    private fun checkNoteIdIsError() : Boolean {
+        if (route.noteId != notesPreferenceHelper.editNoteId) {
+            showError(
+                message = context.getString(R.string.error_with_id, "noteId not equal"),
+                buttonId = ERROR_CLOSE_B
+            )
+            return true
+        }
+
+        return false
+    }
+
+    private fun fillEdit() {
+        if (checkNoteIdIsError()) {
+            return
+        }
+
+        textS.value = notesPreferenceHelper.editNoteText ?: ""
+    }
+
+    override fun onTextChange(newText: String) {
+        textS.value = newText
+    }
+
+    override fun onSaveClick() {
+        val logStr = "onSaveClick"
+        Log.i(TAG, logStr)
+
+        if (checkNoteIdIsError()) {
+            return
+        }
+
+        runBlocking {
+            try {
+                val id = notesPreferenceHelper.editNoteId
+                val note = notesDao.getById(id).firstOrNull()
+                if (note == null) {
+                    showError(
+                        message = context.getString(R.string.note_not_found),
+                        buttonId = ERROR_CLOSE_B
+                    )
+                    return@runBlocking
+                }
+                notesDao.insertAll(note)
+            }
+            catch (e: Throwable) {
+                throwIfCancel(e)
+                Log.e(TAG, "$logStr $e", e)
+            }
+
+            goBack()
+        }
+    }
+
+    override fun onBackClick() {
+        Log.i(TAG, "onBackClick")
+        val prevText = notesPreferenceHelper.editNoteText ?: ""
+
+        if (prevText == textS.value) {
+            goBack()
+            return
+        }
+
+        showDialogOrMenu(
+            Dialog(
+                title = context.getString(R.string.exit_without_save_confirm),
+                message = "",
+                buttons = listOf(
+                    DialogButton(
+                        title = context.getString(R.string.action_yes),
+                        id = EXIT_CONFIRM_YES_B
+                    ),
+                    DialogButton(
+                        title = context.getString(R.string.action_no),
+                        id = ""
+                    )
+                )
+            )
+        )
+    }
+
+    override fun onDialogButtonClick(
+        dialog: Dialog,
+        dialogButton: DialogButton,
+        inputText: String
+    ) {
+        super.onDialogButtonClick(dialog, dialogButton, inputText)
+
+        when(dialogButton.id){
+            EXIT_CONFIRM_YES_B -> {
+                goBack()
+            }
+
+            ERROR_CLOSE_B -> {
+                goBack()
+            }
+        }
+    }
+
+    private fun goBack() {
+        navigator.goBack()
+    }
+
+    companion object {
+        private const val TAG = "NoteEditScreenViewModel"
+        private const val EXIT_CONFIRM_YES_B = "EXIT_CONFIRM_YES_B"
+        private const val ERROR_CLOSE_B = "ERROR_CLOSE_B"
+
+        suspend fun prepareEdit(context: Context,
+                                notesDao: NotesDao,
+                                preferenceHelper: NotesPreferenceHelper,
+                                noteId: Long) : Result<Boolean> {
+            val logStr = "prepareEdit"
+            return withContext(Dispatchers.IO) {
+                val note = notesDao.getById(noteId).firstOrNull()
+                if (note == null) {
+                    val eStr = context.getString(R.string.note_not_found)
+                    Log.e(TAG, "$logStr $eStr")
+                    return@withContext Result.failure(
+                        RuntimeException(eStr)
+                    )
+                }
+
+                preferenceHelper.editNoteId = noteId
+                preferenceHelper.editNoteText = note.content
+
+                return@withContext Result.success(true)
+            }
+        }
+    }
+}

@@ -3,11 +3,13 @@ package ru.qdev.lnotes.ui.screen.base
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import ru.qdev.lnotes.ui.view.dialog.Dialog
 import ru.qdev.lnotes.ui.view.dialog.DialogButton
 import ru.qdev.lnotes.ui.view.menu.DialogMenuItem
 import src.R
+import kotlin.jvm.Throws
 
 interface BaseScreenViewModelListener {
     fun hideDialogOrMenu(index: Int)
@@ -17,6 +19,7 @@ interface BaseScreenViewModelListener {
 
 abstract class BaseScreenViewModel : ViewModel(), BaseScreenViewModelListener {
     abstract fun provideContext(): Context
+    abstract fun provideSavedStateHandle(): SavedStateHandle
 
     val BaseTag = this::class.java.simpleName
 
@@ -35,19 +38,26 @@ abstract class BaseScreenViewModel : ViewModel(), BaseScreenViewModelListener {
         }
     }
 
-    fun showError(message: String) {
-        Log.i(BaseTag, "showError")
+    fun showError(message: String, buttonId: String = "") {
+        Log.i(BaseTag, "showError ${message.take(5000)}")
         showDialogOrMenu(
             dialog = Dialog(
                 title = provideContext().getString(R.string.error_title),
                 message = message,
                 buttons = listOf(
                     DialogButton(
-                        title = provideContext().getString(R.string.action_ok)
+                        title = provideContext().getString(R.string.action_ok),
+                        id = buttonId
                     )
                 )
             )
         )
+    }
+
+    fun showError(error: Throwable, buttonId: String = "") {
+        Log.i(BaseTag, "showError $error")
+        val message = provideContext().getString(R.string.error_s, error.message)
+        showError(message, buttonId)
     }
 
     override fun hideDialogOrMenu(index: Int) {

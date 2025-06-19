@@ -1,8 +1,9 @@
-package ru.qdev.lnotes.ui.screen.note
+package ru.qdev.lnotes.ui.screen.note_list
 
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -14,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import ru.qdev.lnotes.core.events.DbManager
 import ru.qdev.lnotes.core.pref.NotesPreferenceHelper
@@ -23,7 +25,10 @@ import ru.qdev.lnotes.db.entity.FolderEntry
 import ru.qdev.lnotes.db.entity.NotesEntry
 import ru.qdev.lnotes.model.Folder
 import ru.qdev.lnotes.model.FolderType
+import ru.qdev.lnotes.ui.navigation.Navigator
+import ru.qdev.lnotes.ui.navigation.route.note.NoteEditScreenRoute
 import ru.qdev.lnotes.ui.screen.base.BaseScreenViewModel
+import ru.qdev.lnotes.ui.screen.note_edit.NoteEditScreenViewModel
 import ru.qdev.lnotes.ui.view.dialog.Dialog
 import ru.qdev.lnotes.ui.view.dialog.DialogButton
 import ru.qdev.lnotes.ui.view.dialog.DialogType
@@ -37,13 +42,16 @@ interface NoteListScreenListener {
     fun onFolderMenuClick()
     fun onSelectFolder(folder: Folder)
     fun onFolderLongClick(folder: Folder)
+    fun onClick (note: NotesEntry)
 }
 
 @HiltViewModel
 class NoteListScreenViewModel @Inject constructor(
     private val dbManager: DbManager,
     @ApplicationContext private val context: Context,
-    private val notesPreferenceHelper: NotesPreferenceHelper
+    private val notesPreferenceHelper: NotesPreferenceHelper,
+    private val navigator: Navigator,
+    private val savedStateHandle: SavedStateHandle
 ): BaseScreenViewModel(), NoteListScreenListener {
     private lateinit var notesDao: NotesDao
     private lateinit var folderDao: FolderDao
@@ -91,6 +99,10 @@ class NoteListScreenViewModel @Inject constructor(
 
     override fun provideContext(): Context {
         return context
+    }
+
+    override fun provideSavedStateHandle(): SavedStateHandle {
+        return savedStateHandle
     }
 
     init {
@@ -436,6 +448,33 @@ class NoteListScreenViewModel @Inject constructor(
 
                 fillFolder()
             }
+        }
+    }
+
+    override fun onClick (note: NotesEntry) {
+        val logStr = "onClick"
+        Log.i(TAG, "$logStr, id: ${note.uid}")
+
+        val noteId = note.uid
+        if (noteId == null) {
+            showError(context.getString(R.string.note_not_found))
+            return
+        }
+
+        runBlocking {
+            val res = NoteEditScreenViewModel.prepareEdit(
+                context = context,
+                noteId = noteId,
+                notesDao = notesDao,
+                preferenceHelper = notesPreferenceHelper
+            )
+
+            res.exceptionOrNull()?.let {
+                showError(it)
+                return@runBlocking
+            }
+
+            navigator.navigate(NoteEditScreenRoute(noteId = note.uid))
         }
     }
 

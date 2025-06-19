@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder
 import ru.qdev.lnotes.db.entity.QDVDbFolderOrMenuItem
 import ru.qdev.lnotes.model.Folder
 import ru.qdev.lnotes.model.FolderType
+import androidx.core.content.edit
 
 class NotesPreferenceHelper (private val context: Context) {
 
@@ -14,7 +15,9 @@ class NotesPreferenceHelper (private val context: Context) {
     private val PREFERENCE_NAME_SELECTED = "selectedFolderOrMenu"
 
     private val PREFERENCES_NAME = "NotesPreferences"
-    private val PREFERENCE_SELECTED_FOLDER_ID = "PreferenceSelectedFolderId"
+    private val PREFERENCE_SELECTED_FOLDER_ID = "PREFERENCE_SELECTED_FOLDER_ID"
+    private val PREFERENCE_EDIT_NOTE_ID = "PREFERENCE_EDIT_NOTE_ID"
+    private val PREFERENCE_EDIT_NOTE_TEXT = "PREFERENCE_EDIT_NOTE_TEXT"
 
     private fun getPreferencesDrawer(): SharedPreferences {
         return context.getSharedPreferences(PREFERENCES_NAME_DRAWER, Context.MODE_PRIVATE)
@@ -65,8 +68,25 @@ class NotesPreferenceHelper (private val context: Context) {
             return getPreferences().getString(PREFERENCE_SELECTED_FOLDER_ID, null)
         }
         set (value) {
-            getPreferences().edit().putString(PREFERENCE_SELECTED_FOLDER_ID, value).apply()
+            getPreferences().edit() { putString(PREFERENCE_SELECTED_FOLDER_ID, value) }
         }
+
+    var editNoteId: Long
+        get() {
+            return getPreferences().getLong(PREFERENCE_EDIT_NOTE_ID, -1)
+        }
+        set (value) {
+            getPreferences().edit() { putLong(PREFERENCE_EDIT_NOTE_ID, value) }
+        }
+
+    var editNoteText: String?
+        get() {
+            return getPreferences().getString(PREFERENCE_EDIT_NOTE_TEXT, null)
+        }
+        set (value) {
+            getPreferences().edit() { putString(PREFERENCE_EDIT_NOTE_TEXT, value) }
+        }
+
 
     fun saveSelectedFolderToPref(folder: Folder?) {
         if (folder == null) {

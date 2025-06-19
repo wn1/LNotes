@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
@@ -50,13 +49,12 @@ import kotlinx.coroutines.launch
 import ru.qdev.lnotes.db.entity.NotesEntry
 import ru.qdev.lnotes.model.Folder
 import ru.qdev.lnotes.model.FolderType
-import ru.qdev.lnotes.ui.screen.note.NoteListScreenListener
-import ru.qdev.lnotes.ui.screen.note.NoteListScreenViewModel
+import ru.qdev.lnotes.ui.screen.note_list.NoteListScreenListener
+import ru.qdev.lnotes.ui.screen.note_list.NoteListScreenViewModel
 import ru.qdev.lnotes.ui.theme.contentHPaddingDp
 import ru.qdev.lnotes.ui.theme.dp40
 import ru.qdev.lnotes.ui.theme.dp8
 import ru.qdev.lnotes.ui.view.spacer.HSpacer
-import ru.qdev.lnotes.ui.view.spacer.VSpacer
 import ru.qdev.lnotes.ui.view.text.SText
 import ru.qdev.lnotes.utils.live_data.LiveEvent
 import src.R
@@ -174,8 +172,7 @@ private fun ScreenContent(
 
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(0.dp),
                     state = notesColumnState
                 ) {
                     items(
@@ -183,7 +180,13 @@ private fun ScreenContent(
                         key = { index -> notes[index]?.uid ?: index }
                     ) { index ->
                         notes[index]?.let {
-                            NotesItem(modifier = Modifier.fillMaxSize(), note = it)
+                            NotesItem(
+                                modifier = Modifier.fillMaxWidth(),
+                                note = it,
+                                onClick = {
+                                    listener?.onClick(it)
+                                }
+                            )
                         }
                     }
 
@@ -214,8 +217,20 @@ private fun ScreenContent(
 
 @Composable
 private fun NotesItem(modifier: Modifier,
-                      note: NotesEntry) {
-    SText(text = note.content ?: "")
+                      note: NotesEntry,
+                      onClick: (NotesEntry) -> Unit) {
+    SText(
+        modifier = modifier
+            .defaultMinSize(minHeight = dp40)
+            .clickable {
+                onClick(note)
+            }
+            .padding(horizontal = contentHPaddingDp)
+            .padding(vertical = dp8)
+        ,
+        text = note.content ?: "",
+        maxLines = 3
+    )
 }
 
 @Composable
