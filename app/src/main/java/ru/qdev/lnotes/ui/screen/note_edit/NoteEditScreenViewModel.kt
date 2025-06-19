@@ -3,6 +3,9 @@ package ru.qdev.lnotes.ui.screen.note_edit
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -41,6 +44,8 @@ class NoteEditScreenViewModel @Inject constructor(
     private lateinit var folderDao: FolderDao
 
     private val route = savedStateHandle.toRoute<NoteEditScreenRoute>()
+
+    private var isClose = false
 
     val textS = mutableStateOf("")
 
@@ -84,6 +89,13 @@ class NoteEditScreenViewModel @Inject constructor(
         textS.value = newText
     }
 
+    override fun onStop(owner: LifecycleOwner) {
+        if (!isClose) {
+            notesPreferenceHelper.editNoteText = textS.value
+        }
+        super.onStop(owner)
+    }
+
     override fun onSaveClick() {
         val logStr = "onSaveClick"
         Log.i(TAG, logStr)
@@ -103,6 +115,8 @@ class NoteEditScreenViewModel @Inject constructor(
                     )
                     return@runBlocking
                 }
+
+                note.content = textS.value
                 notesDao.insertAll(note)
             }
             catch (e: Throwable) {
@@ -160,6 +174,7 @@ class NoteEditScreenViewModel @Inject constructor(
     }
 
     private fun goBack() {
+        isClose = true
         navigator.goBack()
     }
 

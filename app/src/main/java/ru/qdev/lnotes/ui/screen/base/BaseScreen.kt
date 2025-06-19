@@ -1,12 +1,25 @@
 package ru.qdev.lnotes.ui.screen.base
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import ru.qdev.lnotes.ui.view.dialog.Dialog
 import ru.qdev.lnotes.ui.view.dialog.DialogView
 
 @Composable
 fun BaseScreen(baseViewModel: BaseScreenViewModel,
                content: @Composable () -> Unit) {
+    val owner = LocalLifecycleOwner.current
+
+    DisposableEffect (owner) {
+        val lifecycle = owner.lifecycle
+        lifecycle.addObserver(baseViewModel)
+
+        onDispose {
+            lifecycle.removeObserver(baseViewModel)
+        }
+    }
+
     content()
 
     BaseScreenContent(

@@ -3,6 +3,7 @@ package ru.qdev.lnotes.ui.screen.base
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import ru.qdev.lnotes.ui.view.dialog.Dialog
@@ -17,7 +18,9 @@ interface BaseScreenViewModelListener {
     fun onDialogButtonClick(dialog: Dialog, dialogButton: DialogButton, inputText: String)
 }
 
-abstract class BaseScreenViewModel : ViewModel(), BaseScreenViewModelListener {
+abstract class BaseScreenViewModel : ViewModel(),
+    BaseScreenViewModelListener,
+    DefaultLifecycleObserver {
     abstract fun provideContext(): Context
     abstract fun provideSavedStateHandle(): SavedStateHandle
 

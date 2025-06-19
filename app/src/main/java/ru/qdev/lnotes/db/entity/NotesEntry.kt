@@ -10,7 +10,7 @@ import java.util.Date
 @Entity(tableName = "notes")
 data class NotesEntry(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") val uid: Long? = null, //TODO проверить autoGenerate
-    @ColumnInfo(name = "content") val content: String? = null,
+    @ColumnInfo(name = "content") var content: String? = null,
     @ColumnInfo(name = "create_time_u") val createTimeU: Long? = null,
     @ColumnInfo(name = "isready") val isReady: Int = 0,
     @ColumnInfo(name = "folder_id") val folderId: Long? = null,
