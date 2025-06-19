@@ -7,10 +7,12 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import ru.qdev.lnotes.core.events.DbManager
@@ -104,7 +106,8 @@ class NoteEditScreenViewModel @Inject constructor(
             return
         }
 
-        runBlocking {
+        viewModelScope.launch {
+            val newText = textS.value
             withContext(Dispatchers.IO) {
                 try {
                     val id = notesPreferenceHelper.editNoteId
@@ -117,9 +120,10 @@ class NoteEditScreenViewModel @Inject constructor(
                         return@withContext
                     }
 
-                    note.content = textS.value
+                    note.content = newText
                     notesDao.insertAll(note)
 
+                    goBack()
                 } catch (e: Throwable) {
                     throwIfCancel(e)
                     Log.e(TAG, "$logStr $e", e)
@@ -132,8 +136,6 @@ class NoteEditScreenViewModel @Inject constructor(
                     }
                 }
             }
-
-            goBack()
         }
     }
 

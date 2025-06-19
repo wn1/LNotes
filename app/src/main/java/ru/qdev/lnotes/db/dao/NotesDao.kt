@@ -4,6 +4,7 @@ import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import ru.qdev.lnotes.db.entity.NotesEntry
 
@@ -31,11 +32,11 @@ interface NotesDao {
     @Query("SELECT * FROM notes WHERE folder_id is NULL OR folder_id is 0 ORDER BY (isready > 0), complete_time_u DESC, update_time_u DESC")
     fun getNotesWithUnknownFolderPagingSource(): PagingSource<Int, NotesEntry>
 
-    @Insert
-    fun insertAll(vararg users: NotesEntry)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAll(vararg notes: NotesEntry)
 
     @Delete
-    fun delete(user: NotesEntry)
+    fun delete(note: NotesEntry)
 
     @Query("DELETE FROM notes WHERE folder_id = :folderId")
     fun deleteByFolderId(folderId: Long)
