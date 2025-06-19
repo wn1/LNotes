@@ -105,23 +105,32 @@ class NoteEditScreenViewModel @Inject constructor(
         }
 
         runBlocking {
-            try {
-                val id = notesPreferenceHelper.editNoteId
-                val note = notesDao.getById(id).firstOrNull()
-                if (note == null) {
-                    showError(
-                        message = context.getString(R.string.note_not_found),
-                        buttonId = ERROR_CLOSE_B
-                    )
-                    return@runBlocking
-                }
+            withContext(Dispatchers.IO) {
+                try {
+                    val id = notesPreferenceHelper.editNoteId
+                    val note = notesDao.getById(id).firstOrNull()
+                    if (note == null) {
+                        showError(
+                            message = context.getString(R.string.note_not_found),
+                            buttonId = ERROR_CLOSE_B
+                        )
+                        return@withContext
+                    }
 
-                note.content = textS.value
-                notesDao.insertAll(note)
-            }
-            catch (e: Throwable) {
-                throwIfCancel(e)
-                Log.e(TAG, "$logStr $e", e)
+                    note.content = textS.value
+                    notesDao.insertAll(note)
+
+                } catch (e: Throwable) {
+                    throwIfCancel(e)
+                    Log.e(TAG, "$logStr $e", e)
+
+                    withContext(Dispatchers.Main) {
+                        showError(
+                            error = e,
+                            buttonId = ERROR_CLOSE_B
+                        )
+                    }
+                }
             }
 
             goBack()
