@@ -123,7 +123,9 @@ class NoteEditScreenViewModel @Inject constructor(
                     note.content = newText
                     notesDao.insertAll(note)
 
-                    goBack()
+                    withContext(Dispatchers.Main) {
+                        goBack()
+                    }
                 } catch (e: Throwable) {
                     throwIfCancel(e)
                     Log.e(TAG, "$logStr $e", e)
