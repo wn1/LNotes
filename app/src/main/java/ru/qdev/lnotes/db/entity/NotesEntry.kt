@@ -15,7 +15,7 @@ data class NotesEntry(
     @ColumnInfo(name = "isready") val isReady: Int = 0,
     @ColumnInfo(name = "folder_id") var folderId: Long? = null,
     @ColumnInfo(name = "complete_time_u") val completeTimeU: Long? = null,
-    @ColumnInfo(name = "update_time_u") val updateTimeU: Long? = null,
+    @ColumnInfo(name = "update_time_u") var updateTimeU: Long? = null,
 ) {
     companion object {
         fun makeTestList() : List<NotesEntry> {

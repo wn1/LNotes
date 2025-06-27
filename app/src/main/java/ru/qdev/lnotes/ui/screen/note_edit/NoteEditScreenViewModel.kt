@@ -134,6 +134,7 @@ class NoteEditScreenViewModel @Inject constructor(
                     }
 
                     note.content = newText
+                    note.updateTimeU = Date().time
                     notesDao.insertAll(note)
 
                     withContext(Dispatchers.Main) {

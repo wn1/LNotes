@@ -135,7 +135,7 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
     }
 
     BackHandler {
-            listener?.onBackClick()
+        listener?.onBackClick()
     }
 }
 
