@@ -70,6 +70,7 @@ class NoteListScreenViewModel @Inject constructor(
     private var moveFolderJob: Job? = null
     private var addFolderJob: Job? = null
     private var removeFolderJob: Job? = null
+    private var renameFolderJob: Job? = null
     private var selectedFolderForPager: Folder? = null
 
     private fun makeNotesPagingFlow(): Flow<PagingData<NotesEntry>> {
@@ -112,11 +113,10 @@ class NoteListScreenViewModel @Inject constructor(
         notesDao = dbManager.notesDatabase!!.notesDao()
         folderDao = dbManager.notesDatabase!!.folderDao()
 
-        fillFolder()
-        reloadNotesAndGoToFirst()
+        fillFolder(withReloadAndGoToFirst = true)
     }
 
-    private fun fillFolder() {
+    private fun fillFolder(withReloadAndGoToFirst: Boolean = false) {
         fillFolderJob?.cancel()
         fillFolderJob = viewModelScope.launch {
             loading(folderLoading) {
@@ -158,6 +158,10 @@ class NoteListScreenViewModel @Inject constructor(
                         it.type == type && it.id == fId
                     }
                     selectedFolderS.value = folder
+                }
+
+                if (withReloadAndGoToFirst) {
+                    reloadNotesAndGoToFirst()
                 }
             }
         }
@@ -333,7 +337,7 @@ class NoteListScreenViewModel @Inject constructor(
         }
     }
 
-    fun addFolderClick() {
+    private fun addFolderClick() {
         Log.i(TAG, "addFolderClick")
         showDialogOrMenu(
             dialog = Dialog(
@@ -354,7 +358,13 @@ class NoteListScreenViewModel @Inject constructor(
     }
 
     private fun addFolder(folderName: String) {
-        Log.i(TAG, "addFolder")
+        val logStr = "addFolder"
+        Log.i(TAG, logStr)
+
+        if (folderLoading.value) {
+            Log.i(TAG, "$logStr folderLoading, return")
+            return
+        }
 
         if (folderName.isEmpty()){
             showError(context.getString(R.string.folder_name_need_no_empty))
@@ -376,7 +386,7 @@ class NoteListScreenViewModel @Inject constructor(
                 notesPreferenceHelper.saveSelectedFolderToPref(
                     Folder(id = newEntry.toString(), title = folderEntry.label ?: "")
                 )
-                fillFolder()
+                fillFolder(withReloadAndGoToFirst = true)
             }
         }
     }
@@ -384,6 +394,11 @@ class NoteListScreenViewModel @Inject constructor(
     private fun deleteFolder(folder: Folder) {
         val logStr = "deleteFolder"
         Log.i(TAG, logStr)
+
+        if (folderLoading.value) {
+            Log.i(TAG, "$logStr folderLoading, return")
+            return
+        }
 
         removeFolderJob?.cancel()
         removeFolderJob = viewModelScope.launch {
@@ -394,12 +409,14 @@ class NoteListScreenViewModel @Inject constructor(
                     return@loading
                 }
 
+                var withReloadAndGoToFirst = false
                 if (folder.id == selectedFolderS.value?.id) {
                     val newFolder = folderListS.value.firstOrNull {
                         it.type == FolderType.UnknownFolder
                     }
                     notesPreferenceHelper.saveSelectedFolderToPref(newFolder)
                     selectedFolderS.value = newFolder
+                    withReloadAndGoToFirst = true
                 }
 
                 withContext(Dispatchers.IO) {
@@ -407,7 +424,7 @@ class NoteListScreenViewModel @Inject constructor(
                     folderDao.deleteById(id)
                 }
 
-                fillFolder()
+                fillFolder(withReloadAndGoToFirst = withReloadAndGoToFirst)
             }
         }
     }
@@ -416,13 +433,18 @@ class NoteListScreenViewModel @Inject constructor(
         val logStr = "renameFolder"
         Log.i(TAG, logStr)
 
+        if (folderLoading.value) {
+            Log.i(TAG, "$logStr folderLoading, return")
+            return
+        }
+
         if (newName.isEmpty()){
             showError(context.getString(R.string.folder_name_need_no_empty))
             return
         }
 
-        removeFolderJob?.cancel()
-        removeFolderJob = viewModelScope.launch {
+        renameFolderJob?.cancel()
+        renameFolderJob = viewModelScope.launch {
             loading(folderLoading) {
                 val id = folder.id?.toLongOrNull()
                 if (id == null) {
