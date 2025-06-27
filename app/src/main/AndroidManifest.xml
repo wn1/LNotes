@@ -41,7 +41,6 @@
 
         <activity
             android:name="ru.qdev.lnotes.ui.activity.notes.QDVNotesHomeActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize|screenLayout"
             android:exported="false"
             android:launchMode="singleTop"
             android:theme="@style/QDVActionBarTheme.Launcher">
