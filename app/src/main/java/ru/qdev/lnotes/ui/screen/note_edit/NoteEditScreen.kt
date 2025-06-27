@@ -1,11 +1,17 @@
+@file:OptIn(ExperimentalLayoutApi::class)
+
 package ru.qdev.lnotes.ui.screen.note_edit
 
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,16 +22,24 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.PagingData
 import com.example.reply.ui.theme.AppTheme
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import ru.qdev.lnotes.db.entity.NotesEntry
@@ -38,6 +52,9 @@ import ru.qdev.lnotes.ui.theme.sp16
 import ru.qdev.lnotes.ui.view.spacer.HSpacer
 import ru.qdev.lnotes.ui.view.text.SText
 import ru.qdev.lnotes.ui.view.text.STextField
+import ru.qdev.lnotes.utils.compose.KeyboardUtils
+import ru.qdev.lnotes.utils.compose.StateUtils.updateCounter
+import ru.qdev.lnotes.utils.live_data.LiveEvent
 import src.R
 
 @ExperimentalMaterial3Api
@@ -49,16 +66,20 @@ fun NoteEditScreen(viewModel: NoteEditScreenViewModel = hiltViewModel()) {
             text = viewModel.textS.value
         )
     }
-
-    BackHandler {
-        viewModel.onBackClick()
-    }
 }
 
 @ExperimentalMaterial3Api
 @Composable
 private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
                           text: String) {
+    val scope = rememberCoroutineScope()
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect("focus")
+    {
+        focusRequester.requestFocus()
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -103,14 +124,18 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
     ) { innerPadding ->
         Column (modifier = Modifier.padding(innerPadding).fillMaxSize()){
             STextField(
-                modifier = Modifier.fillMaxSize(),
-                textFieldModifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().imePadding(),
+                textFieldModifier = Modifier.fillMaxSize().focusRequester(focusRequester),
                 value = text,
                 onValueChange = {
                     listener?.onTextChange(it)
-                }
+                },
             )
         }
+    }
+
+    BackHandler {
+            listener?.onBackClick()
     }
 }
 
