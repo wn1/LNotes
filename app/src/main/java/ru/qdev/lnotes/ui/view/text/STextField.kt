@@ -3,6 +3,7 @@ package ru.qdev.lnotes.ui.view.text
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -83,7 +84,7 @@ fun STextField(
     colors: TextFieldColors = TextFieldBorderedColors()
 ) {
     Column (
-        modifier = modifier
+        modifier = modifier,
     ) {
         TextField(
             value = value,

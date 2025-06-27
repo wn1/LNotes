@@ -31,8 +31,10 @@ import kotlinx.coroutines.launch
 import ru.qdev.lnotes.db.entity.NotesEntry
 import ru.qdev.lnotes.model.Folder
 import ru.qdev.lnotes.ui.screen.base.BaseScreen
+import ru.qdev.lnotes.ui.theme.dp14
 import ru.qdev.lnotes.ui.theme.dp40
 import ru.qdev.lnotes.ui.theme.dp8
+import ru.qdev.lnotes.ui.theme.sp16
 import ru.qdev.lnotes.ui.view.spacer.HSpacer
 import ru.qdev.lnotes.ui.view.text.SText
 import ru.qdev.lnotes.ui.view.text.STextField
@@ -90,15 +92,19 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
                         modifier = Modifier.clip(RoundedCornerShape(dp8)).clickable {
                             listener?.onSaveClick()
                         },
-                        text = stringResource(R.string.action_ok)
+                        text = stringResource(R.string.action_ok),
+                        fontSize = sp16,
+                        color = MaterialTheme.colorScheme.primary
                     )
+                    HSpacer(dp14)
                 }
             )
         },
     ) { innerPadding ->
-        Column (modifier = Modifier.padding(innerPadding)){
+        Column (modifier = Modifier.padding(innerPadding).fillMaxSize()){
             STextField(
                 modifier = Modifier.fillMaxSize(),
+                textFieldModifier = Modifier.fillMaxSize(),
                 value = text,
                 onValueChange = {
                     listener?.onTextChange(it)
