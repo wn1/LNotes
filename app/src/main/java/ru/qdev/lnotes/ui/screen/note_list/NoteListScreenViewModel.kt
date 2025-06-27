@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import ru.qdev.lnotes.core.AppConst.NoteAddingId
 import ru.qdev.lnotes.core.events.DbManager
 import ru.qdev.lnotes.core.pref.NotesPreferenceHelper
 import ru.qdev.lnotes.db.dao.FolderDao
@@ -42,7 +43,8 @@ interface NoteListScreenListener {
     fun onFolderMenuClick()
     fun onSelectFolder(folder: Folder)
     fun onFolderLongClick(folder: Folder)
-    fun onClick (note: NotesEntry)
+    fun onNoteClick (note: NotesEntry)
+    fun onNoteAddingClick()
 }
 
 @HiltViewModel
@@ -451,8 +453,8 @@ class NoteListScreenViewModel @Inject constructor(
         }
     }
 
-    override fun onClick (note: NotesEntry) {
-        val logStr = "onClick"
+    override fun onNoteClick (note: NotesEntry) {
+        val logStr = "onNoteClick"
         Log.i(TAG, "$logStr, id: ${note.uid}")
 
         val noteId = note.uid
@@ -476,6 +478,32 @@ class NoteListScreenViewModel @Inject constructor(
 
             navigator.navigate(NoteEditScreenRoute(noteId = note.uid))
         }
+    }
+
+    override fun onNoteAddingClick() {
+        val logStr = "onAddingClick"
+        Log.i(TAG, logStr)
+
+        val folder = selectedFolderS.value
+        val folderId = if (folder?.type == FolderType.Folder) {
+            folder.id?.toLongOrNull()
+        }
+        else {
+            null
+        }
+
+        val res = NoteEditScreenViewModel.prepareAdding(
+            context = context,
+            preferenceHelper = notesPreferenceHelper,
+            folderId = folderId
+        )
+
+        res.exceptionOrNull()?.let {
+            showError(it)
+            return
+        }
+
+        navigator.navigate(NoteEditScreenRoute(noteId = NoteAddingId))
     }
 
     companion object {

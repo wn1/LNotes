@@ -15,10 +15,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import ru.qdev.lnotes.core.AppConst.NoteAddingId
 import ru.qdev.lnotes.core.events.DbManager
 import ru.qdev.lnotes.core.pref.NotesPreferenceHelper
 import ru.qdev.lnotes.db.dao.FolderDao
 import ru.qdev.lnotes.db.dao.NotesDao
+import ru.qdev.lnotes.db.entity.NotesEntry
 import ru.qdev.lnotes.ui.navigation.Navigator
 import ru.qdev.lnotes.ui.navigation.route.note.NoteEditScreenRoute
 import ru.qdev.lnotes.ui.screen.base.BaseScreenViewModel
@@ -26,6 +28,7 @@ import ru.qdev.lnotes.ui.view.dialog.Dialog
 import ru.qdev.lnotes.ui.view.dialog.DialogButton
 import ru.qdev.lnotes.utils.coroutine.CoroutineUtils.throwIfCancel
 import src.R
+import java.util.Date
 import javax.inject.Inject
 
 interface NoteEditScreenViewModelListener {
@@ -111,7 +114,17 @@ class NoteEditScreenViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 try {
                     val id = notesPreferenceHelper.editNoteId
-                    val note = notesDao.getById(id).firstOrNull()
+
+                    val note: NotesEntry?
+                    if (id != NoteAddingId) {
+                        note = notesDao.getById(id).firstOrNull()
+                    }
+                    else {
+                        note = NotesEntry()
+                        note.folderId = notesPreferenceHelper.editNoteToAddingFolderId
+                        note.createTimeU = Date().time
+                    }
+
                     if (note == null) {
                         showError(
                             message = context.getString(R.string.note_not_found),
@@ -201,6 +214,7 @@ class NoteEditScreenViewModel @Inject constructor(
                                 preferenceHelper: NotesPreferenceHelper,
                                 noteId: Long) : Result<Boolean> {
             val logStr = "prepareEdit"
+
             return withContext(Dispatchers.IO) {
                 val note = notesDao.getById(noteId).firstOrNull()
                 if (note == null) {
@@ -213,9 +227,22 @@ class NoteEditScreenViewModel @Inject constructor(
 
                 preferenceHelper.editNoteId = noteId
                 preferenceHelper.editNoteText = note.content
+                preferenceHelper.editNoteToAddingFolderId = note.folderId
 
                 return@withContext Result.success(true)
             }
+        }
+
+        fun prepareAdding(context: Context,
+                                  preferenceHelper: NotesPreferenceHelper,
+                                  folderId: Long?) : Result<Boolean> {
+            val logStr = "prepareAdding"
+
+            preferenceHelper.editNoteId = NoteAddingId
+            preferenceHelper.editNoteText = null
+            preferenceHelper.editNoteToAddingFolderId = folderId
+
+            return Result.success(true)
         }
     }
 }

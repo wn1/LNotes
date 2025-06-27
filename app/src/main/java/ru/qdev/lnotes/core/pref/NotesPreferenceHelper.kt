@@ -18,6 +18,7 @@ class NotesPreferenceHelper (private val context: Context) {
     private val PREFERENCE_SELECTED_FOLDER_ID = "PREFERENCE_SELECTED_FOLDER_ID"
     private val PREFERENCE_EDIT_NOTE_ID = "PREFERENCE_EDIT_NOTE_ID"
     private val PREFERENCE_EDIT_NOTE_TEXT = "PREFERENCE_EDIT_NOTE_TEXT"
+    private val PREFERENCE_EDIT_NOTE_TO_ADDING_FOLDER_ID = "PREFERENCE_EDIT_NOTE_TO_ADDING_FOLDER_ID"
 
     private fun getPreferencesDrawer(): SharedPreferences {
         return context.getSharedPreferences(PREFERENCES_NAME_DRAWER, Context.MODE_PRIVATE)
@@ -71,6 +72,7 @@ class NotesPreferenceHelper (private val context: Context) {
             getPreferences().edit() { putString(PREFERENCE_SELECTED_FOLDER_ID, value) }
         }
 
+    //Если -1, то добавление новой заметки
     var editNoteId: Long
         get() {
             return getPreferences().getLong(PREFERENCE_EDIT_NOTE_ID, -1)
@@ -85,6 +87,18 @@ class NotesPreferenceHelper (private val context: Context) {
         }
         set (value) {
             getPreferences().edit() { putString(PREFERENCE_EDIT_NOTE_TEXT, value) }
+        }
+
+    var editNoteToAddingFolderId: Long?
+        get() {
+            return getPreferences()
+                .getString(PREFERENCE_EDIT_NOTE_TO_ADDING_FOLDER_ID, null)
+                ?.toLongOrNull()
+        }
+        set (value) {
+            getPreferences().edit() {
+                putString(PREFERENCE_EDIT_NOTE_TO_ADDING_FOLDER_ID, value?.toString())
+            }
         }
 
 

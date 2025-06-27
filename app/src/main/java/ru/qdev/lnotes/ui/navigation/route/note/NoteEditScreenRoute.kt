@@ -5,7 +5,7 @@ import ru.qdev.lnotes.ui.navigation.route.base.BaseRoute
 
 @Serializable
 class NoteEditScreenRoute(
-    val noteId: Long?
+    val noteId: Long? //-1 если добавление
 ): BaseRoute(
     screenUid = "NoteEditRoute"
 )

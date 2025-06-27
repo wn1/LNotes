@@ -1,11 +1,13 @@
 package ru.qdev.lnotes.ui.screen.base
 
 import android.content.res.Configuration
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +21,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -53,6 +57,7 @@ import ru.qdev.lnotes.ui.screen.note_list.NoteListScreenListener
 import ru.qdev.lnotes.ui.screen.note_list.NoteListScreenViewModel
 import ru.qdev.lnotes.ui.theme.contentHPaddingDp
 import ru.qdev.lnotes.ui.theme.dp40
+import ru.qdev.lnotes.ui.theme.dp44
 import ru.qdev.lnotes.ui.theme.dp8
 import ru.qdev.lnotes.ui.view.spacer.HSpacer
 import ru.qdev.lnotes.ui.view.text.SText
@@ -146,6 +151,21 @@ private fun ScreenContent(
                 }
             )
         },
+        floatingActionButton = {
+            FloatingActionButton (
+                shape = FloatingActionButtonDefaults.largeShape,
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                onClick = {
+                    listener?.onNoteAddingClick()
+                }
+            ) {
+                Image(
+                    modifier = Modifier.size(dp44),
+                    painter = painterResource(R.drawable.ic_add_24dp),
+                    contentDescription = stringResource(R.string.add_note_button_description)
+                )
+            }
+        }
     ) { innerPadding ->
 
         ModalNavigationDrawer (
@@ -173,7 +193,8 @@ private fun ScreenContent(
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(0.dp),
-                    state = notesColumnState
+                    state = notesColumnState,
+                    contentPadding = PaddingValues(bottom = 60.dp)
                 ) {
                     items(
                         count = notes.itemCount,
@@ -184,7 +205,7 @@ private fun ScreenContent(
                                 modifier = Modifier.fillMaxWidth(),
                                 note = it,
                                 onClick = {
-                                    listener?.onClick(it)
+                                    listener?.onNoteClick(it)
                                 }
                             )
                         }
