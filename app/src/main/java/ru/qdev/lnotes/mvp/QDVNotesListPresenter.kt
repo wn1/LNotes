@@ -12,6 +12,7 @@ import moxy.InjectViewState
 import ru.qdev.lnotes.*
 import ru.qdev.lnotes.db.entity.QDVDbFolderOrMenuItem
 import ru.qdev.lnotes.db.entity.QDVDbNote
+import ru.qdev.lnotes.db.enum.StatusOfExecution
 import src.R
 import java.util.*
 
@@ -161,9 +162,9 @@ class QDVNotesListPresenter : QDVMvpDbPresenter <QDVNotesListView> () {
     }
 
     @UiThread
-    fun doSetStatusOfExecution(note: QDVDbNote, status: QDVDbNote.StatusOfExecution) {
+    fun doSetStatusOfExecution(note: QDVDbNote, status: StatusOfExecution) {
         note.statusOfExecution = status
-        if (status!=QDVDbNote.StatusOfExecution.CREATED){
+        if (status!=StatusOfExecution.CREATED){
             note.completeTime = Date()
         }
         else

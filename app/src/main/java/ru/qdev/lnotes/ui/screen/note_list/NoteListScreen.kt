@@ -23,6 +23,7 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -32,9 +33,11 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -51,18 +54,24 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import ru.qdev.lnotes.db.entity.NotesEntry
+import ru.qdev.lnotes.db.enum.StatusOfExecution
 import ru.qdev.lnotes.model.Folder
 import ru.qdev.lnotes.model.FolderType
 import ru.qdev.lnotes.ui.screen.note_list.NoteListScreenListener
 import ru.qdev.lnotes.ui.screen.note_list.NoteListScreenViewModel
 import ru.qdev.lnotes.ui.theme.contentHPaddingDp
+import ru.qdev.lnotes.ui.theme.dp4
 import ru.qdev.lnotes.ui.theme.dp40
 import ru.qdev.lnotes.ui.theme.dp44
 import ru.qdev.lnotes.ui.theme.dp8
 import ru.qdev.lnotes.ui.view.spacer.HSpacer
+import ru.qdev.lnotes.ui.view.spacer.VSpacer
 import ru.qdev.lnotes.ui.view.text.SText
 import ru.qdev.lnotes.utils.live_data.LiveEvent
 import src.R
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @ExperimentalMaterial3Api
 @Composable
@@ -201,6 +210,10 @@ private fun ScreenContent(
                         key = { index -> notes[index]?.uid ?: index }
                     ) { index ->
                         notes[index]?.let {
+                            if (index != 0) {
+                                HorizontalDivider()
+                            }
+                            VSpacer(dp8)
                             NotesItem(
                                 modifier = Modifier.fillMaxWidth(),
                                 note = it,
@@ -208,9 +221,9 @@ private fun ScreenContent(
                                     listener?.onNoteClick(it)
                                 }
                             )
+                            VSpacer(dp8)
                         }
                     }
-
                 }
             }
 
@@ -240,18 +253,69 @@ private fun ScreenContent(
 private fun NotesItem(modifier: Modifier,
                       note: NotesEntry,
                       onClick: (NotesEntry) -> Unit) {
-    SText(
-        modifier = modifier
-            .defaultMinSize(minHeight = dp40)
-            .clickable {
-                onClick(note)
+    val status = StatusOfExecution.fromDbValue(note.isReady)
+    val isReadyOrDone = status != StatusOfExecution.CREATED
+
+    val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT) }
+
+    Column (modifier = Modifier
+        .defaultMinSize(minHeight = dp40)
+        .clickable {
+            onClick(note)
+        }
+    ){
+        Row {
+            SText(
+                modifier = modifier
+                    .weight(1f)
+                    .alpha(if (isReadyOrDone)  0.4f else 1f)
+                    .padding(start = contentHPaddingDp),
+                text = note.content ?: "",
+                maxLines = 3
+            )
+
+            if (status == StatusOfExecution.COMPLETED) {
+                HSpacer(dp8)
+                Icon(
+                    modifier = Modifier.alpha(0.45f),
+                    painter = painterResource(R.drawable.ic_success_black_24dp),
+                    contentDescription = stringResource(R.string.set_done)
+                )
             }
-            .padding(horizontal = contentHPaddingDp)
-            .padding(vertical = dp8)
-        ,
-        text = note.content ?: "",
-        maxLines = 3
-    )
+
+            HSpacer(contentHPaddingDp)
+        }
+
+        VSpacer(dp4)
+
+        Row {
+            val updateTime = if (note.updateTimeU != null){
+                dateFormat.format(Date(note.updateTimeU!!))
+            } else {
+                null
+            }
+
+            val completeTime = if (note.completeTimeU != null){
+                dateFormat.format(Date(note.completeTimeU))
+            } else {
+                null
+            }
+
+            HSpacer(contentHPaddingDp)
+
+            SText(
+                modifier = Modifier.weight(1f).alpha(if (isReadyOrDone) 0.3f else 0.5f),
+                text = updateTime ?: ""
+            )
+
+            SText(
+                modifier = Modifier.weight(1f).alpha(if (isReadyOrDone) 0.3f else 0.5f),
+                text = completeTime ?: ""
+            )
+
+            HSpacer(contentHPaddingDp)
+        }
+    }
 }
 
 @Composable
