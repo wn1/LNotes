@@ -4,12 +4,10 @@ import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import ru.qdev.lnotes.core.events.DbManager
 import ru.qdev.lnotes.core.pref.NotesPreferenceHelper
-import ru.qdev.lnotes.ui.navigation.Navigator
+import ru.qdev.lnotes.ui.navigation.QDVNavigator
 import javax.inject.Singleton
 
 @Module
@@ -18,8 +16,8 @@ class HelperModule {
 
     @Provides
     @Singleton
-    fun provideNavigator(@ApplicationContext context: Context) : Navigator {
-        return Navigator(context)
+    fun provideNavigator(@ApplicationContext context: Context) : QDVNavigator {
+        return QDVNavigator(context)
     }
 
     @Provides

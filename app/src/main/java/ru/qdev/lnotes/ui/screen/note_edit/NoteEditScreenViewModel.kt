@@ -3,8 +3,6 @@ package ru.qdev.lnotes.ui.screen.note_edit
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -13,15 +11,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import ru.qdev.lnotes.core.AppConst.NoteAddingId
-import ru.qdev.lnotes.core.events.DbManager
+import ru.qdev.lnotes.core.QDVAppConst.NoteAddingId
+import ru.qdev.lnotes.core.events.QDVDbManager
 import ru.qdev.lnotes.core.pref.NotesPreferenceHelper
 import ru.qdev.lnotes.db.dao.FolderDao
 import ru.qdev.lnotes.db.dao.NotesDao
 import ru.qdev.lnotes.db.entity.NotesEntry
-import ru.qdev.lnotes.ui.navigation.Navigator
+import ru.qdev.lnotes.ui.navigation.QDVNavigator
 import ru.qdev.lnotes.ui.navigation.route.note.NoteEditScreenRoute
 import ru.qdev.lnotes.ui.screen.base.BaseScreenViewModel
 import ru.qdev.lnotes.ui.view.dialog.Dialog
@@ -39,10 +36,10 @@ interface NoteEditScreenViewModelListener {
 
 @HiltViewModel
 class NoteEditScreenViewModel @Inject constructor(
-    private val dbManager: DbManager,
+    private val dbManager: QDVDbManager,
     @ApplicationContext private val context: Context,
     private val notesPreferenceHelper: NotesPreferenceHelper,
-    private val navigator: Navigator,
+    private val navigator: QDVNavigator,
     private val savedStateHandle: SavedStateHandle
 ): BaseScreenViewModel(), NoteEditScreenViewModelListener {
     private lateinit var notesDao: NotesDao

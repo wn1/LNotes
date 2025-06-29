@@ -2,18 +2,13 @@ package ru.qdev.lnotes.core.events
 
 import android.content.Context
 import android.util.Log
-import androidx.annotation.AnyThread
 import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import dagger.hilt.android.qualifiers.ApplicationContext
-import org.greenrobot.eventbus.EventBus
 import ru.qdev.lnotes.db.NotesDatabase
-import ru.qdev.lnotes.mvp.QDVMvpDbPresenter
-import ru.qdev.lnotes.mvp.QDVNavigationDrawerState
 import java.io.File
 
-class DbManager (val context: Context) {
+class QDVDbManager (val context: Context) {
     var notesDatabase: NotesDatabase? = null
         private set
 

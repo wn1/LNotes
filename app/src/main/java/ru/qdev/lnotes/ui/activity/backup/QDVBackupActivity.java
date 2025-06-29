@@ -1,6 +1,6 @@
 package ru.qdev.lnotes.ui.activity.backup;
 
-import static ru.qdev.lnotes.core.events.DbManager.NOTES_DATABASE_NAME;
+import static ru.qdev.lnotes.core.events.QDVDbManager.NOTES_DATABASE_NAME;
 
 import android.content.ContentResolver;
 import android.content.Context;

@@ -18,7 +18,7 @@ import com.example.reply.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import ru.qdev.lnotes.mvp.QDVStatisticState.addTimeForShowUserRatingQuest
 import ru.qdev.lnotes.mvp.QDVStatisticState.userRatingQuestShownNoNeed
-import ru.qdev.lnotes.ui.navigation.Navigator
+import ru.qdev.lnotes.ui.navigation.QDVNavigator
 import ru.qdev.lnotes.ui.navigation.route.note.NoteListScreenRoute
 import ru.qdev.lnotes.ui.view.QDVViewFabric
 import ru.qdev.lnotes.utils.QDVTempFileSendUtils
@@ -37,7 +37,7 @@ class QDVNotesHomeActivity : ComponentActivity() {
     private var tempFileSendUtils: QDVTempFileSendUtils? = null
 
     @Inject
-    lateinit var navigator: Navigator
+    lateinit var navigator: QDVNavigator
 
 //    @JvmField
 //    @InjectPresenter

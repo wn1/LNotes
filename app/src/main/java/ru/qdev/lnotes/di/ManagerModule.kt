@@ -4,10 +4,9 @@ import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import ru.qdev.lnotes.core.events.DbManager
+import ru.qdev.lnotes.core.events.QDVDbManager
 import javax.inject.Singleton
 
 @Module
@@ -16,7 +15,7 @@ class ManagerModule {
 
     @Provides
     @Singleton
-    fun provideDbManager(@ApplicationContext context: Context) : DbManager {
-        return DbManager(context)
+    fun provideDbManager(@ApplicationContext context: Context) : QDVDbManager {
+        return QDVDbManager(context)
     }
 }

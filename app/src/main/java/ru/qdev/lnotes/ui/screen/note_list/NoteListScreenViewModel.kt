@@ -17,8 +17,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import ru.qdev.lnotes.core.AppConst.NoteAddingId
-import ru.qdev.lnotes.core.events.DbManager
+import ru.qdev.lnotes.core.QDVAppConst.NoteAddingId
+import ru.qdev.lnotes.core.events.QDVDbManager
 import ru.qdev.lnotes.core.pref.NotesPreferenceHelper
 import ru.qdev.lnotes.db.dao.FolderDao
 import ru.qdev.lnotes.db.dao.NotesDao
@@ -26,7 +26,7 @@ import ru.qdev.lnotes.db.entity.FolderEntry
 import ru.qdev.lnotes.db.entity.NotesEntry
 import ru.qdev.lnotes.model.Folder
 import ru.qdev.lnotes.model.FolderType
-import ru.qdev.lnotes.ui.navigation.Navigator
+import ru.qdev.lnotes.ui.navigation.QDVNavigator
 import ru.qdev.lnotes.ui.navigation.route.note.NoteEditScreenRoute
 import ru.qdev.lnotes.ui.screen.base.BaseScreenViewModel
 import ru.qdev.lnotes.ui.screen.note_edit.NoteEditScreenViewModel
@@ -49,10 +49,10 @@ interface NoteListScreenListener {
 
 @HiltViewModel
 class NoteListScreenViewModel @Inject constructor(
-    private val dbManager: DbManager,
+    private val dbManager: QDVDbManager,
     @ApplicationContext private val context: Context,
     private val notesPreferenceHelper: NotesPreferenceHelper,
-    private val navigator: Navigator,
+    private val navigator: QDVNavigator,
     private val savedStateHandle: SavedStateHandle
 ): BaseScreenViewModel(), NoteListScreenListener {
     private lateinit var notesDao: NotesDao

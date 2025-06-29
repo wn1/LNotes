@@ -1,15 +1,13 @@
 package ru.qdev.lnotes.ui.activity.notes
 
 import android.content.Context
-import android.content.DialogInterface
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import androidx.annotation.UiThread
-import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import ru.qdev.lnotes.core.events.DbManager
+import ru.qdev.lnotes.core.events.QDVDbManager
 import ru.qdev.lnotes.db.QDVDbDatabase
 import ru.qdev.lnotes.ui.activity.base.BaseActivityViewModel
 import ru.qdev.lnotes.ui.activity.notes.model.OldDbUpdateError
@@ -27,7 +25,7 @@ import javax.inject.Inject
 class QDVNotesHomeViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val savedStateHandle: SavedStateHandle,
-    private val dbManager: DbManager
+    private val dbManager: QDVDbManager
 ) : BaseActivityViewModel(context = context, savedStateHandle = savedStateHandle) {
 
     @get:AnyThread

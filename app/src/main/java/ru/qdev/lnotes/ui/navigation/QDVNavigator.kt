@@ -15,7 +15,7 @@ import ru.qdev.lnotes.ui.navigation.route.note.NoteListScreenRoute
 import ru.qdev.lnotes.ui.screen.base.NoteListScreen
 import ru.qdev.lnotes.ui.screen.note_edit.NoteEditScreen
 
-class Navigator (val context: Context) {
+class QDVNavigator (val context: Context) {
     lateinit var navController: NavHostController
 
     @ExperimentalMaterial3Api

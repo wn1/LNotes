@@ -1,5 +1,5 @@
 package ru.qdev.lnotes.core
 
-object AppConst {
+object QDVAppConst {
     const val NoteAddingId = -1L
 }
