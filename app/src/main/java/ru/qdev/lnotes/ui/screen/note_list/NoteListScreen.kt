@@ -3,6 +3,7 @@ package ru.qdev.lnotes.ui.screen.base
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,8 +18,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -40,6 +43,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -50,6 +55,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.reply.ui.theme.AppTheme
+import com.example.reply.ui.theme.Black
+import com.example.reply.ui.theme.isDark
 import drawVerticalScrollbar
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -61,6 +68,8 @@ import ru.qdev.lnotes.model.FolderType
 import ru.qdev.lnotes.ui.screen.note_list.NoteListScreenListener
 import ru.qdev.lnotes.ui.screen.note_list.NoteListScreenViewModel
 import ru.qdev.lnotes.ui.theme.contentHPaddingDp
+import ru.qdev.lnotes.ui.theme.dp1
+import ru.qdev.lnotes.ui.theme.dp10
 import ru.qdev.lnotes.ui.theme.dp4
 import ru.qdev.lnotes.ui.theme.dp40
 import ru.qdev.lnotes.ui.theme.dp44
@@ -220,6 +229,9 @@ private fun ScreenContent(
                                 note = it,
                                 onClick = {
                                     listener?.onNoteClick(it)
+                                },
+                                onMenuClick = {
+                                    listener?.onNoteMenuClick(it)
                                 }
                             )
                             VSpacer(dp8)
@@ -253,7 +265,8 @@ private fun ScreenContent(
 @Composable
 private fun NotesItem(modifier: Modifier,
                       note: NotesEntry,
-                      onClick: (NotesEntry) -> Unit) {
+                      onClick: (NotesEntry) -> Unit,
+                      onMenuClick: (NotesEntry) -> Unit) {
     val status = StatusOfExecution.fromDbValue(note.isReady)
     val isReadyOrDone = status != StatusOfExecution.CREATED
 
@@ -261,61 +274,94 @@ private fun NotesItem(modifier: Modifier,
 
     Column (modifier = Modifier
         .defaultMinSize(minHeight = dp40)
-        .clickable {
-            onClick(note)
-        }
+        .combinedClickable (
+            onClick = {
+                onClick(note)
+            },
+            onLongClick = {
+                onMenuClick(note)
+            }
+        )
     ){
         Row {
-            SText(
-                modifier = modifier
-                    .weight(1f)
-                    .alpha(if (isReadyOrDone)  0.4f else 1f)
-                    .padding(start = contentHPaddingDp),
-                text = note.content ?: "",
-                maxLines = 3
-            )
-
-            if (status == StatusOfExecution.COMPLETED) {
-                HSpacer(dp8)
-                Icon(
-                    modifier = Modifier.alpha(0.45f),
-                    painter = painterResource(R.drawable.ic_success_black_24dp),
-                    contentDescription = stringResource(R.string.set_done)
-                )
-            }
-
-            HSpacer(contentHPaddingDp)
-        }
-
-        VSpacer(dp4)
-
-        Row {
-            val updateTime = if (note.updateTimeU != null){
-                dateFormat.format(Date(note.updateTimeU!!))
-            } else {
-                null
-            }
-
-            val completeTime = if (note.completeTimeU != null){
-                dateFormat.format(Date(note.completeTimeU))
-            } else {
-                null
-            }
-
             HSpacer(contentHPaddingDp)
 
-            SText(
-                modifier = Modifier.weight(1f).alpha(if (isReadyOrDone) 0.3f else 0.5f),
-                text = updateTime ?: ""
+            val color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
+//                Black(MaterialTheme.colorScheme.isDark())
+            Image(
+                modifier = Modifier
+                    .size(dp40)
+                    .align(Alignment.CenterVertically)
+                    .border(
+                        dp1,
+                        color,
+                        RoundedCornerShape(dp10)
+                    )
+                    .clip(RoundedCornerShape(dp10))
+                    .clickable {
+                        onMenuClick(note)
+                    },
+                painter = painterResource(R.drawable.ic_more_horiz_24),
+                contentDescription = stringResource(R.string.set_done),
+                contentScale = ContentScale.None,
+                colorFilter = ColorFilter.tint(color)
             )
 
-            SText(
-                modifier = Modifier.weight(1f).alpha(if (isReadyOrDone) 0.3f else 0.5f),
-                text = completeTime ?: "",
-                textAlign = TextAlign.End
-            )
+            HSpacer(dp8)
 
-            HSpacer(contentHPaddingDp)
+            Column {
+
+                Row {
+                    SText(
+                        modifier = modifier
+                            .weight(1f)
+                            .alpha(if (isReadyOrDone) 0.4f else 1f),
+                        text = note.content ?: "",
+                        maxLines = 3,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+
+                    if (status == StatusOfExecution.COMPLETED) {
+                        HSpacer(dp8)
+                        Icon(
+                            modifier = Modifier.alpha(0.45f),
+                            painter = painterResource(R.drawable.ic_success_black_24dp),
+                            contentDescription = stringResource(R.string.set_done)
+                        )
+                    }
+
+                    HSpacer(contentHPaddingDp)
+                }
+
+                VSpacer(dp4)
+
+                Row {
+                    val updateTime = if (note.updateTimeU != null) {
+                        dateFormat.format(Date(note.updateTimeU!!))
+                    } else {
+                        null
+                    }
+
+                    val completeTime = if (note.completeTimeU != null) {
+                        dateFormat.format(Date(note.completeTimeU))
+                    } else {
+                        null
+                    }
+
+                    SText(
+                        modifier = Modifier.weight(1f).alpha(if (isReadyOrDone) 0.3f else 0.5f),
+                        text = updateTime ?: ""
+                    )
+
+                    SText(
+                        modifier = Modifier.weight(1f).alpha(if (isReadyOrDone) 0.3f else 0.5f),
+                        text = completeTime ?: "",
+                        textAlign = TextAlign.End
+                    )
+
+                    HSpacer(contentHPaddingDp)
+                }
+            }
         }
     }
 }

@@ -44,6 +44,7 @@ interface NoteListScreenListener {
     fun onSelectFolder(folder: Folder)
     fun onFolderLongClick(folder: Folder)
     fun onNoteClick (note: NotesEntry)
+    fun onNoteMenuClick (note: NotesEntry)
     fun onNoteAddingClick()
 }
 
@@ -500,6 +501,13 @@ class NoteListScreenViewModel @Inject constructor(
 
             navigator.navigate(NoteEditScreenRoute(noteId = note.uid))
         }
+    }
+
+    override fun onNoteMenuClick (note: NotesEntry) {
+        val logStr = "onNoteMenuClick"
+        Log.i(TAG, "$logStr, id: ${note.uid}")
+
+        //TODO
     }
 
     override fun onNoteAddingClick() {

@@ -17,11 +17,13 @@
 package com.example.reply.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 
 // Material 3 color schemes
 private val DarkColorScheme = darkColorScheme(
@@ -34,7 +36,7 @@ private val DarkColorScheme = darkColorScheme(
     secondaryContainer = Color(0xFF000000),
 
     tertiary = Color(0xff00a3a3),
-    tertiaryContainer = Color(0xFFFFFFFF)
+    tertiaryContainer = Color(0xFFFFFFFF),
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -64,3 +66,7 @@ fun AppTheme(
         content = content
     )
 }
+
+@Composable
+fun ColorScheme.isDark() = this.background.luminance() <= 0.5
+
