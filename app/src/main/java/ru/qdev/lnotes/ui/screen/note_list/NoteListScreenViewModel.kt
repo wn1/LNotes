@@ -251,6 +251,12 @@ class NoteListScreenViewModel @Inject constructor(
                     deleteFolder(it)
                 }
             }
+
+            NOTE_DELETE_CONFIRM_B -> {
+                noteForMenu?.let {
+                    deleteNote(it)
+                }
+            }
         }
     }
 
@@ -335,7 +341,23 @@ class NoteListScreenViewModel @Inject constructor(
             }
 
             MENU_NOTE_DELETE -> {
-                deleteNote(noteForMenu)
+                showDialogOrMenu(
+                    Dialog(
+                        title = noteForMenu?.content ?: "",
+                        titleMaxLines = MAX_DIALOG_NOTE_TITLE_LINES,
+                        message = context.getString(R.string.delete_confirm),
+                        dialogType = DialogType.Dialog,
+                        buttons = listOf(
+                            DialogButton(
+                                title = context.getString(R.string.delete_button),
+                                id = NOTE_DELETE_CONFIRM_B
+                            ),
+                            DialogButton(
+                                title = context.getString(R.string.cancel),
+                            )
+                        )
+                    )
+                )
             }
         }
     }
@@ -436,7 +458,7 @@ class NoteListScreenViewModel @Inject constructor(
                     showDialogOrMenu(
                         Dialog(
                             title = noteForMenu?.content ?: "",
-                            titleMaxLines = 2,
+                            titleMaxLines = MAX_DIALOG_NOTE_TITLE_LINES,
                             message = context.getString(R.string.move_title),
                             dialogType = DialogType.Menu,
                             buttons = listOf(),
@@ -672,7 +694,7 @@ class NoteListScreenViewModel @Inject constructor(
         showDialogOrMenu(
             Dialog(
                 title = noteForMenu?.content ?: "",
-                titleMaxLines = 2,
+                titleMaxLines = MAX_DIALOG_NOTE_TITLE_LINES,
                 message = "",
                 dialogType = DialogType.Menu,
                 buttons = listOf(),
@@ -709,6 +731,7 @@ class NoteListScreenViewModel @Inject constructor(
 
     companion object {
         private const val TAG = "NoteListScreenViewModel"
+        private const val MAX_DIALOG_NOTE_TITLE_LINES = 2
         private const val ADD_FOLDER_OK_B = "ADD_FOLDER_OK"
         private const val RENAME_FOLDER_OK_B = "RENAME_FOLDER_OK_B"
         private const val MENU_FOLDER_DELETE = "MENU_FOLDER_DELETE"
@@ -718,6 +741,7 @@ class NoteListScreenViewModel @Inject constructor(
         private const val MENU_NOTE_SET_NO_NEEDED = "MENU_NOTE_SET_NO_NEEDED"
         private const val MENU_NOTE_MOVE = "MENU_NOTE_MOVE"
         private const val MENU_NOTE_DELETE = "MENU_NOTE_DELETE"
+        private const val NOTE_DELETE_CONFIRM_B = "NOTE_DELETE_CONFIRM_B"
         private const val FOLDER_DELETE_CONFIRM_B = "FOLDER_DELETE_CONFIRM_B"
         private const val MENU_FOLDER_RENAME = "MENU_FOLDER_MOVE"
         private const val NOTE_MOVE_SELECT_DIALOG = "NOTE_MOVE_SELECT_DIALOG"
