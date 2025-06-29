@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -394,7 +395,7 @@ class NoteListScreenViewModel @Inject constructor(
         }
     }
 
-    private fun moveNoteMenuPrepare() {
+    private fun moveNoteMenuPrepare(delayMs: Long = 200) {
         noteMoveJob?.cancel()
         noteMoveJob = viewModelScope.launch {
             loading(folderLoading) {
@@ -412,6 +413,7 @@ class NoteListScreenViewModel @Inject constructor(
                 }
 
                 noteForMenu?.let { folder ->
+                    delay(delayMs)
                     showDialogOrMenu(
                         Dialog(
                             title = noteForMenu?.content ?: "",
