@@ -3,6 +3,7 @@ package ru.qdev.lnotes.db.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import ru.qdev.lnotes.db.enum.StatusOfExecution
 import java.util.Date
 
 
@@ -12,11 +13,15 @@ data class NotesEntry(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") val uid: Long? = null, //TODO проверить autoGenerate
     @ColumnInfo(name = "content") var content: String? = null,
     @ColumnInfo(name = "create_time_u") var createTimeU: Long? = null,
-    @ColumnInfo(name = "isready") val isReady: Int = 0,
+    @ColumnInfo(name = "isready") var isReady: Int = 0,
     @ColumnInfo(name = "folder_id") var folderId: Long? = null,
-    @ColumnInfo(name = "complete_time_u") val completeTimeU: Long? = null,
+    @ColumnInfo(name = "complete_time_u") var completeTimeU: Long? = null,
     @ColumnInfo(name = "update_time_u") var updateTimeU: Long? = null,
 ) {
+    fun statusOfExecution() : StatusOfExecution {
+        return StatusOfExecution.fromDbValue(isReady)
+    }
+
     companion object {
         fun makeTestList() : List<NotesEntry> {
             val list = List(30) { it }.mapIndexed { index, i ->

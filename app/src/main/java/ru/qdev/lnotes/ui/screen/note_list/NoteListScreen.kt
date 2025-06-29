@@ -267,7 +267,7 @@ private fun NotesItem(modifier: Modifier,
                       note: NotesEntry,
                       onClick: (NotesEntry) -> Unit,
                       onMenuClick: (NotesEntry) -> Unit) {
-    val status = StatusOfExecution.fromDbValue(note.isReady)
+    val status = note.statusOfExecution()
     val isReadyOrDone = status != StatusOfExecution.CREATED
 
     val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT) }
@@ -336,16 +336,20 @@ private fun NotesItem(modifier: Modifier,
                 VSpacer(dp4)
 
                 Row {
-                    val updateTime = if (note.updateTimeU != null) {
-                        dateFormat.format(Date(note.updateTimeU!!))
-                    } else {
-                        null
+                    val updateTime = note.updateTimeU.let {
+                        if (it != null) {
+                            dateFormat.format(Date(it))
+                        } else {
+                            null
+                        }
                     }
 
-                    val completeTime = if (note.completeTimeU != null) {
-                        dateFormat.format(Date(note.completeTimeU))
-                    } else {
-                        null
+                    val completeTime = note.completeTimeU.let {
+                        if (it != null) {
+                            dateFormat.format(Date(it))
+                        } else {
+                            null
+                        }
                     }
 
                     SText(

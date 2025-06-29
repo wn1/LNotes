@@ -179,6 +179,8 @@ private fun DialogHeader(dialog: Dialog) {
                 text = dialog.title,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
+                maxLines = dialog.titleMaxLines,
+                overflow = TextOverflow.Ellipsis,
                 fontSize = sp16
             )
         }

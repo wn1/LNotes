@@ -5,6 +5,7 @@ import ru.qdev.lnotes.ui.view.menu.DialogMenuItem
 import src.R
 
 data class Dialog(val title: String,
+                  val titleMaxLines: Int = 5,
                   val message: String,
                   val messageMaxLines: Int = 5,
                   val buttons: List<DialogButton>,

@@ -24,6 +24,7 @@ import ru.qdev.lnotes.db.dao.FolderDao
 import ru.qdev.lnotes.db.dao.NotesDao
 import ru.qdev.lnotes.db.entity.FolderEntry
 import ru.qdev.lnotes.db.entity.NotesEntry
+import ru.qdev.lnotes.db.enum.StatusOfExecution
 import ru.qdev.lnotes.model.Folder
 import ru.qdev.lnotes.model.FolderType
 import ru.qdev.lnotes.ui.navigation.QDVNavigator
@@ -34,9 +35,11 @@ import ru.qdev.lnotes.ui.view.dialog.Dialog
 import ru.qdev.lnotes.ui.view.dialog.DialogButton
 import ru.qdev.lnotes.ui.view.dialog.DialogType
 import ru.qdev.lnotes.ui.view.menu.DialogMenuItem
+import ru.qdev.lnotes.ui.view.menu.MenuItemType
 import ru.qdev.lnotes.utils.LoadingUtils.loading
 import ru.qdev.lnotes.utils.live_data.LiveEvent
 import src.R
+import java.util.Date
 import javax.inject.Inject
 
 interface NoteListScreenListener {
@@ -66,12 +69,14 @@ class NoteListScreenViewModel @Inject constructor(
     val folderLoading = mutableStateOf(false)
 
     private var folderForMenu: Folder? = null
+    private var noteForMenu: NotesEntry? = null
 
     private var fillFolderJob: Job? = null
     private var moveFolderJob: Job? = null
     private var addFolderJob: Job? = null
     private var removeFolderJob: Job? = null
     private var renameFolderJob: Job? = null
+    private var noteEditJob: Job? = null
     private var selectedFolderForPager: Folder? = null
 
     private fun makeNotesPagingFlow(): Flow<PagingData<NotesEntry>> {
@@ -250,12 +255,10 @@ class NoteListScreenViewModel @Inject constructor(
     override fun onDialogMenuItemClick(dialog: Dialog, dialogMenuItem: DialogMenuItem) {
         super.onDialogMenuItemClick(dialog, dialogMenuItem)
 
-        val folder = folderForMenu
+        val logStr = "onDialogMenuItemClick"
 
-        if (folder == null) {
-            Log.e(TAG, "onDialogMenuItemClick: folder is empty")
-            return
-        }
+        val folder = folderForMenu
+        val folderIsEmptyLog = "$logStr: folder is empty"
 
         if (dialog.id == NOTE_MOVE_SELECT_DIALOG){
             //TODO
@@ -264,6 +267,11 @@ class NoteListScreenViewModel @Inject constructor(
 
         when(dialogMenuItem.id) {
             MENU_FOLDER_DELETE -> {
+                if (folder == null) {
+                    Log.e(TAG, folderIsEmptyLog)
+                    return
+                }
+
                 showDialogOrMenu(
                     Dialog(
                         title = context.getString(R.string.delete_folder_confirm_message),
@@ -284,6 +292,11 @@ class NoteListScreenViewModel @Inject constructor(
             }
 
             MENU_FOLDER_RENAME -> {
+                if (folder == null) {
+                    Log.e(TAG, folderIsEmptyLog)
+                    return
+                }
+
                 showDialogOrMenu(
                     dialog = Dialog(
                         dialogType = DialogType.InputText,
@@ -302,6 +315,53 @@ class NoteListScreenViewModel @Inject constructor(
                     )
                 )
             }
+
+            MENU_NOTE_SET_DONE -> {
+                setStatusToNote(noteForMenu, StatusOfExecution.COMPLETED)
+            }
+
+            MENU_NOTE_SET_IN_WORK -> {
+                setStatusToNote(noteForMenu, StatusOfExecution.CREATED)
+            }
+
+            MENU_NOTE_SET_NO_NEEDED -> {
+                setStatusToNote(noteForMenu, StatusOfExecution.NOT_NEED)
+            }
+
+//            TODO
+//            private const val MENU_NOTE_MOVE = "MENU_NOTE_MOVE"
+//            private const val MENU_NOTE_DELETE = "MENU_NOTE_DELETE"
+        }
+    }
+
+    private fun setStatusToNote(note: NotesEntry?, statusOfExecution: StatusOfExecution) {
+        val logStr = "setStatusToNote"
+        if (note == null) {
+            Log.e(TAG, "$logStr note is null")
+            return
+        }
+
+        Log.i(TAG, "$logStr note id: ${note.uid}")
+
+        noteEditJob?.cancel()
+        noteEditJob = viewModelScope.launch {
+            setStatusToNoteTask(note, statusOfExecution)
+        }
+    }
+
+    private suspend fun setStatusToNoteTask(note: NotesEntry, statusOfExecution: StatusOfExecution) {
+        note.isReady = statusOfExecution.dbValue
+        when (statusOfExecution) {
+            StatusOfExecution.CREATED -> {
+                note.updateTimeU = Date().time
+            }
+
+            StatusOfExecution.NOT_NEED, StatusOfExecution.COMPLETED -> {
+                note.completeTimeU = Date().time
+            }
+        }
+        withContext(Dispatchers.IO) {
+            notesDao.insertAll(note)
         }
     }
 
@@ -507,7 +567,67 @@ class NoteListScreenViewModel @Inject constructor(
         val logStr = "onNoteMenuClick"
         Log.i(TAG, "$logStr, id: ${note.uid}")
 
-        //TODO
+        noteForMenu = note
+
+        val menuList = mutableListOf<DialogMenuItem>()
+
+        val status = note.statusOfExecution()
+
+        if (status != StatusOfExecution.COMPLETED) {
+            menuList.add(
+                DialogMenuItem(
+                    title = context.getString(R.string.set_done),
+                    id = MENU_NOTE_SET_DONE
+                ),
+            )
+        }
+
+        if (status != StatusOfExecution.CREATED) {
+            menuList.add(
+                DialogMenuItem(
+                    title = context.getString(R.string.set_in_work),
+                    id = MENU_NOTE_SET_IN_WORK
+                ),
+            )
+        }
+
+        if (status != StatusOfExecution.NOT_NEED) {
+            menuList.add(
+                DialogMenuItem(
+                    title = context.getString(R.string.set_no_needed),
+                    id = MENU_NOTE_SET_NO_NEEDED
+                ),
+            )
+        }
+
+        menuList.addAll(
+            listOf(
+                DialogMenuItem(
+                    title = "",
+                    id = MENU_DIVIDER,
+                    type = MenuItemType.Divider
+                ),
+                DialogMenuItem(
+                    title = context.getString(R.string.menu_move),
+                    id = MENU_NOTE_MOVE
+                ),
+                DialogMenuItem(
+                    title = context.getString(R.string.menu_delete),
+                    id = MENU_NOTE_DELETE
+                ),
+            )
+        )
+
+        showDialogOrMenu(
+            Dialog(
+                title = noteForMenu?.content ?: "",
+                titleMaxLines = 2,
+                message = "",
+                dialogType = DialogType.Menu,
+                buttons = listOf(),
+                menuList = menuList
+            )
+        )
     }
 
     override fun onNoteAddingClick() {
@@ -541,6 +661,12 @@ class NoteListScreenViewModel @Inject constructor(
         private const val ADD_FOLDER_OK_B = "ADD_FOLDER_OK"
         private const val RENAME_FOLDER_OK_B = "RENAME_FOLDER_OK_B"
         private const val MENU_FOLDER_DELETE = "MENU_FOLDER_DELETE"
+        private const val MENU_DIVIDER = "MENU_DIVIDER"
+        private const val MENU_NOTE_SET_DONE = "MENU_NOTE_SET_DONE"
+        private const val MENU_NOTE_SET_IN_WORK = "MENU_NOTE_SET_IN_WORK"
+        private const val MENU_NOTE_SET_NO_NEEDED = "MENU_NOTE_SET_NO_NEEDED"
+        private const val MENU_NOTE_MOVE = "MENU_NOTE_MOVE"
+        private const val MENU_NOTE_DELETE = "MENU_NOTE_DELETE"
         private const val FOLDER_DELETE_CONFIRM_B = "FOLDER_DELETE_CONFIRM_B"
         private const val MENU_FOLDER_RENAME = "MENU_FOLDER_MOVE"
         private const val NOTE_MOVE_SELECT_DIALOG = "NOTE_MOVE_SELECT_DIALOG"
