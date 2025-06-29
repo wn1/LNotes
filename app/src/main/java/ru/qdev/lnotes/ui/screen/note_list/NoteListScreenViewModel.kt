@@ -333,8 +333,27 @@ class NoteListScreenViewModel @Inject constructor(
             MENU_NOTE_MOVE -> {
                 moveNoteMenuPrepare()
             }
-//            TODO
-//            private const val MENU_NOTE_DELETE = "MENU_NOTE_DELETE"
+
+            MENU_NOTE_DELETE -> {
+                deleteNote(noteForMenu)
+            }
+        }
+    }
+
+    private fun deleteNote(note: NotesEntry?) {
+        val logStr = "deleteNote"
+        if (note == null) {
+            Log.e(TAG, "$logStr note is null")
+            return
+        }
+
+        Log.i(TAG, "$logStr note id: ${note.uid}")
+
+        noteEditJob?.cancel()
+        noteEditJob = viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                notesDao.delete(note)
+            }
         }
     }
 
