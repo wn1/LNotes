@@ -213,7 +213,7 @@ private fun ScreenContent(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(0.dp),
                     state = notesColumnState,
-                    contentPadding = PaddingValues(bottom = 60.dp)
+                    contentPadding = PaddingValues(bottom = 80.dp)
                 ) {
                     items(
                         count = notes.itemCount,

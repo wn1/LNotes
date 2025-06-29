@@ -77,6 +77,7 @@ class NoteListScreenViewModel @Inject constructor(
     private var removeFolderJob: Job? = null
     private var renameFolderJob: Job? = null
     private var noteEditJob: Job? = null
+    private var noteMoveJob: Job? = null
     private var selectedFolderForPager: Folder? = null
 
     private fun makeNotesPagingFlow(): Flow<PagingData<NotesEntry>> {
@@ -261,7 +262,7 @@ class NoteListScreenViewModel @Inject constructor(
         val folderIsEmptyLog = "$logStr: folder is empty"
 
         if (dialog.id == NOTE_MOVE_SELECT_DIALOG){
-            //TODO
+            moveNoteToFolderWithId(noteForMenu, dialogMenuItem.id)
             return
         }
 
@@ -328,9 +329,37 @@ class NoteListScreenViewModel @Inject constructor(
                 setStatusToNote(noteForMenu, StatusOfExecution.NOT_NEED)
             }
 
+            MENU_NOTE_MOVE -> {
+                moveNoteMenuPrepare()
+            }
 //            TODO
-//            private const val MENU_NOTE_MOVE = "MENU_NOTE_MOVE"
 //            private const val MENU_NOTE_DELETE = "MENU_NOTE_DELETE"
+        }
+    }
+
+    private fun moveNoteToFolderWithId(note: NotesEntry?, folderIdStr: String) {
+        val logStr = "moveNoteToFolderWithId"
+        if (note == null) {
+            Log.e(TAG, "$logStr note is null")
+            return
+        }
+
+        val folderId: Long? = if (folderIdStr.isEmpty()) {
+            null
+        } else {
+            folderIdStr.toLongOrNull() ?: run {
+                Log.e(TAG, "$logStr folderIdStr error")
+                return
+            }
+        }
+
+        Log.i(TAG, "$logStr note id: ${note.uid}, folderId: $folderIdStr")
+        noteEditJob?.cancel()
+        noteEditJob = viewModelScope.launch {
+            note.folderId = folderId
+            withContext(Dispatchers.IO) {
+                notesDao.insertAll(note)
+            }
         }
     }
 
@@ -366,8 +395,8 @@ class NoteListScreenViewModel @Inject constructor(
     }
 
     private fun moveNoteMenuPrepare() {
-        moveFolderJob?.cancel()
-        moveFolderJob = viewModelScope.launch {
+        noteMoveJob?.cancel()
+        noteMoveJob = viewModelScope.launch {
             loading(folderLoading) {
                 val itemList = mutableListOf<DialogMenuItem>()
 
@@ -382,11 +411,12 @@ class NoteListScreenViewModel @Inject constructor(
                     )
                 }
 
-                folderForMenu?.let { folder ->
+                noteForMenu?.let { folder ->
                     showDialogOrMenu(
                         Dialog(
-                            title = folder.title,
-                            message = "",
+                            title = noteForMenu?.content ?: "",
+                            titleMaxLines = 2,
+                            message = context.getString(R.string.move_title),
                             dialogType = DialogType.Menu,
                             buttons = listOf(),
                             menuList = itemList,

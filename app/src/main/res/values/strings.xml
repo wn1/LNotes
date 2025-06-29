@@ -13,6 +13,7 @@
     <string name="action_without_password">Without password</string>
     <string name="exit_without_save_confirm">Exit without save?</string>
     <string name="menu_move">Move...</string>
+    <string name="move_title">Moving</string>
     <string name="menu_delete">Delete...</string>
     <string name="menu_rename">Rename...</string>
     <string name="rename_folder_title">Rename</string>

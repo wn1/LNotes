@@ -87,6 +87,7 @@ fun DialogView (dialog: Dialog,
                             ) {
                                 VSpacer(dp4)
                                 SText(
+                                    modifier = Modifier.fillMaxWidth(),
                                     color = MaterialTheme.colorScheme.secondary,
                                     text = item.title
                                 )
