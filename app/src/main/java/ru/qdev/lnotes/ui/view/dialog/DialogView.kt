@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,6 +44,7 @@ import ru.qdev.lnotes.ui.theme.sp16
 import ru.qdev.lnotes.ui.view.button.MainButtonContent
 import ru.qdev.lnotes.ui.view.button.SButton
 import ru.qdev.lnotes.ui.view.menu.DialogMenuItem
+import ru.qdev.lnotes.ui.view.menu.MenuItemType
 import ru.qdev.lnotes.ui.view.spacer.HSpacer
 import ru.qdev.lnotes.ui.view.spacer.HSpacerWeight
 import ru.qdev.lnotes.ui.view.spacer.VSpacer
@@ -76,22 +78,30 @@ fun DialogView (dialog: Dialog,
                         DialogHeader(dialog)
 
                         dialog.menuList.forEachIndexed { index, item ->
-                            Row(
-                                modifier = Modifier
-                                    .defaultMinSize(minHeight = dp40)
-                                    .clickable {
-                                        onMenuItemClick(item)
+                            when (item.type) {
+                                MenuItemType.MenuItem -> {
+                                    Row(
+                                        modifier = Modifier
+                                            .defaultMinSize(minHeight = dp40)
+                                            .clickable {
+                                                onMenuItemClick(item)
+                                            }
+                                            .padding(dp14),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        VSpacer(dp4)
+                                        SText(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            color = MaterialTheme.colorScheme.secondary,
+                                            text = item.title
+                                        )
+                                        VSpacer(dp4)
                                     }
-                                    .padding(dp14),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                VSpacer(dp4)
-                                SText(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    color = MaterialTheme.colorScheme.secondary,
-                                    text = item.title
-                                )
-                                VSpacer(dp4)
+                                }
+
+                                MenuItemType.Divider -> {
+                                    HorizontalDivider()
+                                }
                             }
                         }
                     }

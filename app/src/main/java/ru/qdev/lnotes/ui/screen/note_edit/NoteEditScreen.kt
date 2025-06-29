@@ -5,15 +5,19 @@ package ru.qdev.lnotes.ui.screen.note_edit
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -47,6 +51,7 @@ import ru.qdev.lnotes.model.Folder
 import ru.qdev.lnotes.ui.screen.base.BaseScreen
 import ru.qdev.lnotes.ui.theme.dp14
 import ru.qdev.lnotes.ui.theme.dp40
+import ru.qdev.lnotes.ui.theme.dp44
 import ru.qdev.lnotes.ui.theme.dp8
 import ru.qdev.lnotes.ui.theme.sp16
 import ru.qdev.lnotes.ui.view.spacer.HSpacer
@@ -109,14 +114,20 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
                     }
                 },
                 actions = {
-                    SText(
-                        modifier = Modifier.clip(RoundedCornerShape(dp8)).clickable {
-                            listener?.onSaveClick()
-                        },
-                        text = stringResource(R.string.action_ok),
-                        fontSize = sp16,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    Box (
+                        modifier = Modifier.defaultMinSize(minWidth = dp44, minHeight = dp40)
+                            .clip(RoundedCornerShape(dp8))
+                            .clickable {
+                                listener?.onSaveClick()
+                            }
+                    ) {
+                        SText(
+                            modifier = Modifier.align(Alignment.Center),
+                            text = stringResource(R.string.action_ok),
+                            fontSize = sp16,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
                     HSpacer(dp14)
                 }
             )

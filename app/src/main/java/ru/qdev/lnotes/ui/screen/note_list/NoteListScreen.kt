@@ -223,7 +223,7 @@ private fun ScreenContent(
                             if (index != 0) {
                                 HorizontalDivider()
                             }
-                            VSpacer(dp8)
+
                             NotesItem(
                                 modifier = Modifier.fillMaxWidth(),
                                 note = it,
@@ -234,7 +234,6 @@ private fun ScreenContent(
                                     listener?.onNoteMenuClick(it)
                                 }
                             )
-                            VSpacer(dp8)
                         }
                     }
                 }
@@ -283,6 +282,7 @@ private fun NotesItem(modifier: Modifier,
             }
         )
     ){
+        VSpacer(dp8)
         Row {
             HSpacer(contentHPaddingDp)
 
@@ -367,6 +367,7 @@ private fun NotesItem(modifier: Modifier,
                 }
             }
         }
+        VSpacer(dp8)
     }
 }
 

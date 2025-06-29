@@ -2,6 +2,7 @@ package ru.qdev.lnotes.ui.view.dialog
 
 import android.content.Context
 import ru.qdev.lnotes.ui.view.menu.DialogMenuItem
+import ru.qdev.lnotes.ui.view.menu.MenuItemType
 import src.R
 
 data class Dialog(val title: String,
@@ -73,6 +74,11 @@ data class Dialog(val title: String,
                     DialogMenuItem(
                         title = "Menu item 1",
                         id = "1"
+                    ),
+                    DialogMenuItem(
+                        title = "Menu divider",
+                        id = "",
+                        type = MenuItemType.Divider
                     ),
                     DialogMenuItem(
                         title = "Menu item 2",
