@@ -155,11 +155,11 @@ class NoteEditScreenViewModel @Inject constructor(
                     note.updateTimeU = Date().time
                     notesDao.insertAll(note)
 
-                    if (isAdding) {
-                        appEvents.onNewNoteAdded.value = LiveEvent(true)
-                    }
-
                     withContext(Dispatchers.Main) {
+                        if (isAdding) {
+                            appEvents.onNewNoteAdded.value = LiveEvent(true)
+                        }
+
                         goBack()
                     }
                 } catch (e: Throwable) {
