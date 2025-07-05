@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import ru.qdev.lnotes.core.QDVAppConst.NoteAddingId
+import ru.qdev.lnotes.core.events.AppEvents
 import ru.qdev.lnotes.core.events.QDVDbManager
 import ru.qdev.lnotes.core.pref.NotesPreferenceHelper
 import ru.qdev.lnotes.db.dao.FolderDao
@@ -64,7 +65,8 @@ class NoteListScreenViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val notesPreferenceHelper: NotesPreferenceHelper,
     private val navigator: QDVNavigator,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val appEvents: AppEvents
 ): BaseScreenViewModel(), NoteListScreenListener {
     private lateinit var notesDao: NotesDao
     private lateinit var folderDao: FolderDao
@@ -167,6 +169,16 @@ class NoteListScreenViewModel @Inject constructor(
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
         reloadNotes()
+    }
+
+    override fun onCreate(owner: LifecycleOwner) {
+        super.onCreate(owner)
+
+        appEvents.onNewNoteAdded.observe(owner) {
+            it?.getEventAndReset()?.let {
+                reloadNotesAndGoToFirst()
+            }
+        }
     }
 
     private fun fillFolder(withReloadAndGoToFirst: Boolean = false) {

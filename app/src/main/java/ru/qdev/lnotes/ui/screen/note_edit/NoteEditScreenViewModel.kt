@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.qdev.lnotes.core.QDVAppConst.NoteAddingId
+import ru.qdev.lnotes.core.events.AppEvents
 import ru.qdev.lnotes.core.events.QDVDbManager
 import ru.qdev.lnotes.core.pref.NotesPreferenceHelper
 import ru.qdev.lnotes.db.dao.FolderDao
@@ -28,6 +29,7 @@ import ru.qdev.lnotes.ui.screen.base.BaseScreenViewModel
 import ru.qdev.lnotes.ui.view.dialog.Dialog
 import ru.qdev.lnotes.ui.view.dialog.DialogButton
 import ru.qdev.lnotes.utils.coroutine.CoroutineUtils.throwIfCancel
+import ru.qdev.lnotes.utils.live_data.LiveEvent
 import src.R
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -50,7 +52,8 @@ class NoteEditScreenViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val notesPreferenceHelper: NotesPreferenceHelper,
     private val navigator: QDVNavigator,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val appEvents: AppEvents
 ): BaseScreenViewModel(), NoteEditScreenViewModelListener {
     private lateinit var notesDao: NotesDao
     private lateinit var folderDao: FolderDao
@@ -128,9 +131,10 @@ class NoteEditScreenViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 try {
                     val id = notesPreferenceHelper.editNoteId
+                    val isAdding = id == NoteAddingId
 
                     val note: NotesEntry?
-                    if (id != NoteAddingId) {
+                    if (!isAdding) {
                         note = notesDao.getById(id).firstOrNull()
                     }
                     else {
@@ -150,6 +154,10 @@ class NoteEditScreenViewModel @Inject constructor(
                     note.content = newText
                     note.updateTimeU = Date().time
                     notesDao.insertAll(note)
+
+                    if (isAdding) {
+                        appEvents.onNewNoteAdded.value = LiveEvent(true)
+                    }
 
                     withContext(Dispatchers.Main) {
                         goBack()
