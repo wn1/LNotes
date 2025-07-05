@@ -63,10 +63,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.paging.PagingData
 import com.example.reply.ui.theme.AppTheme
 import drawVerticalScrollbar
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import ru.qdev.lnotes.db.entity.NotesEntry
 import ru.qdev.lnotes.db.entity.NotesEntry.Companion.getNotesEntry
@@ -459,7 +457,7 @@ private fun NotesItem(modifier: Modifier,
         Row {
             HSpacer(contentHPaddingDp)
 
-            val color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
+            val color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
 //                Black(MaterialTheme.colorScheme.isDark())
             Image(
                 modifier = Modifier
