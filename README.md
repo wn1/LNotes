@@ -21,19 +21,12 @@ Older versions of Android (up to 4.3 inclusive) require write permissions to the
 This repository contains the source code of this application.
 
 You can:
-- Install app from **Google Play**:
-    [Light Notes](https://play.google.com/store/apps/details?id=ru.q_dev.LNote) with advertising banner 
-    or
-    [Light Notes Plus](https://play.google.com/store/apps/details?id=ru.q_dev.LNoteP) without advertising banner, but for a small fee.
-
-or
-
 - Build project in Android Studio and install on your Android device.
 
 or
 
 - Use link for apk:
-  https://disk.yandex.ru/d/UoBq4AorUMeZHw
+  https://disk.yandex.ru/d/zZkOzOl9dyyX1A
 
 Support Andoid 4.0 (API 14) and above
 
@@ -50,21 +43,19 @@ Support Andoid 4.0 (API 14) and above
 
 
 ## Version 
-### 2.2.2
+### 2.3.1
 
 ## Background
 
-This app developing in [Android Studio 3.2](https://developer.android.com/studio/) 
+This app developing in [Android Studio 2024.3.1](https://developer.android.com/studio/) 
 
 Develop on Java and Kotlin languages. 
 
-Database: SQLite with [ORMLite Android](https://github.com/j256/ormlite-android)
+Database: SQLite with Room
 
-Architecture: MVP with [Moxy](https://github.com/Arello-Mobile/Moxy)
+Architecture: MVVM
 
-Also use: 
-[Butter Knife](https://github.com/JakeWharton/butterknife), 
-[EventBus](https://github.com/greenrobot/EventBus),
+Also use:
 [Gson](https://github.com/google/gson),
 [Material Design for Android](https://developer.android.com/design/material/)
 and etc.
@@ -80,14 +71,6 @@ git clone https://github.com/wn1/LNotes.git
 ```
 3. Open project in Android Studio.
 4. Build project in Android Studio and install on your Android device.
-
-### Install from Google Play
-
-This application in google play is present in two versions:
-
-1. [Light Notes](https://play.google.com/store/apps/details?id=ru.q_dev.LNote) with advertising banner.
-
-2. [Light Notes Plus](https://play.google.com/store/apps/details?id=ru.q_dev.LNoteP) without advertising banner, but for a small fee.
 
 ## Usage
 If you have a question, please [send me an email](mailto:v.kudashov.83@yandex.ru).
