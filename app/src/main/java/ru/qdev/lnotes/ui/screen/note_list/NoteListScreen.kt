@@ -161,7 +161,9 @@ private fun ScreenContent(
                     titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
                 title = {
-                    Row {
+                    Row (
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
                         Icon(
                             modifier = Modifier.size(dp40).clip(RoundedCornerShape(dp8)).clickable {
                                 scope.launch {
