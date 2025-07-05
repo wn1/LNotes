@@ -3,6 +3,7 @@ package ru.qdev.lnotes.ui.screen.note_list
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -39,6 +40,7 @@ import ru.qdev.lnotes.ui.view.menu.DialogMenuItem
 import ru.qdev.lnotes.ui.view.menu.MenuItemType
 import ru.qdev.lnotes.utils.LoadingUtils.loading
 import ru.qdev.lnotes.utils.live_data.LiveEvent
+import src.BuildConfig
 import src.R
 import java.util.Date
 import javax.inject.Inject
@@ -67,7 +69,8 @@ class NoteListScreenViewModel @Inject constructor(
     val folderListS = mutableStateOf<List<Folder>>(listOf())
     val reloadNotesAndGoToFirstEvent = mutableStateOf<LiveEvent<Boolean>?>(null)
     val drawerHideEvent = mutableStateOf<LiveEvent<Boolean>?>(null)
-    val folderLoading = mutableStateOf(false)
+    val folderLoadingS = mutableStateOf(false)
+    val notesCountS = mutableStateOf(0L)
 
     private var folderForMenu: Folder? = null
     private var noteForMenu: NotesEntry? = null
@@ -79,6 +82,7 @@ class NoteListScreenViewModel @Inject constructor(
     private var renameFolderJob: Job? = null
     private var noteEditJob: Job? = null
     private var noteMoveJob: Job? = null
+    private var notesCountUpdateJob: Job? = null
     private var selectedFolderForPager: Folder? = null
 
     private fun makeNotesPagingFlow(): Flow<PagingData<NotesEntry>> {
@@ -108,6 +112,29 @@ class NoteListScreenViewModel @Inject constructor(
 
     val notesPagingFlow = makeNotesPagingFlow().cachedIn(viewModelScope)
 
+    private fun notesCountUpdate() {
+        notesCountUpdateJob?.cancel()
+        notesCountUpdateJob = viewModelScope.launch {
+            notesCountS.value = withContext(Dispatchers.IO) {
+                when (selectedFolderForPager?.type) {
+                FolderType.AllFolder -> {
+                    notesDao.getNotesAllCount()
+                }
+
+                FolderType.UnknownFolder -> {
+                    notesDao.getNotesWithUnknownFolderCount()
+                }
+
+                else -> {
+                    notesDao.getNotesByFolderIdCount(
+                        folderId = selectedFolderForPager?.id?.toLongOrNull()
+                    )
+                }
+            }
+            }
+        }
+    }
+
     override fun provideContext(): Context {
         return context
     }
@@ -124,10 +151,15 @@ class NoteListScreenViewModel @Inject constructor(
         fillFolder(withReloadAndGoToFirst = true)
     }
 
+    override fun onResume(owner: LifecycleOwner) {
+        super.onResume(owner)
+        notesCountUpdate()
+    }
+
     private fun fillFolder(withReloadAndGoToFirst: Boolean = false) {
         fillFolderJob?.cancel()
         fillFolderJob = viewModelScope.launch {
-            loading(folderLoading) {
+            loading(folderLoadingS) {
                 var folderList = listOf(
                     Folder(
                         id = null,
@@ -171,6 +203,9 @@ class NoteListScreenViewModel @Inject constructor(
                 if (withReloadAndGoToFirst) {
                     reloadNotesAndGoToFirst()
                 }
+                else {
+                    notesCountUpdate()
+                }
             }
         }
     }
@@ -178,6 +213,7 @@ class NoteListScreenViewModel @Inject constructor(
     fun reloadNotesAndGoToFirst() {
         selectedFolderForPager = selectedFolderS.value
         reloadNotesAndGoToFirstEvent.value = LiveEvent(true)
+        notesCountUpdate()
     }
 
     override fun onFolderMenuClick(){
@@ -359,6 +395,25 @@ class NoteListScreenViewModel @Inject constructor(
                     )
                 )
             }
+
+            MENU_TEST1 -> {
+                test()
+            }
+        }
+    }
+
+    private fun test() {
+        noteEditJob?.cancel()
+        noteEditJob = viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                for (n in 0..100) {
+                    val note = NotesEntry()
+                    note.content = "test-$n"
+                    note.createTimeU = Date().time
+                    notesDao.insertAll(note)
+                }
+            }
+            notesCountUpdate()
         }
     }
 
@@ -376,6 +431,7 @@ class NoteListScreenViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 notesDao.delete(note)
             }
+            notesCountUpdate()
         }
     }
 
@@ -402,6 +458,7 @@ class NoteListScreenViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 notesDao.insertAll(note)
             }
+            notesCountUpdate()
         }
     }
 
@@ -434,12 +491,13 @@ class NoteListScreenViewModel @Inject constructor(
         withContext(Dispatchers.IO) {
             notesDao.insertAll(note)
         }
+        notesCountUpdate()
     }
 
     private fun moveNoteMenuPrepare(delayMs: Long = 200) {
         noteMoveJob?.cancel()
         noteMoveJob = viewModelScope.launch {
-            loading(folderLoading) {
+            loading(folderLoadingS) {
                 val itemList = mutableListOf<DialogMenuItem>()
 
                 withContext(Dispatchers.IO) {
@@ -495,7 +553,7 @@ class NoteListScreenViewModel @Inject constructor(
         val logStr = "addFolder"
         Log.i(TAG, logStr)
 
-        if (folderLoading.value) {
+        if (folderLoadingS.value) {
             Log.i(TAG, "$logStr folderLoading, return")
             return
         }
@@ -507,7 +565,7 @@ class NoteListScreenViewModel @Inject constructor(
 
         addFolderJob?.cancel()
         addFolderJob = viewModelScope.launch {
-            loading(folderLoading) {
+            loading(folderLoadingS) {
                 val folderEntry = FolderEntry(
                     uid = null,
                     label = folderName
@@ -529,14 +587,14 @@ class NoteListScreenViewModel @Inject constructor(
         val logStr = "deleteFolder"
         Log.i(TAG, logStr)
 
-        if (folderLoading.value) {
+        if (folderLoadingS.value) {
             Log.i(TAG, "$logStr folderLoading, return")
             return
         }
 
         removeFolderJob?.cancel()
         removeFolderJob = viewModelScope.launch {
-            loading(folderLoading) {
+            loading(folderLoadingS) {
                 val id = folder.id?.toLongOrNull()
                 if (id == null) {
                     Log.e(TAG, "$logStr id is null")
@@ -567,7 +625,7 @@ class NoteListScreenViewModel @Inject constructor(
         val logStr = "renameFolder"
         Log.i(TAG, logStr)
 
-        if (folderLoading.value) {
+        if (folderLoadingS.value) {
             Log.i(TAG, "$logStr folderLoading, return")
             return
         }
@@ -579,7 +637,7 @@ class NoteListScreenViewModel @Inject constructor(
 
         renameFolderJob?.cancel()
         renameFolderJob = viewModelScope.launch {
-            loading(folderLoading) {
+            loading(folderLoadingS) {
                 val id = folder.id?.toLongOrNull()
                 if (id == null) {
                     Log.e(TAG, "$logStr id is null")
@@ -691,6 +749,17 @@ class NoteListScreenViewModel @Inject constructor(
             )
         )
 
+        if (BuildConfig.DEBUG) {
+            menuList.addAll(
+                listOf(
+                    DialogMenuItem(
+                        title = "test1",
+                        id = MENU_TEST1
+                    )
+                )
+            )
+        }
+
         showDialogOrMenu(
             Dialog(
                 title = noteForMenu?.content ?: "",
@@ -741,6 +810,7 @@ class NoteListScreenViewModel @Inject constructor(
         private const val MENU_NOTE_SET_NO_NEEDED = "MENU_NOTE_SET_NO_NEEDED"
         private const val MENU_NOTE_MOVE = "MENU_NOTE_MOVE"
         private const val MENU_NOTE_DELETE = "MENU_NOTE_DELETE"
+        private const val MENU_TEST1 = "MENU_TEST1"
         private const val NOTE_DELETE_CONFIRM_B = "NOTE_DELETE_CONFIRM_B"
         private const val FOLDER_DELETE_CONFIRM_B = "FOLDER_DELETE_CONFIRM_B"
         private const val MENU_FOLDER_RENAME = "MENU_FOLDER_MOVE"

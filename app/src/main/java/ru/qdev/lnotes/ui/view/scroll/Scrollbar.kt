@@ -93,6 +93,37 @@ private fun Modifier.drawScrollbar(
 }
 
 fun Modifier.drawHorizontalScrollbar(
+    maxValue: Int,
+    value: Int,
+    reverseScrolling: Boolean = false
+): Modifier = drawScrollbar(maxValue, value, Orientation.Horizontal, reverseScrolling)
+
+fun Modifier.drawVerticalScrollbar(
+    maxValue: Int,
+    value: Int,
+    reverseScrolling: Boolean = false
+): Modifier = drawScrollbar(maxValue, value, Orientation.Vertical, reverseScrolling)
+
+private fun Modifier.drawScrollbar(
+    maxValue: Int,
+    value: Int,
+    orientation: Orientation,
+    reverseScrolling: Boolean
+): Modifier = drawScrollbar(
+    orientation, reverseScrolling
+) { reverseDirection, atEnd, color, alpha ->
+    if (maxValue > 0) {
+        val canvasSize = if (orientation == Orientation.Horizontal) size.width else size.height
+        val totalSize = canvasSize + maxValue
+        val thumbSize = canvasSize / totalSize * canvasSize
+        val startOffset = value / totalSize * canvasSize
+        drawScrollbar(
+            orientation, reverseDirection, atEnd, color, alpha, thumbSize, startOffset
+        )
+    }
+}
+
+fun Modifier.drawHorizontalScrollbar(
     state: LazyListState,
     reverseScrolling: Boolean = false
 ): Modifier = drawScrollbar(state, Orientation.Horizontal, reverseScrolling)
@@ -102,6 +133,7 @@ fun Modifier.drawVerticalScrollbar(
     reverseScrolling: Boolean = false
 ): Modifier = drawScrollbar(state, Orientation.Vertical, reverseScrolling)
 
+//TODO пока не использовал
 private fun Modifier.drawScrollbar(
     state: LazyListState,
     orientation: Orientation,

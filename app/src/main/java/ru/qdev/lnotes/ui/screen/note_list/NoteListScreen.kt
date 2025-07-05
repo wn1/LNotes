@@ -36,6 +36,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -92,6 +94,7 @@ fun NoteListScreen(viewModel: NoteListScreenViewModel = hiltViewModel()) {
             folderList = viewModel.folderListS.value,
             selectedFolder = viewModel.selectedFolderS.value,
             notesFlow = viewModel.notesPagingFlow,
+            notesCount = viewModel.notesCountS.value,
             reloadNotesAndGoToFirstEvent = viewModel.reloadNotesAndGoToFirstEvent.value,
             drawerHideEvent = viewModel.drawerHideEvent.value
         )
@@ -105,6 +108,7 @@ private fun ScreenContent(
     folderList: List<Folder>,
     selectedFolder: Folder?,
     notesFlow: Flow<PagingData<NotesEntry>>,
+    notesCount: Long,
     reloadNotesAndGoToFirstEvent: LiveEvent<Boolean>? = null,
     drawerHideEvent: LiveEvent<Boolean>? = null,
     drawerShowEvent: LiveEvent<Boolean>? = null
@@ -208,9 +212,20 @@ private fun ScreenContent(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.secondaryContainer)
             ){
+                val newCount = notesCount.toInt()
+                val scrollValue = remember {
+                    derivedStateOf {
+                        notesColumnState.firstVisibleItemIndex
+                    }
+                }
 
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .weight(1f)
+                        .drawVerticalScrollbar(
+                            maxValue = newCount,
+                            value = scrollValue.value
+                        ),
                     verticalArrangement = Arrangement.spacedBy(0.dp),
                     state = notesColumnState,
                     contentPadding = PaddingValues(bottom = 80.dp)
@@ -236,6 +251,12 @@ private fun ScreenContent(
                             )
                         }
                     }
+                }
+
+                Row() {
+                    SText(
+                        text = "Fetch count: ${notes.itemCount}"
+                    )
                 }
             }
 
@@ -452,12 +473,14 @@ private fun FolderListDrawer(modifier: Modifier,
 private fun ScreenContentPreview() {
     val context = LocalContext.current
     val folders = Folder.makeTestList(context)
+    val notes = NotesEntry.makeTestList()
     AppTheme {
         ScreenContent(
             listener = null,
             selectedFolder = folders.getOrNull(1),
             folderList = folders,
-            notesFlow = flowOf(PagingData.from(NotesEntry.makeTestList()))
+            notesFlow = flowOf(PagingData.from(notes)),
+            notesCount = notes.size.toLong()
         )
     }
 }
