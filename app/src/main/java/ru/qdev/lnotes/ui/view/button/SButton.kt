@@ -12,6 +12,7 @@ import androidx.compose.material3.ButtonElevation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.Role.Companion.Button
 import androidx.compose.ui.unit.sp
@@ -26,14 +27,19 @@ import ru.qdev.lnotes.ui.view.text.SText
     disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer
 )
 
-@Composable fun MainButtonBorderStroke() =
+@Composable
+fun MainButtonBorderStroke() =
     BorderStroke(dp1, MaterialTheme.colorScheme.primaryContainer)
 
-@Composable fun MainButtonContent(text: String): @Composable RowScope.() -> Unit {
+@Composable
+fun MainButtonContent(
+    text: String,
+    color: Color = MaterialTheme.colorScheme.tertiary
+): @Composable RowScope.() -> Unit {
     return {
         SText(
             text = text,
-            color = MaterialTheme.colorScheme.tertiary
+            color = color
         )
     }
 }

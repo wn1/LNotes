@@ -87,7 +87,7 @@
     <string name="folder_listview_description">Папки заметок</string>
     <string name="actionbar_home_folder_list_description">Показать список папок</string>
     <string name="actionbar_home_back_description">Назад</string>
-    <string name="add_time_text"><u>Вписать время</u></string>
+    <string name="add_time_text">Вписать время</string>
     <string name="folder_not_found">Папка не найдена</string>
     <string name="note_not_found">Заметка не найдена</string>
 </resources>

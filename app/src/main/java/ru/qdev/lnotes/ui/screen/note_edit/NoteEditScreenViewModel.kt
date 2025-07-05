@@ -27,13 +27,17 @@ import ru.qdev.lnotes.ui.view.dialog.Dialog
 import ru.qdev.lnotes.ui.view.dialog.DialogButton
 import ru.qdev.lnotes.utils.coroutine.CoroutineUtils.throwIfCancel
 import src.R
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 interface NoteEditScreenViewModelListener {
     fun onBackClick()
     fun onSaveClick()
     fun onTextChange(newText: TextFieldValue)
+    fun onAddTimeClick()
 }
 
 @HiltViewModel
@@ -209,6 +213,31 @@ class NoteEditScreenViewModel @Inject constructor(
     private fun goBack() {
         isClose = true
         navigator.goBack()
+    }
+
+    override fun onAddTimeClick(){
+        val st = textS.value.selection.start
+        val end = textS.value.selection.end
+        val text = StringBuilder(textS.value.text)
+        val dateFormat = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
+        var timestamp = dateFormat.format(Date())
+        val nextLine = if (st != 0) {
+            "\n"
+        }
+        else {
+            ""
+        }
+        timestamp = "$nextLine*$timestamp* "
+        text.insert(st, timestamp)
+        val oldTextValue = textS.value
+        textS.value = TextFieldValue(
+            text = text.toString(),
+            selection =
+                TextRange(
+                    start = oldTextValue.selection.start + timestamp.length,
+                    end = oldTextValue.selection.end + timestamp.length,
+                )
+        )
     }
 
     companion object {

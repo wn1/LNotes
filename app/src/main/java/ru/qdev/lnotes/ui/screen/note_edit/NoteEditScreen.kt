@@ -4,7 +4,9 @@ package ru.qdev.lnotes.ui.screen.note_edit
 
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -13,13 +15,18 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -51,12 +58,17 @@ import kotlinx.coroutines.launch
 import ru.qdev.lnotes.db.entity.NotesEntry
 import ru.qdev.lnotes.model.Folder
 import ru.qdev.lnotes.ui.screen.base.BaseScreen
+import ru.qdev.lnotes.ui.theme.contentHPaddingDp
+import ru.qdev.lnotes.ui.theme.dp10
 import ru.qdev.lnotes.ui.theme.dp14
 import ru.qdev.lnotes.ui.theme.dp40
 import ru.qdev.lnotes.ui.theme.dp44
 import ru.qdev.lnotes.ui.theme.dp8
 import ru.qdev.lnotes.ui.theme.sp16
+import ru.qdev.lnotes.ui.view.button.MainButtonContent
+import ru.qdev.lnotes.ui.view.button.SButton
 import ru.qdev.lnotes.ui.view.spacer.HSpacer
+import ru.qdev.lnotes.ui.view.spacer.VSpacer
 import ru.qdev.lnotes.ui.view.text.SText
 import ru.qdev.lnotes.ui.view.text.STextField
 import ru.qdev.lnotes.utils.compose.KeyboardUtils
@@ -135,15 +147,47 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
             )
         },
     ) { innerPadding ->
-        Column (modifier = Modifier.padding(innerPadding).fillMaxSize()){
-            STextField(
-                modifier = Modifier.fillMaxSize().imePadding(),
-                textFieldModifier = Modifier.fillMaxSize().focusRequester(focusRequester),
-                value = text,
-                onValueChange = {
-                    listener?.onTextChange(it)
-                },
-            )
+        Box(modifier = Modifier
+            .background(MaterialTheme.colorScheme.secondaryContainer)
+            .padding(innerPadding)
+            .fillMaxSize()
+        ) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                VSpacer(dp10)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = contentHPaddingDp)
+                        .horizontalScroll(rememberScrollState()),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(modifier = Modifier
+                        .defaultMinSize(minHeight = dp40)
+                        .clickable {
+                            listener?.onAddTimeClick()
+                        }
+                    ) {
+                        SText(
+                            modifier = Modifier
+                                .align(Alignment.Center),
+                            text = stringResource(R.string.add_time_text),
+                            color = MaterialTheme.colorScheme.tertiary,
+                            fontSize = sp16
+                        )
+                    }
+                }
+                VSpacer(dp10)
+                HorizontalDivider()
+
+                STextField(
+                    modifier = Modifier.weight(1f).imePadding(),
+                    textFieldModifier = Modifier.fillMaxSize().focusRequester(focusRequester),
+                    value = text,
+                    onValueChange = {
+                        listener?.onTextChange(it)
+                    },
+                )
+            }
         }
     }
 

@@ -88,7 +88,7 @@
     <string name="folder_listview_description">Notes folders</string>
     <string name="actionbar_home_folder_list_description">Folder list show</string>
     <string name="actionbar_home_back_description">Back</string>
-    <string name="add_time_text"><u>Write time</u></string>
+    <string name="add_time_text">Write time</string>
     <string name="folder_not_found">Folder not found</string>
     <string name="note_not_found">Note not found</string>
 </resources>
