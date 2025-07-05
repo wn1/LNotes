@@ -92,4 +92,5 @@
     <string name="note_not_found">Заметка не найдена</string>
     <string name="option_checked_char">☑</string>
     <string name="option_unchecked_char">☐</string>
+    <string name="action_send_text">Поделиться</string>
 </resources>

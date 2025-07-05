@@ -29,9 +29,14 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
@@ -39,6 +44,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -64,6 +70,7 @@ import kotlinx.coroutines.launch
 import ru.qdev.lnotes.db.entity.NotesEntry
 import ru.qdev.lnotes.model.Folder
 import ru.qdev.lnotes.ui.screen.base.BaseScreen
+import ru.qdev.lnotes.ui.screen.note_list.NoteListScreenListener
 import ru.qdev.lnotes.ui.theme.contentHPaddingDp
 import ru.qdev.lnotes.ui.theme.dp1
 import ru.qdev.lnotes.ui.theme.dp10
@@ -102,6 +109,8 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
     val scope = rememberCoroutineScope()
     val focusRequester = remember { FocusRequester() }
 
+    val menuExpandedS = remember { mutableStateOf(false) }
+
     LaunchedEffect("focus")
     {
         focusRequester.requestFocus()
@@ -136,6 +145,12 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
                     }
                 },
                 actions = {
+                    MainDropdownMenu(
+                        modifier = Modifier,
+                        listener = listener,
+                        expandedS = menuExpandedS
+                    )
+
                     Box (
                         modifier = Modifier.defaultMinSize(minWidth = dp44, minHeight = dp40)
                             .clip(RoundedCornerShape(dp8))
@@ -249,6 +264,42 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
         listener?.onBackClick()
     }
 }
+
+@Composable
+fun MainDropdownMenu(modifier: Modifier,
+                     listener: NoteEditScreenViewModelListener?,
+                     expandedS: MutableState<Boolean>
+) {
+    Box(
+        modifier = modifier
+    ) {
+        IconButton(onClick = { expandedS.value = !expandedS.value }) {
+            Icon(
+                Icons.Default.MoreVert,
+                contentDescription = stringResource(R.string.menu_cd),
+                tint = MaterialTheme.colorScheme.primary
+            )
+        }
+
+        DropdownMenu(
+            expanded = expandedS.value,
+            onDismissRequest = { expandedS.value = false }
+        ) {
+            DropdownMenuItem(
+                text = {
+                    SText(
+                        text = stringResource(R.string.action_send_text)
+                    )
+                },
+                onClick = {
+                    expandedS.value = false
+                    listener?.onSendNoteClick()
+                }
+            )
+        }
+    }
+}
+
 
 @ExperimentalMaterial3Api
 @Composable

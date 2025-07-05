@@ -1,6 +1,7 @@
 package ru.qdev.lnotes.ui.screen.note_edit
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.TextRange
@@ -20,6 +21,7 @@ import ru.qdev.lnotes.core.pref.NotesPreferenceHelper
 import ru.qdev.lnotes.db.dao.FolderDao
 import ru.qdev.lnotes.db.dao.NotesDao
 import ru.qdev.lnotes.db.entity.NotesEntry
+import ru.qdev.lnotes.ui.activity.notes.QDVNotesHomeActivity
 import ru.qdev.lnotes.ui.navigation.QDVNavigator
 import ru.qdev.lnotes.ui.navigation.route.note.NoteEditScreenRoute
 import ru.qdev.lnotes.ui.screen.base.BaseScreenViewModel
@@ -39,6 +41,7 @@ interface NoteEditScreenViewModelListener {
     fun onAddTimeClick()
     fun onInsertCheckedCharClick()
     fun onInsertUncheckedCharClick()
+    fun onSendNoteClick()
 }
 
 @HiltViewModel
@@ -297,6 +300,13 @@ class NoteEditScreenViewModel @Inject constructor(
         catch (e: Throwable) {
             Log.e(TAG, "insertCheckedCharEx $e", e)
         }
+    }
+
+    override fun onSendNoteClick() {
+        Log.i(TAG, "onSendNoteClick")
+        (getActivity() as? QDVNotesHomeActivity)?.sendText(
+            textS.value.text
+        )
     }
 
     companion object {

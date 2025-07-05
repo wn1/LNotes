@@ -334,6 +334,22 @@ class QDVNotesHomeActivity : ComponentActivity() {
         startActivity(intent)
     }
 
+    fun sendText(text: String) {
+        try {
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, text)
+                type = "text/plain"
+            }
+
+            val shareIntent = Intent.createChooser(sendIntent, null)
+            startActivity(shareIntent)
+        }
+        catch (e: Throwable) {
+            Log.e(TAG, "sendText $e", e)
+        }
+    }
+
     companion object {
         const val TAG = "QDVNotesHomeActivity"
     }
