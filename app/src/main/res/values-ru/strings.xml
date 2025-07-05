@@ -90,4 +90,6 @@
     <string name="add_time_text">Вписать время</string>
     <string name="folder_not_found">Папка не найдена</string>
     <string name="note_not_found">Заметка не найдена</string>
+    <string name="option_checked_char">☑</string>
+    <string name="option_unchecked_char">☐</string>
 </resources>

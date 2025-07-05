@@ -27,7 +27,6 @@ import ru.qdev.lnotes.ui.view.dialog.Dialog
 import ru.qdev.lnotes.ui.view.dialog.DialogButton
 import ru.qdev.lnotes.utils.coroutine.CoroutineUtils.throwIfCancel
 import src.R
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -38,6 +37,8 @@ interface NoteEditScreenViewModelListener {
     fun onSaveClick()
     fun onTextChange(newText: TextFieldValue)
     fun onAddTimeClick()
+    fun onInsertCheckedCharClick()
+    fun onInsertUncheckedCharClick()
 }
 
 @HiltViewModel
@@ -216,28 +217,86 @@ class NoteEditScreenViewModel @Inject constructor(
     }
 
     override fun onAddTimeClick(){
-        val st = textS.value.selection.start
-        val end = textS.value.selection.end
-        val text = StringBuilder(textS.value.text)
-        val dateFormat = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
-        var timestamp = dateFormat.format(Date())
-        val nextLine = if (st != 0) {
-            "\n"
+        try {
+            val st = textS.value.selection.start
+            val dateFormat = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
+            var timestamp = dateFormat.format(Date())
+            val nextLine = if (st != 0) {
+                "\n"
+            }
+            else {
+                ""
+            }
+            timestamp = "$nextLine*$timestamp* "
+            insertText(timestamp)
         }
-        else {
-            ""
+        catch (e: Throwable) {
+            Log.e(TAG, "onAddTimeClick $e", e)
         }
-        timestamp = "$nextLine*$timestamp* "
-        text.insert(st, timestamp)
-        val oldTextValue = textS.value
-        textS.value = TextFieldValue(
-            text = text.toString(),
-            selection =
-                TextRange(
-                    start = oldTextValue.selection.start + timestamp.length,
-                    end = oldTextValue.selection.end + timestamp.length,
-                )
-        )
+    }
+
+    private fun insertText(textToInsert: String) {
+        try {
+            val st = textS.value.selection.start
+            val text = StringBuilder(textS.value.text)
+            text.insert(st, textToInsert)
+            val oldTextValue = textS.value
+            textS.value = TextFieldValue(
+                text = text.toString(),
+                selection =
+                    TextRange(
+                        start = oldTextValue.selection.start + textToInsert.length,
+                        end = oldTextValue.selection.end + textToInsert.length,
+                    )
+            )
+        }
+        catch (e: Throwable) {
+            Log.e(TAG, "insertText $e", e)
+        }
+    }
+
+    override fun onInsertCheckedCharClick() {
+        insertCheckedCharEx(context.getString(R.string.option_checked_char))
+    }
+
+    override fun onInsertUncheckedCharClick() {
+        insertCheckedCharEx(context.getString(R.string.option_unchecked_char))
+    }
+
+    private fun insertCheckedCharEx(char: String) {
+        try {
+            val st = textS.value.selection.start
+            val end = textS.value.selection.end
+            val text = StringBuilder(textS.value.text)
+
+            val ch = context.getString(R.string.option_checked_char)
+            val unCh = context.getString(R.string.option_unchecked_char)
+            var insertLength = 1
+            val stCh = text.getOrNull(st)?.toString()
+            val stCh2 = text.getOrNull(st - 1)?.toString()
+            if (stCh == ch || stCh == unCh) {
+                insertLength = 0
+                text.replace(st, st + 1, char)
+            } else if (stCh2 == ch || stCh2 == unCh) {
+                insertLength = 0
+                text.replace(st - 1, st, char)
+            } else {
+                insertLength = 2
+                text.insert(st, "$char ")
+            }
+            val oldTextValue = textS.value
+            textS.value = TextFieldValue(
+                text = text.toString(),
+                selection =
+                    TextRange(
+                        start = oldTextValue.selection.start + insertLength,
+                        end = oldTextValue.selection.end + insertLength,
+                    )
+            )
+        }
+        catch (e: Throwable) {
+            Log.e(TAG, "insertCheckedCharEx $e", e)
+        }
     }
 
     companion object {

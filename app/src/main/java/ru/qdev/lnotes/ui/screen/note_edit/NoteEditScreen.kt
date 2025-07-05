@@ -10,7 +10,10 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -21,6 +24,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,6 +36,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -59,8 +65,10 @@ import ru.qdev.lnotes.db.entity.NotesEntry
 import ru.qdev.lnotes.model.Folder
 import ru.qdev.lnotes.ui.screen.base.BaseScreen
 import ru.qdev.lnotes.ui.theme.contentHPaddingDp
+import ru.qdev.lnotes.ui.theme.dp1
 import ru.qdev.lnotes.ui.theme.dp10
 import ru.qdev.lnotes.ui.theme.dp14
+import ru.qdev.lnotes.ui.theme.dp4
 import ru.qdev.lnotes.ui.theme.dp40
 import ru.qdev.lnotes.ui.theme.dp44
 import ru.qdev.lnotes.ui.theme.dp8
@@ -147,36 +155,82 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
             )
         },
     ) { innerPadding ->
+
+        @Composable fun ToolbarButton(
+            text: String,
+            onClick: () -> Unit
+        ) {
+            Box(modifier = Modifier
+                .defaultMinSize(dp40)
+                .clickable {
+                    onClick()
+                }
+            ) {
+                Column (
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                ){
+                    VSpacer(dp10)
+                    SText(
+                        modifier = Modifier.padding(horizontal = dp10),
+                        text = text,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        fontSize = sp16
+                    )
+                    VSpacer(dp10)
+                }
+            }
+        }
+
+        @Composable fun RowScope.ToolbarDivider() {
+            HSpacer(dp4)
+            Spacer(modifier = Modifier.width(dp1).background(Color.LightGray).fillMaxHeight())
+            HSpacer(dp4)
+        }
+
         Box(modifier = Modifier
             .background(MaterialTheme.colorScheme.secondaryContainer)
             .padding(innerPadding)
             .fillMaxSize()
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                VSpacer(dp10)
                 Row(
                     modifier = Modifier
+                        .height(intrinsicSize = IntrinsicSize.Max)
                         .fillMaxWidth()
                         .padding(horizontal = contentHPaddingDp)
                         .horizontalScroll(rememberScrollState()),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(modifier = Modifier
-                        .defaultMinSize(minHeight = dp40)
-                        .clickable {
+                    ToolbarDivider()
+
+                    ToolbarButton(
+                        text = stringResource(R.string.add_time_text),
+                        onClick = {
                             listener?.onAddTimeClick()
                         }
-                    ) {
-                        SText(
-                            modifier = Modifier
-                                .align(Alignment.Center),
-                            text = stringResource(R.string.add_time_text),
-                            color = MaterialTheme.colorScheme.tertiary,
-                            fontSize = sp16
-                        )
-                    }
+                    )
+
+                    ToolbarDivider()
+
+                    ToolbarButton(
+                        text = stringResource(R.string.option_checked_char),
+                        onClick = {
+                            listener?.onInsertCheckedCharClick()
+                        }
+                    )
+
+                    ToolbarDivider()
+
+                    ToolbarButton(
+                        text = stringResource(R.string.option_unchecked_char),
+                        onClick = {
+                            listener?.onInsertUncheckedCharClick()
+                        }
+                    )
+
+                    ToolbarDivider()
                 }
-                VSpacer(dp10)
                 HorizontalDivider()
 
                 STextField(
