@@ -7,6 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -21,13 +22,19 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Button
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -36,6 +43,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,10 +55,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -76,14 +86,18 @@ import ru.qdev.lnotes.ui.theme.dp4
 import ru.qdev.lnotes.ui.theme.dp40
 import ru.qdev.lnotes.ui.theme.dp44
 import ru.qdev.lnotes.ui.theme.dp8
+import ru.qdev.lnotes.ui.view.button.MainButtonContent
+import ru.qdev.lnotes.ui.view.button.SButton
 import ru.qdev.lnotes.ui.view.spacer.HSpacer
 import ru.qdev.lnotes.ui.view.spacer.VSpacer
 import ru.qdev.lnotes.ui.view.text.SText
+import ru.qdev.lnotes.utils.compose.toDp
 import ru.qdev.lnotes.utils.live_data.LiveEvent
 import src.R
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.math.max
 
 @ExperimentalMaterial3Api
 @Composable
@@ -96,7 +110,8 @@ fun NoteListScreen(viewModel: NoteListScreenViewModel = hiltViewModel()) {
             notesFlow = viewModel.notesPagingFlow,
             notesCount = viewModel.notesCountS.value,
             reloadNotesAndGoToFirstEvent = viewModel.reloadNotesAndGoToFirstEvent.value,
-            drawerHideEvent = viewModel.drawerHideEvent.value
+            drawerHideEvent = viewModel.drawerHideEvent.value,
+            searchText = viewModel.searchText.value
         )
     }
 }
@@ -111,7 +126,8 @@ private fun ScreenContent(
     notesCount: Long,
     reloadNotesAndGoToFirstEvent: LiveEvent<Boolean>? = null,
     drawerHideEvent: LiveEvent<Boolean>? = null,
-    drawerShowEvent: LiveEvent<Boolean>? = null
+    drawerShowEvent: LiveEvent<Boolean>? = null,
+    searchText: String
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -137,6 +153,9 @@ private fun ScreenContent(
             drawerState.open()
         }
     }
+
+    val menuExpandedS = remember { mutableStateOf(false) }
+    val searchViewH = remember { mutableStateOf(0f) }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -171,11 +190,26 @@ private fun ScreenContent(
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
+                },
+                actions = {
+                    MainDropdownMenu(
+                        modifier = Modifier,
+                        listener = listener,
+                        expandedS = menuExpandedS
+                    )
                 }
             )
         },
         floatingActionButton = {
+            val modifier = if (searchText.isNotEmpty()) {
+                Modifier.padding(bottom = searchViewH.value.toDp().plus(10.dp))
+            }
+            else {
+                Modifier
+            }
+
             FloatingActionButton (
+                modifier = modifier,
                 shape = FloatingActionButtonDefaults.largeShape,
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 onClick = {
@@ -253,31 +287,90 @@ private fun ScreenContent(
                     }
                 }
 
-                Row() {
+                if (searchText.isNotEmpty()) {
+                    Row(
+                        modifier = Modifier
+                            .onGloballyPositioned {
+                                searchViewH.value = it.size.height.toFloat()
+                            }
+                            .padding(horizontal = contentHPaddingDp, vertical = dp10)
+                        ,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        val text = stringResource(R.string.finding_label, searchText)
+                        val countText = stringResource(R.string.finding_label_count, notesCount)
+                        Column (modifier = Modifier.weight(1f)) {
+                            SText(
+                                modifier = Modifier,
+                                text = text,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                            SText(
+                                modifier = Modifier,
+                                text = countText,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                        }
+
+                        HSpacer(dp10)
+                        SButton (
+                            onClick = {
+                                listener?.onSearchCancelClick()
+                            },
+                            content = MainButtonContent(stringResource(R.string.cancel))
+                        )
+
+                    }
+                }
+
+                Row(modifier = Modifier.padding(horizontal = contentHPaddingDp)) {
                     SText(
-                        text = "Fetch count: ${notes.itemCount}"
+                        text = "Fetch count: ${notes.itemCount}",
+                        color = MaterialTheme.colorScheme.secondary
                     )
                 }
             }
+        }
+    }
+}
 
-//            Text(text = "test 2")
-//            Scaffold(
-//                floatingActionButton = {
-//                    ExtendedFloatingActionButton(
-//                        text = { Text("Show drawer") },
-//                        icon = { Icon(Icons.Filled.Add, contentDescription = "") },
-//                        onClick = {
-//                            scope.launch {
-//                                drawerState.apply {
-//                                    if (isClosed) open() else close()
-//                                }
-//                            }
-//                        }
-//                    )
-//                }
-//            ) { contentPadding ->
-//                // Screen content
-//            }
+@Composable
+fun MainDropdownMenu(modifier: Modifier,
+                     listener: NoteListScreenListener?,
+                     expandedS: MutableState<Boolean>) {
+    Box(
+        modifier = modifier
+    ) {
+        IconButton(onClick = { expandedS.value = !expandedS.value }) {
+            Icon(
+                Icons.Default.MoreVert,
+                contentDescription = stringResource(R.string.menu_cd),
+                tint = MaterialTheme.colorScheme.primary
+            )
+        }
+
+        DropdownMenu(
+            expanded = expandedS.value,
+            onDismissRequest = { expandedS.value = false }
+        ) {
+            DropdownMenuItem(
+                text = {
+                    SText(
+                        text = stringResource(R.string.action_find_notes)
+                    )
+                },
+                onClick = {
+                    expandedS.value = false
+                    listener?.onSearchClick()
+                }
+            )
+
+//            DropdownMenuItem(
+//                text = { SText("Option 2") },
+//                onClick = { /* Do something... */ }
+//            )
         }
     }
 }
@@ -480,7 +573,8 @@ private fun ScreenContentPreview() {
             selectedFolder = folders.getOrNull(1),
             folderList = folders,
             notesFlow = flowOf(PagingData.from(notes)),
-            notesCount = notes.size.toLong()
+            notesCount = notes.size.toLong(),
+            searchText = ""
         )
     }
 }
@@ -507,6 +601,34 @@ private fun ScreenContentPreviewDrawer() {
             selectedFolder = folders.getOrNull(1),
             onFolderClick = {},
             onFolderLongClick = {}
+        )
+    }
+}
+
+@ExperimentalMaterial3Api
+@Composable
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "DefaultPreviewDark",
+    showBackground = true
+)
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    name = "DefaultPreviewLight",
+    showBackground = true
+)
+private fun ScreenContentPreviewSearch() {
+    val context = LocalContext.current
+    val folders = Folder.makeTestList(context)
+    val notes = NotesEntry.makeTestList()
+    AppTheme {
+        ScreenContent(
+            listener = null,
+            selectedFolder = folders.getOrNull(1),
+            folderList = folders,
+            notesFlow = flowOf(PagingData.from(notes)),
+            notesCount = notes.size.toLong(),
+            searchText = stringResource(R.string.finding_label)
         )
     }
 }

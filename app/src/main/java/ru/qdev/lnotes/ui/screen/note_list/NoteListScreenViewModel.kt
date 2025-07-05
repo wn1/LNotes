@@ -52,6 +52,8 @@ interface NoteListScreenListener {
     fun onNoteClick (note: NotesEntry)
     fun onNoteMenuClick (note: NotesEntry)
     fun onNoteAddingClick()
+    fun onSearchClick()
+    fun onSearchCancelClick()
 }
 
 @HiltViewModel
@@ -71,6 +73,7 @@ class NoteListScreenViewModel @Inject constructor(
     val drawerHideEvent = mutableStateOf<LiveEvent<Boolean>?>(null)
     val folderLoadingS = mutableStateOf(false)
     val notesCountS = mutableStateOf(0L)
+    val searchText = mutableStateOf("")
 
     private var folderForMenu: Folder? = null
     private var noteForMenu: NotesEntry? = null
@@ -95,14 +98,19 @@ class NoteListScreenViewModel @Inject constructor(
             pagingSourceFactory = {
                 when (selectedFolderForPager?.type){
                     FolderType.AllFolder -> {
-                        return@Pager notesDao.getNotesAllPagingSource()
+                        return@Pager notesDao.getNotesAllPagingSource(
+                            searchText = textToSearch(searchText.value)
+                        )
                     }
                     FolderType.UnknownFolder -> {
-                        return@Pager notesDao.getNotesWithUnknownFolderPagingSource()
+                        return@Pager notesDao.getNotesWithUnknownFolderPagingSource(
+                            searchText = textToSearch(searchText.value)
+                        )
                     }
                     else -> {
                         notesDao.getNotesByFolderIdPagingSource(
-                            folderId = selectedFolderForPager?.id?.toLongOrNull()
+                            folderId = selectedFolderForPager?.id?.toLongOrNull(),
+                            searchText = textToSearch(searchText.value)
                         )
                     }
                 }
@@ -118,21 +126,30 @@ class NoteListScreenViewModel @Inject constructor(
             notesCountS.value = withContext(Dispatchers.IO) {
                 when (selectedFolderForPager?.type) {
                 FolderType.AllFolder -> {
-                    notesDao.getNotesAllCount()
+                    notesDao.getNotesAllCount(
+                        searchText = textToSearch(searchText.value)
+                    )
                 }
 
                 FolderType.UnknownFolder -> {
-                    notesDao.getNotesWithUnknownFolderCount()
+                    notesDao.getNotesWithUnknownFolderCount(
+                        searchText = textToSearch(searchText.value)
+                    )
                 }
 
                 else -> {
                     notesDao.getNotesByFolderIdCount(
-                        folderId = selectedFolderForPager?.id?.toLongOrNull()
+                        folderId = selectedFolderForPager?.id?.toLongOrNull(),
+                        searchText = textToSearch(searchText.value)
                     )
                 }
             }
             }
         }
+    }
+
+    private fun textToSearch(text: String) : String {
+        return "%$text%"
     }
 
     override fun provideContext(): Context {
@@ -292,6 +309,10 @@ class NoteListScreenViewModel @Inject constructor(
                 noteForMenu?.let {
                     deleteNote(it)
                 }
+            }
+
+            NOTES_SEARCH_OK_B -> {
+                notesSearch(inputText)
             }
         }
     }
@@ -798,6 +819,40 @@ class NoteListScreenViewModel @Inject constructor(
         navigator.navigate(NoteEditScreenRoute(noteId = NoteAddingId))
     }
 
+    override fun onSearchClick() {
+        val logStr = "onSearchClick"
+        Log.i(TAG, logStr)
+
+        showDialogOrMenu(
+            dialog = Dialog(
+                dialogType = DialogType.InputText,
+                title = context.getString(R.string.action_find_notes_title),
+                message = "",
+                buttons = listOf(
+                    DialogButton(
+                        title = context.getString(R.string.action_find_notes),
+                        id = NOTES_SEARCH_OK_B
+                    ),
+                    DialogButton(
+                        title = context.getString(R.string.cancel)
+                    )
+                )
+            )
+        )
+    }
+
+    private fun notesSearch(inputText: String) {
+        searchText.value = inputText
+        reloadNotesAndGoToFirst()
+    }
+
+    override fun onSearchCancelClick() {
+        val logStr = "onSearchCancelClick"
+        Log.i(TAG, logStr)
+        searchText.value = ""
+        reloadNotesAndGoToFirst()
+    }
+
     companion object {
         private const val TAG = "NoteListScreenViewModel"
         private const val MAX_DIALOG_NOTE_TITLE_LINES = 2
@@ -815,5 +870,6 @@ class NoteListScreenViewModel @Inject constructor(
         private const val FOLDER_DELETE_CONFIRM_B = "FOLDER_DELETE_CONFIRM_B"
         private const val MENU_FOLDER_RENAME = "MENU_FOLDER_MOVE"
         private const val NOTE_MOVE_SELECT_DIALOG = "NOTE_MOVE_SELECT_DIALOG"
+        private const val NOTES_SEARCH_OK_B = "NOTES_SEARCH_OK_B"
     }
 }

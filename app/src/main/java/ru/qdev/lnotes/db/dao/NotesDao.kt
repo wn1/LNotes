@@ -23,23 +23,23 @@ interface NotesDao {
 //            "last_name LIKE :last LIMIT 1")
 //    fun findByName(first: String, last: String): User
 
-    @Query("SELECT * FROM notes WHERE folder_id is :folderId ORDER BY (isready > 0), complete_time_u DESC, update_time_u DESC")
-    fun getNotesByFolderIdPagingSource(folderId: Long?): PagingSource<Int, NotesEntry>
+    @Query("SELECT * FROM notes WHERE folder_id is :folderId AND content LIKE :searchText ORDER BY (isready > 0), complete_time_u DESC, update_time_u DESC")
+    fun getNotesByFolderIdPagingSource(folderId: Long?, searchText: String): PagingSource<Int, NotesEntry>
 
-    @Query("SELECT COUNT(*) FROM notes WHERE folder_id is :folderId ORDER BY (isready > 0), complete_time_u DESC, update_time_u DESC")
-    fun getNotesByFolderIdCount(folderId: Long?): Long
+    @Query("SELECT COUNT(*) FROM notes WHERE folder_id is :folderId  AND content LIKE :searchText ORDER BY (isready > 0), complete_time_u DESC, update_time_u DESC")
+    fun getNotesByFolderIdCount(folderId: Long?, searchText: String): Long
 
-    @Query("SELECT * FROM notes ORDER BY (isready > 0), complete_time_u DESC, update_time_u DESC")
-    fun getNotesAllPagingSource(): PagingSource<Int, NotesEntry>
+    @Query("SELECT * FROM notes WHERE content LIKE :searchText ORDER BY (isready > 0), complete_time_u DESC, update_time_u DESC")
+    fun getNotesAllPagingSource(searchText: String): PagingSource<Int, NotesEntry>
 
-    @Query("SELECT COUNT(*) FROM notes ORDER BY (isready > 0), complete_time_u DESC, update_time_u DESC")
-    fun getNotesAllCount(): Long
+    @Query("SELECT COUNT(*) FROM notes WHERE content LIKE :searchText ORDER BY (isready > 0), complete_time_u DESC, update_time_u DESC")
+    fun getNotesAllCount(searchText: String): Long
 
-    @Query("SELECT * FROM notes WHERE folder_id is NULL OR folder_id is 0 ORDER BY (isready > 0), complete_time_u DESC, update_time_u DESC")
-    fun getNotesWithUnknownFolderPagingSource(): PagingSource<Int, NotesEntry>
+    @Query("SELECT * FROM notes WHERE (folder_id is NULL OR folder_id is 0) AND content LIKE :searchText ORDER BY (isready > 0), complete_time_u DESC, update_time_u DESC")
+    fun getNotesWithUnknownFolderPagingSource(searchText: String): PagingSource<Int, NotesEntry>
 
-    @Query("SELECT COUNT(*) FROM notes WHERE folder_id is NULL OR folder_id is 0 ORDER BY (isready > 0), complete_time_u DESC, update_time_u DESC")
-    fun getNotesWithUnknownFolderCount(): Long
+    @Query("SELECT COUNT(*) FROM notes WHERE (folder_id is NULL OR folder_id is 0) AND content LIKE :searchText ORDER BY (isready > 0), complete_time_u DESC, update_time_u DESC")
+    fun getNotesWithUnknownFolderCount(searchText: String): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg notes: NotesEntry)
