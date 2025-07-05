@@ -106,7 +106,7 @@ fun NoteListScreen(viewModel: NoteListScreenViewModel = hiltViewModel()) {
             selectedFolder = viewModel.selectedFolderS.value,
             notesCursor = viewModel.notesCursorS.value,
             notesCount = viewModel.notesCountS.value,
-//            reloadNotesAndGoToFirstEvent = viewModel.reloadNotesAndGoToFirstEvent.value,
+            goToFirstEvent = viewModel.goToFirstEvent.value,
             drawerHideEvent = viewModel.drawerHideEvent.value,
             searchText = viewModel.searchText.value
         )
@@ -121,7 +121,7 @@ private fun ScreenContent(
     selectedFolder: Folder?,
     notesCursor: Cursor?,
     notesCount: Long,
-//    reloadNotesAndGoToFirstEvent: LiveEvent<Boolean>? = null,
+    goToFirstEvent: LiveEvent<Boolean>? = null,
     drawerHideEvent: LiveEvent<Boolean>? = null,
     drawerShowEvent: LiveEvent<Boolean>? = null,
     searchText: String
@@ -132,15 +132,11 @@ private fun ScreenContent(
 //    val notes = notesFlow.collectAsLazyPagingItems()
     val notesColumnState = rememberLazyListState()
 
-//    reloadNotesAndGoToFirstEvent?.getEventAndReset()?.let {
-//        scope.launch {
-//            if (it) {
-//                notesColumnState.scrollToItem(0)
-//            }
-//
-//            notes.refresh()
-//        }
-//    }
+    goToFirstEvent?.getEventAndReset()?.let {
+        scope.launch {
+            notesColumnState.scrollToItem(0)
+        }
+    }
 
     drawerHideEvent?.getEventAndReset()?.let {
         scope.launch {

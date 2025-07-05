@@ -73,7 +73,7 @@ class NoteListScreenViewModel @Inject constructor(
 
     val selectedFolderS = mutableStateOf<Folder?>(null)
     val folderListS = mutableStateOf<List<Folder>>(listOf())
-//    val reloadNotesAndGoToFirstEvent = mutableStateOf<LiveEvent<Boolean>?>(null)
+    val goToFirstEvent = mutableStateOf<LiveEvent<Boolean>?>(null)
     val drawerHideEvent = mutableStateOf<LiveEvent<Boolean>?>(null)
     val folderLoadingS = mutableStateOf(false)
     val notesCountS = mutableStateOf(0L)
@@ -245,7 +245,6 @@ class NoteListScreenViewModel @Inject constructor(
     fun reloadNotes(gotoFirst: Boolean = false) {
         val logStr = "reloadNotes"
         selectedFolderForPager = selectedFolderS.value
-//        reloadNotesAndGoToFirstEvent.value = LiveEvent(false)
 
         cursorUpdateJob?.cancel()
         cursorUpdateJob = viewModelScope.launch {
@@ -255,12 +254,7 @@ class NoteListScreenViewModel @Inject constructor(
             notesCountS.value = cursor.count.toLong()
 
             if (gotoFirst){
-                try {
-                    cursor.moveToFirst()
-                }
-                catch (e: Throwable) {
-                    Log.e(TAG, "$logStr $e", e)
-                }
+                goToFirstEvent.value = LiveEvent(true)
             }
         }
     }
