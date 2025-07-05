@@ -303,19 +303,20 @@ class QDVNotesHomeActivity : ComponentActivity() {
             .setTitle(lnotesNameAndVersion)
             .setCancelable(true)
             .setView(alertDialogView)
-            .setPositiveButton(R.string.open_google_play,
-                object : DialogInterface.OnClickListener {
-
-                    @Override
-                    override fun onClick(p0: DialogInterface?, p1: Int) {
-                        startActivity(
-                            Intent(Intent.ACTION_VIEW,
-                            getString(R.string.google_play_link).toUri())
-                        )
-                        QDVStatisticState.userRatingQuestShownNoNeed = true
-                    }
-                })
-            .setNeutralButton(R.string.action_thanks, null).show();
+//            .setPositiveButton(R.string.open_google_play,
+//                object : DialogInterface.OnClickListener {
+//
+//                    @Override
+//                    override fun onClick(p0: DialogInterface?, p1: Int) {
+//                        startActivity(
+//                            Intent(Intent.ACTION_VIEW,
+//                            getString(R.string.google_play_link).toUri())
+//                        )
+//                        QDVStatisticState.userRatingQuestShownNoNeed = true
+//                    }
+//                })
+//            .setNeutralButton(R.string.action_thanks, null).show();
+            .setPositiveButton(R.string.action_thanks, null).show();
     }
 
     fun contactToDeveloper() {

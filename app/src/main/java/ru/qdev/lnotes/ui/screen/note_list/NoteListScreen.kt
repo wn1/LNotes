@@ -1,6 +1,7 @@
 package ru.qdev.lnotes.ui.screen.base
 
 import android.content.res.Configuration
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -158,6 +159,7 @@ private fun ScreenContent(
 
     val menuExpandedS = remember { mutableStateOf(false) }
     val searchViewH = remember { mutableStateOf(0f) }
+    val animateSearchViewH = animateFloatAsState( targetValue = searchViewH.value)
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -221,7 +223,7 @@ private fun ScreenContent(
         },
         floatingActionButton = {
             val modifier = if (searchText.isNotEmpty()) {
-                Modifier.padding(bottom = searchViewH.value.toDp().plus(10.dp))
+                Modifier.padding(bottom = animateSearchViewH.value.toDp().plus(10.dp))
             }
             else {
                 Modifier
@@ -394,7 +396,7 @@ fun MainDropdownMenu(modifier: Modifier,
                 },
                 onClick = {
                     expandedS.value = false
-                    listener?.onSearchClick()
+                    listener?.onBackupClick()
                 }
             )
 
