@@ -1,4 +1,4 @@
-package ru.qdev.lnotes.mvp
+package ru.qdev.lnotes.utils
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -50,6 +50,6 @@ object QDVStatisticState {
 
     fun isTimeForShowUserRatingQuest(): Boolean {
         if (userRatingQuestShownNoNeed) return false
-        return (addedNotesCount>=showUserRatingQuestAfterAddedNotesCount)
+        return (addedNotesCount >= showUserRatingQuestAfterAddedNotesCount)
     }
 }

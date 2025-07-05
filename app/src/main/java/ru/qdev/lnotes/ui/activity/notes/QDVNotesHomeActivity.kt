@@ -1,5 +1,6 @@
 package ru.qdev.lnotes.ui.activity.notes
 
+//import butterknife.ButterKnife
 import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
@@ -19,19 +20,16 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
 import com.example.reply.ui.theme.AppTheme
-//import butterknife.ButterKnife
 import dagger.hilt.android.AndroidEntryPoint
-import ru.qdev.lnotes.mvp.QDVStatisticState.addTimeForShowUserRatingQuest
-import ru.qdev.lnotes.mvp.QDVStatisticState.userRatingQuestShownNoNeed
 import ru.qdev.lnotes.ui.navigation.QDVNavigator
 import ru.qdev.lnotes.ui.navigation.route.note.NoteListScreenRoute
 import ru.qdev.lnotes.ui.view.QDVViewFabric
+import ru.qdev.lnotes.utils.QDVStatisticState.addTimeForShowUserRatingQuest
+import ru.qdev.lnotes.utils.QDVStatisticState.userRatingQuestShownNoNeed
 import ru.qdev.lnotes.utils.QDVTempFileSendUtils
+import ru.qdev.lnotes.utils.getVersionName
 import src.R
 import javax.inject.Inject
-import androidx.core.net.toUri
-import ru.qdev.lnotes.mvp.QDVStatisticState
-import ru.qdev.lnotes.utils.getVersionName
 
 /**
  * Created by Vladimir Kudashov on 11.03.17.
