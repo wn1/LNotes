@@ -1,5 +1,6 @@
 package ru.qdev.lnotes.db.entity
 
+import android.database.Cursor
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -32,6 +33,24 @@ data class NotesEntry(
                 )
             }
             return list
+        }
+        //id INTEGER PRIMARY KEY, content, create_time_u INTEGER DEFAULT NULL, isready INT DEFAULT 0, folder_id INTEGER DEFAULT NULL, complete_time_u INTEGER DEFAULT NULL, update_time_u INTEGER DEFAULT NULL
+
+        fun Cursor.getNotesUid() : Long? {
+            return getLong(0)
+        }
+
+        fun Cursor.getNotesEntry() : NotesEntry? {
+            val entity = NotesEntry(
+                uid = getLong(0),
+                content = getString(1),
+                createTimeU = getLong(2),
+                isReady = getInt(3),
+                folderId = getLong(4),
+                completeTimeU = getLong(5),
+                updateTimeU = getLong(6)
+            )
+            return entity
         }
     }
 }

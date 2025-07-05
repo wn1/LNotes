@@ -2,21 +2,17 @@ package ru.qdev.lnotes.ui.screen.note_list
 
 import android.content.Context
 import android.content.Intent
+import android.database.Cursor
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -75,11 +71,12 @@ class NoteListScreenViewModel @Inject constructor(
 
     val selectedFolderS = mutableStateOf<Folder?>(null)
     val folderListS = mutableStateOf<List<Folder>>(listOf())
-    val reloadNotesAndGoToFirstEvent = mutableStateOf<LiveEvent<Boolean>?>(null)
+//    val reloadNotesAndGoToFirstEvent = mutableStateOf<LiveEvent<Boolean>?>(null)
     val drawerHideEvent = mutableStateOf<LiveEvent<Boolean>?>(null)
     val folderLoadingS = mutableStateOf(false)
     val notesCountS = mutableStateOf(0L)
     val searchText = mutableStateOf("") //TODO сохранять searchText
+    val notesCursorS = mutableStateOf<Cursor?>(null)
 
     private var folderForMenu: Folder? = null
     private var noteForMenu: NotesEntry? = null
@@ -91,68 +88,61 @@ class NoteListScreenViewModel @Inject constructor(
     private var renameFolderJob: Job? = null
     private var noteEditJob: Job? = null
     private var noteMoveJob: Job? = null
-    private var notesCountUpdateJob: Job? = null
+    private var cursorUpdateJob: Job? = null
     private var selectedFolderForPager: Folder? = null
 
-    private fun makeNotesPagingFlow(): Flow<PagingData<NotesEntry>> {
-        return Pager(
-            config = PagingConfig(
-                pageSize = 20,
-                enablePlaceholders = false,
-                initialLoadSize = 40
-            ),
-            pagingSourceFactory = {
-                when (selectedFolderForPager?.type){
-                    FolderType.AllFolder -> {
-                        return@Pager notesDao.getNotesAllPagingSource(
-                            searchText = textToSearch(searchText.value)
-                        )
-                    }
-                    FolderType.UnknownFolder -> {
-                        return@Pager notesDao.getNotesWithUnknownFolderPagingSource(
-                            searchText = textToSearch(searchText.value)
-                        )
-                    }
-                    else -> {
-                        notesDao.getNotesByFolderIdPagingSource(
-                            folderId = selectedFolderForPager?.id?.toLongOrNull(),
-                            searchText = textToSearch(searchText.value)
-                        )
-                    }
-                }
-            }
-        ).flow
-    }
-
-    val notesPagingFlow = makeNotesPagingFlow().cachedIn(viewModelScope)
-
-    private fun notesCountUpdate() {
-        notesCountUpdateJob?.cancel()
-        notesCountUpdateJob = viewModelScope.launch {
-            notesCountS.value = withContext(Dispatchers.IO) {
-                when (selectedFolderForPager?.type) {
+    suspend fun getCursor() : Cursor {
+        return withContext(Dispatchers.IO) {
+            when (selectedFolderForPager?.type){
                 FolderType.AllFolder -> {
-                    notesDao.getNotesAllCount(
+                    notesDao.getNotesAllCursor(
                         searchText = textToSearch(searchText.value)
                     )
                 }
-
                 FolderType.UnknownFolder -> {
-                    notesDao.getNotesWithUnknownFolderCount(
+                    notesDao.getNotesWithUnknownFolderCursor(
                         searchText = textToSearch(searchText.value)
                     )
                 }
-
                 else -> {
-                    notesDao.getNotesByFolderIdCount(
+                    notesDao.getNotesByFolderIdCursor(
                         folderId = selectedFolderForPager?.id?.toLongOrNull(),
                         searchText = textToSearch(searchText.value)
                     )
                 }
             }
-            }
         }
     }
+
+//    private fun notesCountUpdate() {
+//
+//    }
+//        notesCountUpdateJob?.cancel()
+//        notesCountUpdateJob = viewModelScope.launch {
+//            notesCountS.value = withContext(Dispatchers.IO) {
+//                when (selectedFolderForPager?.type) {
+//                FolderType.AllFolder -> {
+//                    notesDao.getNotesAllCount(
+//                        searchText = textToSearch(searchText.value)
+//                    )
+//                }
+//
+//                FolderType.UnknownFolder -> {
+//                    notesDao.getNotesWithUnknownFolderCount(
+//                        searchText = textToSearch(searchText.value)
+//                    )
+//                }
+//
+//                else -> {
+//                    notesDao.getNotesByFolderIdCount(
+//                        folderId = selectedFolderForPager?.id?.toLongOrNull(),
+//                        searchText = textToSearch(searchText.value)
+//                    )
+//                }
+//            }
+//            }
+//        }
+//    }
 
     private fun textToSearch(text: String) : String {
         return "%$text%"
@@ -176,7 +166,7 @@ class NoteListScreenViewModel @Inject constructor(
 
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
-        notesCountUpdate()
+        reloadNotes()
     }
 
     private fun fillFolder(withReloadAndGoToFirst: Boolean = false) {
@@ -227,7 +217,7 @@ class NoteListScreenViewModel @Inject constructor(
                     reloadNotesAndGoToFirst()
                 }
                 else {
-                    notesCountUpdate()
+                    reloadNotes()
                 }
             }
         }
@@ -235,14 +225,32 @@ class NoteListScreenViewModel @Inject constructor(
 
     fun reloadNotesAndGoToFirst() {
         selectedFolderForPager = selectedFolderS.value
-        reloadNotesAndGoToFirstEvent.value = LiveEvent(true)
-        notesCountUpdate()
+//        reloadNotesAndGoToFirstEvent.value = LiveEvent(true)
+
+        reloadNotes(gotoFirst = true)
     }
 
-    fun reloadNotes() {
+    fun reloadNotes(gotoFirst: Boolean = false) {
+        val logStr = "reloadNotes"
         selectedFolderForPager = selectedFolderS.value
-        reloadNotesAndGoToFirstEvent.value = LiveEvent(false)
-        notesCountUpdate()
+//        reloadNotesAndGoToFirstEvent.value = LiveEvent(false)
+
+        cursorUpdateJob?.cancel()
+        cursorUpdateJob = viewModelScope.launch {
+
+            val cursor = getCursor()
+            notesCursorS.value = cursor
+            notesCountS.value = cursor.count.toLong()
+
+            if (gotoFirst){
+                try {
+                    cursor.moveToFirst()
+                }
+                catch (e: Throwable) {
+                    Log.e(TAG, "$logStr $e", e)
+                }
+            }
+        }
     }
 
     override fun onFolderMenuClick(){
@@ -446,7 +454,7 @@ class NoteListScreenViewModel @Inject constructor(
                     notesDao.insertAll(note)
                 }
             }
-            notesCountUpdate()
+            reloadNotes()
         }
     }
 
@@ -464,7 +472,7 @@ class NoteListScreenViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 notesDao.delete(note)
             }
-            notesCountUpdate()
+            reloadNotes()
         }
     }
 
@@ -491,7 +499,7 @@ class NoteListScreenViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 notesDao.insertAll(note)
             }
-            notesCountUpdate()
+            reloadNotes()
         }
     }
 

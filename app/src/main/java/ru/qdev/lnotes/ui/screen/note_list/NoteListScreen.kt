@@ -1,6 +1,7 @@
 package ru.qdev.lnotes.ui.screen.base
 
 import android.content.res.Configuration
+import android.database.Cursor
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,13 +21,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.Button
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -66,15 +64,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.PagingData
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.reply.ui.theme.AppTheme
-import com.example.reply.ui.theme.Black
-import com.example.reply.ui.theme.isDark
 import drawVerticalScrollbar
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import ru.qdev.lnotes.db.entity.NotesEntry
+import ru.qdev.lnotes.db.entity.NotesEntry.Companion.getNotesEntry
+import ru.qdev.lnotes.db.entity.NotesEntry.Companion.getNotesUid
 import ru.qdev.lnotes.db.enum.StatusOfExecution
 import ru.qdev.lnotes.model.Folder
 import ru.qdev.lnotes.model.FolderType
@@ -83,7 +79,6 @@ import ru.qdev.lnotes.ui.screen.note_list.NoteListScreenViewModel
 import ru.qdev.lnotes.ui.theme.contentHPaddingDp
 import ru.qdev.lnotes.ui.theme.dp1
 import ru.qdev.lnotes.ui.theme.dp10
-import ru.qdev.lnotes.ui.theme.dp14
 import ru.qdev.lnotes.ui.theme.dp4
 import ru.qdev.lnotes.ui.theme.dp40
 import ru.qdev.lnotes.ui.theme.dp44
@@ -100,7 +95,6 @@ import src.R
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.math.max
 
 @ExperimentalMaterial3Api
 @Composable
@@ -110,9 +104,9 @@ fun NoteListScreen(viewModel: NoteListScreenViewModel = hiltViewModel()) {
             listener = viewModel,
             folderList = viewModel.folderListS.value,
             selectedFolder = viewModel.selectedFolderS.value,
-            notesFlow = viewModel.notesPagingFlow,
+            notesCursor = viewModel.notesCursorS.value,
             notesCount = viewModel.notesCountS.value,
-            reloadNotesAndGoToFirstEvent = viewModel.reloadNotesAndGoToFirstEvent.value,
+//            reloadNotesAndGoToFirstEvent = viewModel.reloadNotesAndGoToFirstEvent.value,
             drawerHideEvent = viewModel.drawerHideEvent.value,
             searchText = viewModel.searchText.value
         )
@@ -125,9 +119,9 @@ private fun ScreenContent(
     listener: NoteListScreenListener?,
     folderList: List<Folder>,
     selectedFolder: Folder?,
-    notesFlow: Flow<PagingData<NotesEntry>>,
+    notesCursor: Cursor?,
     notesCount: Long,
-    reloadNotesAndGoToFirstEvent: LiveEvent<Boolean>? = null,
+//    reloadNotesAndGoToFirstEvent: LiveEvent<Boolean>? = null,
     drawerHideEvent: LiveEvent<Boolean>? = null,
     drawerShowEvent: LiveEvent<Boolean>? = null,
     searchText: String
@@ -135,18 +129,18 @@ private fun ScreenContent(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    val notes = notesFlow.collectAsLazyPagingItems()
+//    val notes = notesFlow.collectAsLazyPagingItems()
     val notesColumnState = rememberLazyListState()
 
-    reloadNotesAndGoToFirstEvent?.getEventAndReset()?.let {
-        scope.launch {
-            if (it) {
-                notesColumnState.scrollToItem(0)
-            }
-
-            notes.refresh()
-        }
-    }
+//    reloadNotesAndGoToFirstEvent?.getEventAndReset()?.let {
+//        scope.launch {
+//            if (it) {
+//                notesColumnState.scrollToItem(0)
+//            }
+//
+//            notes.refresh()
+//        }
+//    }
 
     drawerHideEvent?.getEventAndReset()?.let {
         scope.launch {
@@ -289,10 +283,16 @@ private fun ScreenContent(
                     contentPadding = PaddingValues(bottom = 80.dp)
                 ) {
                     items(
-                        count = notes.itemCount,
-                        key = { index -> notes[index]?.uid ?: index }
+                        count = notesCursor?.count ?: 0,
+                        key = { index ->
+                            notesCursor?.moveToPosition(index)
+                            notesCursor?.getNotesUid() ?: index
+                        }
                     ) { index ->
-                        notes[index]?.let {
+                        notesCursor?.moveToPosition(index)
+                        val note = notesCursor?.getNotesEntry()
+
+                        note?.let {
                             if (index != 0) {
                                 HorizontalDivider()
                             }
@@ -351,7 +351,7 @@ private fun ScreenContent(
 
                 Row(modifier = Modifier.padding(horizontal = contentHPaddingDp)) {
                     SText(
-                        text = "Fetch count: ${notes.itemCount}",
+                        text = "Fetch count: ${notesCursor?.count}",
                         color = MaterialTheme.colorScheme.secondary
                     )
                 }
@@ -632,7 +632,7 @@ private fun ScreenContentPreview() {
             listener = null,
             selectedFolder = folders.getOrNull(1),
             folderList = folders,
-            notesFlow = flowOf(PagingData.from(notes)),
+            notesCursor = null,
             notesCount = notes.size.toLong(),
             searchText = ""
         )
@@ -686,7 +686,7 @@ private fun ScreenContentPreviewSearch() {
             listener = null,
             selectedFolder = folders.getOrNull(1),
             folderList = folders,
-            notesFlow = flowOf(PagingData.from(notes)),
+            notesCursor = null,
             notesCount = notes.size.toLong(),
             searchText = stringResource(R.string.finding_label)
         )

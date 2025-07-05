@@ -1,5 +1,7 @@
 package ru.qdev.lnotes.db.dao
 
+import android.database.Cursor
+import androidx.lifecycle.LiveData
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Delete
@@ -24,22 +26,22 @@ interface NotesDao {
 //    fun findByName(first: String, last: String): User
 
     @Query("SELECT * FROM notes WHERE folder_id is :folderId AND content LIKE :searchText ORDER BY (isready > 0), complete_time_u DESC, update_time_u DESC")
-    fun getNotesByFolderIdPagingSource(folderId: Long?, searchText: String): PagingSource<Int, NotesEntry>
+    fun getNotesByFolderIdCursor(folderId: Long?, searchText: String): Cursor
 
-    @Query("SELECT COUNT(*) FROM notes WHERE folder_id is :folderId  AND content LIKE :searchText ORDER BY (isready > 0), complete_time_u DESC, update_time_u DESC")
-    fun getNotesByFolderIdCount(folderId: Long?, searchText: String): Long
+//    @Query("SELECT COUNT(*) FROM notes WHERE folder_id is :folderId  AND content LIKE :searchText ORDER BY (isready > 0), complete_time_u DESC, update_time_u DESC")
+//    fun getNotesByFolderIdCount(folderId: Long?, searchText: String): Long
 
     @Query("SELECT * FROM notes WHERE content LIKE :searchText ORDER BY (isready > 0), complete_time_u DESC, update_time_u DESC")
-    fun getNotesAllPagingSource(searchText: String): PagingSource<Int, NotesEntry>
+    fun getNotesAllCursor(searchText: String): Cursor
 
-    @Query("SELECT COUNT(*) FROM notes WHERE content LIKE :searchText ORDER BY (isready > 0), complete_time_u DESC, update_time_u DESC")
-    fun getNotesAllCount(searchText: String): Long
+//    @Query("SELECT COUNT(*) FROM notes WHERE content LIKE :searchText ORDER BY (isready > 0), complete_time_u DESC, update_time_u DESC")
+//    fun getNotesAllCount(searchText: String): Long
 
     @Query("SELECT * FROM notes WHERE (folder_id is NULL OR folder_id is 0) AND content LIKE :searchText ORDER BY (isready > 0), complete_time_u DESC, update_time_u DESC")
-    fun getNotesWithUnknownFolderPagingSource(searchText: String): PagingSource<Int, NotesEntry>
+    fun getNotesWithUnknownFolderCursor(searchText: String): Cursor
 
-    @Query("SELECT COUNT(*) FROM notes WHERE (folder_id is NULL OR folder_id is 0) AND content LIKE :searchText ORDER BY (isready > 0), complete_time_u DESC, update_time_u DESC")
-    fun getNotesWithUnknownFolderCount(searchText: String): Long
+//    @Query("SELECT COUNT(*) FROM notes WHERE (folder_id is NULL OR folder_id is 0) AND content LIKE :searchText ORDER BY (isready > 0), complete_time_u DESC, update_time_u DESC")
+//    fun getNotesWithUnknownFolderCount(searchText: String): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg notes: NotesEntry)
