@@ -347,7 +347,10 @@ private fun ScreenContent(
 
                 Row(modifier = Modifier.padding(horizontal = contentHPaddingDp)) {
                     SText(
-                        text = "Fetch count: ${notesCursor?.count}",
+                        text = stringResource(
+                            R.string.fetch_count,
+                            notesCursor?.count.toString()
+                        ),
                         color = MaterialTheme.colorScheme.secondary
                     )
                 }

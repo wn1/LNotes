@@ -93,4 +93,5 @@
     <string name="option_checked_char">☑</string>
     <string name="option_unchecked_char">☐</string>
     <string name="action_send_text">Поделиться</string>
+    <string name="fetch_count">Количество: %s</string>
 </resources>
