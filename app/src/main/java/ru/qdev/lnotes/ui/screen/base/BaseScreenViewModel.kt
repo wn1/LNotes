@@ -1,5 +1,6 @@
 package ru.qdev.lnotes.ui.screen.base
 
+import android.app.Activity
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
@@ -10,6 +11,7 @@ import ru.qdev.lnotes.ui.view.dialog.Dialog
 import ru.qdev.lnotes.ui.view.dialog.DialogButton
 import ru.qdev.lnotes.ui.view.menu.DialogMenuItem
 import src.R
+import java.lang.ref.WeakReference
 import kotlin.jvm.Throws
 
 interface BaseScreenViewModelListener {
@@ -27,6 +29,17 @@ abstract class BaseScreenViewModel : ViewModel(),
     val BaseTag = this::class.java.simpleName
 
     val dialogMenuS = mutableStateOf<List<Dialog>>(listOf())
+
+    var activityRef: WeakReference<Activity>? = null
+        private set
+
+    fun bind(activity: Activity?) {
+        activityRef = WeakReference(activity)
+    }
+
+    fun getActivity(): Activity? {
+        return activityRef?.get()
+    }
 
     fun showDialogOrMenu(dialog: Dialog) {
         Log.i(BaseTag, "showDialogOrMenu, dialogId: ${dialog.id}")

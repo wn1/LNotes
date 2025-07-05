@@ -1,6 +1,7 @@
 package ru.qdev.lnotes.ui.screen.note_list
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LifecycleOwner
@@ -29,6 +30,8 @@ import ru.qdev.lnotes.db.entity.NotesEntry
 import ru.qdev.lnotes.db.enum.StatusOfExecution
 import ru.qdev.lnotes.model.Folder
 import ru.qdev.lnotes.model.FolderType
+import ru.qdev.lnotes.ui.activity.backup.QDVBackupActivity
+import ru.qdev.lnotes.ui.activity.notes.QDVNotesHomeActivity
 import ru.qdev.lnotes.ui.navigation.QDVNavigator
 import ru.qdev.lnotes.ui.navigation.route.note.NoteEditScreenRoute
 import ru.qdev.lnotes.ui.screen.base.BaseScreenViewModel
@@ -54,6 +57,9 @@ interface NoteListScreenListener {
     fun onNoteAddingClick()
     fun onSearchClick()
     fun onSearchCancelClick()
+    fun onBackupClick()
+    fun onAboutAppClick()
+    fun onMailToDeveloperClick()
 }
 
 @HiltViewModel
@@ -73,7 +79,7 @@ class NoteListScreenViewModel @Inject constructor(
     val drawerHideEvent = mutableStateOf<LiveEvent<Boolean>?>(null)
     val folderLoadingS = mutableStateOf(false)
     val notesCountS = mutableStateOf(0L)
-    val searchText = mutableStateOf("")
+    val searchText = mutableStateOf("") //TODO сохранять searchText
 
     private var folderForMenu: Folder? = null
     private var noteForMenu: NotesEntry? = null
@@ -851,6 +857,28 @@ class NoteListScreenViewModel @Inject constructor(
         Log.i(TAG, logStr)
         searchText.value = ""
         reloadNotesAndGoToFirst()
+    }
+
+    override fun onBackupClick() {
+        val logStr = "onBackupClick"
+        Log.i(TAG, logStr)
+        val intent = Intent(context, QDVBackupActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        getActivity()?.startActivity(intent)
+    }
+
+    override fun onAboutAppClick() {
+        val logStr = "onAboutAppClick"
+        Log.i(TAG, logStr)
+
+        (getActivity() as? QDVNotesHomeActivity)?.showAboutAppDialog()
+    }
+
+    override fun onMailToDeveloperClick() {
+        val logStr = "onMailToDeveloperClick"
+        Log.i(TAG, logStr)
+
+        (getActivity() as? QDVNotesHomeActivity)?.contactToDeveloper()
     }
 
     companion object {

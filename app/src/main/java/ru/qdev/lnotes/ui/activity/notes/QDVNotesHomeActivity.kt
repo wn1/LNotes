@@ -3,7 +3,12 @@ package ru.qdev.lnotes.ui.activity.notes
 import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.view.ViewGroup
+import android.widget.RelativeLayout
+import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -24,6 +29,9 @@ import ru.qdev.lnotes.ui.view.QDVViewFabric
 import ru.qdev.lnotes.utils.QDVTempFileSendUtils
 import src.R
 import javax.inject.Inject
+import androidx.core.net.toUri
+import ru.qdev.lnotes.mvp.QDVStatisticState
+import ru.qdev.lnotes.utils.getVersionName
 
 /**
  * Created by Vladimir Kudashov on 11.03.17.
@@ -264,7 +272,68 @@ class QDVNotesHomeActivity : ComponentActivity() {
             .show()
     }
 
-    companion object {
+    fun showAboutAppDialog() {
+        val logStr = "showAboutAppDialog"
 
+        var lnotesNameAndVersion = getString(R.string.app_name)+" "
+
+        try {
+            lnotesNameAndVersion += packageManager.getPackageInfo(
+                packageName,
+                0
+            ).versionName
+        } catch (e: Throwable) {
+            Log.e(TAG, "$logStr, $e", e)
+        }
+
+        val alertDialogView = layoutInflater.inflate(
+            R.layout.about_dialog, null)
+
+        val aboutTextView: TextView = alertDialogView.findViewById(R.id.aboutText)
+        aboutTextView.setText(R.string.about_message)
+
+        val ratingView = QDVViewFabric(this, layoutInflater).createRatingView()
+        ((alertDialogView as ViewGroup).findViewById<RelativeLayout>(R.id.layoutForView))
+            .addView(ratingView)
+
+        val rateQuestText: TextView = alertDialogView.findViewById(R.id.rateQuestText)
+        rateQuestText.text = getString(R.string.like_app_quest_text)
+
+        AlertDialog.Builder(this)
+            .setTitle(lnotesNameAndVersion)
+            .setCancelable(true)
+            .setView(alertDialogView)
+            .setPositiveButton(R.string.open_google_play,
+                object : DialogInterface.OnClickListener {
+
+                    @Override
+                    override fun onClick(p0: DialogInterface?, p1: Int) {
+                        startActivity(
+                            Intent(Intent.ACTION_VIEW,
+                            getString(R.string.google_play_link).toUri())
+                        )
+                        QDVStatisticState.userRatingQuestShownNoNeed = true
+                    }
+                })
+            .setNeutralButton(R.string.action_thanks, null).show();
+    }
+
+    fun contactToDeveloper() {
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.setType("text/html")
+        intent.putExtra(Intent.EXTRA_EMAIL,
+            listOf(getString(R.string.developer_email)).toTypedArray())
+        intent.putExtra(Intent.EXTRA_SUBJECT,
+            getString(R.string.email_to_developer_subject))
+
+        val appInfo = getString(R.string.app_name) + " v" + getVersionName(this) +
+                "\nAndroid " + Build.VERSION.RELEASE
+        val mailText = String.format(getString(R.string.email_to_developer_text), appInfo)
+        intent.putExtra(Intent.EXTRA_TEXT, mailText)
+        startActivity(intent)
+    }
+
+    companion object {
+        const val TAG = "QDVNotesHomeActivity"
     }
 }
