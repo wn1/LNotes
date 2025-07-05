@@ -509,6 +509,7 @@ class NoteListScreenViewModel @Inject constructor(
         when (statusOfExecution) {
             StatusOfExecution.CREATED -> {
                 note.updateTimeU = Date().time
+                note.completeTimeU = null
             }
 
             StatusOfExecution.NOT_NEED, StatusOfExecution.COMPLETED -> {

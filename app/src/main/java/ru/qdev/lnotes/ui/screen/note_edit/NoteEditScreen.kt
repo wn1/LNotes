@@ -39,6 +39,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.PagingData
@@ -76,7 +78,7 @@ fun NoteEditScreen(viewModel: NoteEditScreenViewModel = hiltViewModel()) {
 @ExperimentalMaterial3Api
 @Composable
 private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
-                          text: String) {
+                          text: TextFieldValue) {
     val scope = rememberCoroutineScope()
     val focusRequester = remember { FocusRequester() }
 
@@ -166,7 +168,7 @@ private fun ScreenContentPreview() {
     AppTheme {
         ScreenContent(
             listener = null,
-            text = "Text"
+            text = TextFieldValue("Text")
         )
     }
 }

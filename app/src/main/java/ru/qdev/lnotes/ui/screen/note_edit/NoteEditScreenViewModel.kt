@@ -3,6 +3,8 @@ package ru.qdev.lnotes.ui.screen.note_edit
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -31,7 +33,7 @@ import javax.inject.Inject
 interface NoteEditScreenViewModelListener {
     fun onBackClick()
     fun onSaveClick()
-    fun onTextChange(newText: String)
+    fun onTextChange(newText: TextFieldValue)
 }
 
 @HiltViewModel
@@ -49,7 +51,7 @@ class NoteEditScreenViewModel @Inject constructor(
 
     private var isClose = false
 
-    val textS = mutableStateOf("")
+    val textS = mutableStateOf(TextFieldValue())
 
     override fun provideContext(): Context {
         return context
@@ -84,16 +86,23 @@ class NoteEditScreenViewModel @Inject constructor(
             return
         }
 
-        textS.value = notesPreferenceHelper.editNoteText ?: ""
+        val text = notesPreferenceHelper.editNoteText ?: ""
+        textS.value = TextFieldValue(
+            text,
+            selection = TextRange(
+                start = text.length,
+                end = text.length
+            )
+        )
     }
 
-    override fun onTextChange(newText: String) {
+    override fun onTextChange(newText: TextFieldValue) {
         textS.value = newText
     }
 
     override fun onStop(owner: LifecycleOwner) {
         if (!isClose) {
-            notesPreferenceHelper.editNoteText = textS.value
+            notesPreferenceHelper.editNoteText = textS.value.text
         }
         super.onStop(owner)
     }
@@ -107,7 +116,7 @@ class NoteEditScreenViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val newText = textS.value
+            val newText = textS.value.text
             withContext(Dispatchers.IO) {
                 try {
                     val id = notesPreferenceHelper.editNoteId
@@ -156,7 +165,7 @@ class NoteEditScreenViewModel @Inject constructor(
         Log.i(TAG, "onBackClick")
         val prevText = notesPreferenceHelper.editNoteText ?: ""
 
-        if (prevText == textS.value) {
+        if (prevText == textS.value.text) {
             goBack()
             return
         }
