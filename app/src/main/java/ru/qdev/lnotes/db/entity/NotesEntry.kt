@@ -1,6 +1,8 @@
 package ru.qdev.lnotes.db.entity
 
 import android.database.Cursor
+import androidx.core.database.getLongOrNull
+import androidx.core.database.getStringOrNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -43,12 +45,12 @@ data class NotesEntry(
         fun Cursor.getNotesEntry() : NotesEntry? {
             val entity = NotesEntry(
                 uid = getLong(0),
-                content = getString(1),
-                createTimeU = getLong(2),
+                content = getStringOrNull(1),
+                createTimeU = getLongOrNull(2),
                 isReady = getInt(3),
-                folderId = getLong(4),
-                completeTimeU = getLong(5),
-                updateTimeU = getLong(6)
+                folderId = getLongOrNull(4),
+                completeTimeU = getLongOrNull(5),
+                updateTimeU = getLongOrNull(6)
             )
             return entity
         }
