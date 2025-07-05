@@ -140,7 +140,10 @@ private fun ScreenContent(
 
     reloadNotesAndGoToFirstEvent?.getEventAndReset()?.let {
         scope.launch {
-            notesColumnState.scrollToItem(0)
+            if (it) {
+                notesColumnState.scrollToItem(0)
+            }
+
             notes.refresh()
         }
     }

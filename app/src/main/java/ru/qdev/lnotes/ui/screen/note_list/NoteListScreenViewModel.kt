@@ -239,6 +239,12 @@ class NoteListScreenViewModel @Inject constructor(
         notesCountUpdate()
     }
 
+    fun reloadNotes() {
+        selectedFolderForPager = selectedFolderS.value
+        reloadNotesAndGoToFirstEvent.value = LiveEvent(false)
+        notesCountUpdate()
+    }
+
     override fun onFolderMenuClick(){
         Log.i(TAG, "onFolderMenuClick")
 
@@ -519,7 +525,7 @@ class NoteListScreenViewModel @Inject constructor(
         withContext(Dispatchers.IO) {
             notesDao.insertAll(note)
         }
-        notesCountUpdate()
+        reloadNotes()
     }
 
     private fun moveNoteMenuPrepare(delayMs: Long = 200) {
