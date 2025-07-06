@@ -18,8 +18,8 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import ru.qdev.lnotes.core.QDVAppConst.NoteAddingId
 import ru.qdev.lnotes.core.events.AppEvents
-import ru.qdev.lnotes.core.events.QDVDbManager
 import ru.qdev.lnotes.core.pref.NotesPreferenceHelper
+import ru.qdev.lnotes.db.QDVDbManager
 import ru.qdev.lnotes.db.dao.FolderDao
 import ru.qdev.lnotes.db.dao.NotesDao
 import ru.qdev.lnotes.db.entity.FolderEntry

@@ -1,11 +1,10 @@
-package ru.qdev.lnotes.core.events
+package ru.qdev.lnotes.db
 
 import android.content.Context
 import android.util.Log
 import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import ru.qdev.lnotes.db.NotesDatabase
 import java.io.File
 
 class QDVDbManager (val context: Context) {

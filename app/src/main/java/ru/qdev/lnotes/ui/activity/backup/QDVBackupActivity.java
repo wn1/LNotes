@@ -42,7 +42,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import ru.qdev.lnotes.ThisApp;
-import ru.qdev.lnotes.core.events.QDVDbManager;
+import ru.qdev.lnotes.db.QDVDbManager;
 import ru.qdev.lnotes.ui.activity.notes.QDVNotesHomeActivity;
 import ru.qdev.lnotes.ui.activity.splash.SplashActivity;
 import ru.qdev.lnotes.utils.QDVFileUtils;

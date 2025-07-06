@@ -22,6 +22,7 @@ android {
         versionCode 42
         versionName "2.3.3"
         vectorDrawables.useSupportLibrary = true
+        setProperty("archivesBaseName", "LNotes-$versionName-b$versionCode")
     }
 
     compileOptions {

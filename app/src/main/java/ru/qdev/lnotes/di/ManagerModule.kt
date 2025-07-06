@@ -7,7 +7,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ru.qdev.lnotes.core.events.AppEvents
-import ru.qdev.lnotes.core.events.QDVDbManager
+import ru.qdev.lnotes.db.QDVDbManager
 import javax.inject.Singleton
 
 @Module
