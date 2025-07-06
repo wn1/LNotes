@@ -318,6 +318,9 @@ class QDVNotesHomeActivity : ComponentActivity() {
     }
 
     fun contactToDeveloper() {
+        val logStr = "contactToDeveloper"
+        Log.i(TAG, logStr)
+
         val intent = Intent(Intent.ACTION_SEND)
         intent.setType("text/html")
         intent.putExtra(Intent.EXTRA_EMAIL,
@@ -332,7 +335,17 @@ class QDVNotesHomeActivity : ComponentActivity() {
         startActivity(intent)
     }
 
+    fun moveToBackground(){
+        val logStr = "moveToBackground"
+        Log.i(TAG, logStr)
+
+        moveTaskToBack(true)
+    }
+
     fun sendText(text: String) {
+        val logStr = "sendText"
+        Log.i(TAG, logStr)
+
         try {
             val sendIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SEND

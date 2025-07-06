@@ -2,6 +2,7 @@ package ru.qdev.lnotes.ui.screen.base
 
 import android.content.res.Configuration
 import android.database.Cursor
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -108,6 +109,10 @@ fun NoteListScreen(viewModel: NoteListScreenViewModel = hiltViewModel()) {
             drawerHideEvent = viewModel.drawerHideEvent.value,
             searchText = viewModel.searchText.value
         )
+    }
+
+    BackHandler {
+        viewModel.onBackClick()
     }
 }
 

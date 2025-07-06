@@ -57,6 +57,7 @@ interface NoteListScreenListener {
     fun onBackupClick()
     fun onAboutAppClick()
     fun onMailToDeveloperClick()
+    fun onBackClick()
 }
 
 @HiltViewModel
@@ -900,6 +901,13 @@ class NoteListScreenViewModel @Inject constructor(
         Log.i(TAG, logStr)
 
         (getActivity() as? QDVNotesHomeActivity)?.contactToDeveloper()
+    }
+
+    override fun onBackClick() {
+        val logStr = "onBackClick"
+        Log.i(TAG, logStr)
+
+        (getActivity() as? QDVNotesHomeActivity)?.moveToBackground()
     }
 
     companion object {
