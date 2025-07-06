@@ -18,6 +18,7 @@ package com.example.reply.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -51,6 +52,19 @@ private val LightColorScheme = lightColorScheme(
     tertiaryContainer = Color(0xFFFFFFFF)
 )
 
+//@ExperimentalMaterial3Api
+//private val AppRippleConfiguration =
+//    RippleConfiguration(
+//        color = Color.Red,
+//        rippleAlpha = RippleAlpha(
+//            draggedAlpha = 0.4f,
+//            focusedAlpha = 0.3f,
+//            hoveredAlpha = 0.4f,
+//            pressedAlpha = 0.4f
+//        )
+//    )
+
+@ExperimentalMaterial3Api
 @Composable
 fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -63,8 +77,11 @@ fun AppTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        content = content
-    )
+    ) {
+//        CompositionLocalProvider(LocalRippleConfiguration provides AppRippleConfiguration) {
+            content()
+//        }
+    }
 }
 
 @Composable

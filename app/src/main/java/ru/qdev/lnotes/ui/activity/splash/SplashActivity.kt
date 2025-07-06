@@ -10,8 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +33,7 @@ import src.R
 class SplashActivity : AppCompatActivity() {
     private var launchTimerJob: Job? = null
 
+    @ExperimentalMaterial3Api
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -105,6 +105,7 @@ class SplashActivity : AppCompatActivity() {
         launchTimerJob?.cancel()
     }
 
+    @ExperimentalMaterial3Api
     @Composable
     @Preview(
         uiMode = Configuration.UI_MODE_NIGHT_YES,

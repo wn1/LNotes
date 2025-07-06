@@ -2,18 +2,17 @@ package ru.qdev.lnotes.ui.view.dialog
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -51,6 +50,7 @@ import ru.qdev.lnotes.ui.view.spacer.VSpacer
 import ru.qdev.lnotes.ui.view.text.SText
 import ru.qdev.lnotes.ui.view.text.STextField
 import ru.qdev.lnotes.ui.view.text.TextFieldBorderedModifier
+import ru.qdev.lnotes.utils.compose.clickableStyled
 
 @Composable
 fun DialogView (dialog: Dialog,
@@ -83,7 +83,7 @@ fun DialogView (dialog: Dialog,
                                     Row(
                                         modifier = Modifier
                                             .defaultMinSize(minHeight = dp40)
-                                            .clickable {
+                                            .clickableStyled {
                                                 onMenuItemClick(item)
                                             }
                                             .padding(dp14),
@@ -261,6 +261,7 @@ private fun DialogButtons(dialog: Dialog,
     }
 }
 
+@ExperimentalMaterial3Api
 @Composable
 @Preview(
     uiMode = Configuration.UI_MODE_NIGHT_YES,
@@ -286,6 +287,7 @@ private fun DialogViewPreviewInputText() {
     }
 }
 
+@ExperimentalMaterial3Api
 @Composable
 @Preview(
     uiMode = Configuration.UI_MODE_NIGHT_YES,
@@ -311,6 +313,7 @@ private fun DialogViewPreview() {
     }
 }
 
+@ExperimentalMaterial3Api
 @Composable
 @Preview(
     uiMode = Configuration.UI_MODE_NIGHT_YES,
