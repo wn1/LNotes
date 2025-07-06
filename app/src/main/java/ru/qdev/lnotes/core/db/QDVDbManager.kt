@@ -12,6 +12,8 @@ class QDVDbManager (val context: Context) {
     var notesDatabase: NotesDatabase? = null
         private set
 
+    private var prevNotesDatabase: NotesDatabase? = null
+
     fun doReloadDb() {
         closeNotesDb()
         openNotesDb()
@@ -25,12 +27,18 @@ class QDVDbManager (val context: Context) {
                     NotesDatabase::class.java, NOTES_DATABASE_NAME
                 )
                 .addMigrations(MIGRATION_7_8).build()
+
+            prevNotesDatabase = notesDatabase
         }
     }
 
     fun closeNotesDb() {
         notesDatabase?.close()
         notesDatabase = null
+    }
+
+    fun isNotesDbOpen() : Boolean {
+        return notesDatabase?.isOpen == true || prevNotesDatabase?.isOpen == true
     }
 
     companion object {

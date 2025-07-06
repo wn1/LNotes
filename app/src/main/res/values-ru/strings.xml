@@ -54,6 +54,7 @@
     <string name="navigation_drawer_open">Открыть панель папок</string>
     <string name="input_password">Введите пароль</string>
     <string name="backup_saved">Резервная копия успешно сохранена</string>
+    <string name="backup_db_close_wait">Попробуйте позже, данные подготавливаются</string>
     <string name="backup_saved_to">Резервная копия успешно сохранена в: </string>
     <string name="backup_send_title">Отправить резервную копию</string>
     <string name="backup_sent">Резервная копия отправлена</string>

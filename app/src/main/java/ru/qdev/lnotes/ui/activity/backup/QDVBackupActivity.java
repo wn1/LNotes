@@ -249,7 +249,14 @@ public class QDVBackupActivity extends AppCompatActivity {
 
     @UiThread
     private boolean saveBackup (OutputStream os, boolean withoutCloseActivity, boolean withMessage) {
-        dbManager.closeNotesDb();
+        if (dbManager.isNotesDbOpen()) {
+            new AlertDialog.Builder(QDVBackupActivity.this).
+                    setMessage(getString(R.string.backup_db_close_wait))
+                    .setCancelable(true)
+                    .setPositiveButton(R.string.action_ok, null).show();
+            dbManager.closeNotesDb();
+            return false;
+        }
 
         File dbFile = getFileDB();
 
@@ -332,6 +339,15 @@ public class QDVBackupActivity extends AppCompatActivity {
 
     @UiThread
     private void restoreBackup(InputStream inputStream, boolean isCrypted, String password) {
+        if (dbManager.isNotesDbOpen()) {
+            new AlertDialog.Builder(QDVBackupActivity.this).
+                    setMessage(getString(R.string.backup_db_close_wait))
+                    .setCancelable(true)
+                    .setPositiveButton(R.string.action_ok, null).show();
+            dbManager.closeNotesDb();
+            return;
+        }
+
         if (isCrypted && password==null) {
             new AlertDialog.Builder(QDVBackupActivity.this).
                     setMessage(String.format(getString(R.string.error_with_id), "304"))
@@ -342,8 +358,6 @@ public class QDVBackupActivity extends AppCompatActivity {
 
         String code0 = "Code: 0";
         String errorCode = code0;
-
-        dbManager.closeNotesDb();
 
         File dbFile = getFileDB();
         OutputStream outputStream = null;

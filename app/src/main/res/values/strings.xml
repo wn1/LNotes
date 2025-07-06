@@ -53,6 +53,7 @@
     <string name="need_update_lnotesync">Update LNotesSync needed</string>
     <string name="input_password">Input password</string>
     <string name="backup_saved">Backup saved</string>
+    <string name="backup_db_close_wait">Try again later, the data is being prepared</string>
     <string name="backup_saved_to">Backup saved to: </string>
     <string name="backup_send_title">Send db backup to</string>
     <string name="backup_sent">Backup sent</string>
