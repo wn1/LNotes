@@ -887,6 +887,7 @@ class NoteListScreenViewModel @Inject constructor(
         val intent = Intent(context, QDVBackupActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         getActivity()?.startActivity(intent)
+        getActivity()?.finish()
     }
 
     override fun onAboutAppClick() {
