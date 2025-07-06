@@ -258,6 +258,9 @@ public class QDVBackupActivity extends AppCompatActivity {
             return false;
         }
 
+        dbManager.closePrevNotesDb();
+        System.gc();
+
         File dbFile = getFileDB();
 
         InputStream is = null;
@@ -347,6 +350,9 @@ public class QDVBackupActivity extends AppCompatActivity {
             dbManager.closeNotesDb();
             return;
         }
+
+        dbManager.closePrevNotesDb();
+        System.gc();
 
         if (isCrypted && password==null) {
             new AlertDialog.Builder(QDVBackupActivity.this).

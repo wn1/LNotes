@@ -36,6 +36,10 @@ class QDVDbManager (val context: Context) {
         notesDatabase = null
     }
 
+    fun closePrevNotesDb() {
+        prevNotesDatabase = null
+    }
+
     fun isNotesDbOpen() : Boolean {
         return notesDatabase?.isOpen == true || prevNotesDatabase?.isOpen == true
     }
