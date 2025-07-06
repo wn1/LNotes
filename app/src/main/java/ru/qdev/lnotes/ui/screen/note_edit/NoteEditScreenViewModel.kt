@@ -1,7 +1,6 @@
 package ru.qdev.lnotes.ui.screen.note_edit
 
 import android.content.Context
-import android.content.Intent
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.TextRange
@@ -44,6 +43,7 @@ interface NoteEditScreenViewModelListener {
     fun onInsertCheckedCharClick()
     fun onInsertUncheckedCharClick()
     fun onSendNoteClick()
+    fun onCheckedSwitchClick()
 }
 
 @HiltViewModel
@@ -63,6 +63,7 @@ class NoteEditScreenViewModel @Inject constructor(
     private var isClose = false
 
     val textS = mutableStateOf(TextFieldValue())
+    val checkedSwitchEnabledS = mutableStateOf(false)
 
     override fun provideContext(): Context {
         return context
@@ -109,6 +110,7 @@ class NoteEditScreenViewModel @Inject constructor(
 
     override fun onTextChange(newText: TextFieldValue) {
         textS.value = newText
+        updateCheckedSwitch()
     }
 
     override fun onStop(owner: LifecycleOwner) {
@@ -228,6 +230,9 @@ class NoteEditScreenViewModel @Inject constructor(
     }
 
     override fun onAddTimeClick(){
+        val logStr = "onAddTimeClick"
+        Log.i(TAG, logStr)
+
         try {
             val st = textS.value.selection.start
             val dateFormat = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
@@ -267,10 +272,14 @@ class NoteEditScreenViewModel @Inject constructor(
     }
 
     override fun onInsertCheckedCharClick() {
+        val logStr = "onInsertCheckedCharClick"
+        Log.i(TAG, logStr)
         insertCheckedCharEx(context.getString(R.string.option_checked_char))
     }
 
     override fun onInsertUncheckedCharClick() {
+        val logStr = "onInsertUncheckedCharClick"
+        Log.i(TAG, logStr)
         insertCheckedCharEx(context.getString(R.string.option_unchecked_char))
     }
 
@@ -295,6 +304,98 @@ class NoteEditScreenViewModel @Inject constructor(
                 insertLength = 2
                 text.insert(st, "$char ")
             }
+            val oldTextValue = textS.value
+            textS.value = TextFieldValue(
+                text = text.toString(),
+                selection =
+                    TextRange(
+                        start = oldTextValue.selection.start + insertLength,
+                        end = oldTextValue.selection.end + insertLength,
+                    )
+            )
+        }
+        catch (e: Throwable) {
+            Log.e(TAG, "insertCheckedCharEx $e", e)
+        }
+    }
+
+    fun updateCheckedSwitch() {
+//        val logStr = "updateCheckedSwitch"
+//        Log.i(TAG, logStr)
+        try {
+            val st = textS.value.selection.start
+
+            val found = findCheckedSwitch(
+                st,
+                textS.value.text
+            )
+
+            checkedSwitchEnabledS.value = found != null
+        }
+        catch (e: Throwable) {
+            Log.e(TAG, "insertCheckedCharEx $e", e)
+        }
+    }
+
+    private fun findCheckedSwitch(stPos: Int, text: String) : Pair<Int, Boolean>?{
+        val ch = context.getString(R.string.option_checked_char).firstOrNull()
+        val unCh = context.getString(R.string.option_unchecked_char).firstOrNull()
+        var isChecked = false
+
+        var pos = stPos
+        var isFound = false
+        while (pos > 0) {
+            val stCh = text.getOrNull(pos)
+            if (stCh == '\n' && pos != stPos) {
+                break
+            }
+
+            if (stCh == ch) {
+                isChecked = true
+                isFound = true
+                break
+            }
+
+            if (stCh == unCh) {
+                isFound = true
+                break
+            }
+            pos--
+        }
+
+        if (!isFound) {
+            return null
+        }
+
+        return Pair(pos, isChecked)
+    }
+
+    override fun onCheckedSwitchClick() {
+        val logStr = "onCheckedSwitchClick"
+        Log.i(TAG, logStr)
+        try {
+            val st = textS.value.selection.start
+            val end = textS.value.selection.end
+
+            val found = findCheckedSwitch(
+                st,
+                textS.value.text
+            )
+
+            if (found == null) return
+
+            val isChecked = found.second
+            val pos = found.first
+
+            val ch = context.getString(R.string.option_checked_char)
+            val unCh = context.getString(R.string.option_unchecked_char)
+
+            val char = if (isChecked) unCh else ch
+
+            val insertLength = 0
+            val text = StringBuilder(textS.value.text)
+            text.replace(pos, pos + 1, char)
+
             val oldTextValue = textS.value
             textS.value = TextFieldValue(
                 text = text.toString(),

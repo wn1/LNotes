@@ -14,21 +14,17 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
@@ -41,7 +37,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -55,22 +50,15 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.paging.PagingData
 import com.example.reply.ui.theme.AppTheme
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.launch
-import ru.qdev.lnotes.db.entity.NotesEntry
 import ru.qdev.lnotes.model.Folder
 import ru.qdev.lnotes.ui.screen.base.BaseScreen
-import ru.qdev.lnotes.ui.screen.note_list.NoteListScreenListener
 import ru.qdev.lnotes.ui.theme.contentHPaddingDp
 import ru.qdev.lnotes.ui.theme.dp1
 import ru.qdev.lnotes.ui.theme.dp10
@@ -79,16 +67,12 @@ import ru.qdev.lnotes.ui.theme.dp4
 import ru.qdev.lnotes.ui.theme.dp40
 import ru.qdev.lnotes.ui.theme.dp44
 import ru.qdev.lnotes.ui.theme.dp8
+import ru.qdev.lnotes.ui.theme.sp12
 import ru.qdev.lnotes.ui.theme.sp16
-import ru.qdev.lnotes.ui.view.button.MainButtonContent
-import ru.qdev.lnotes.ui.view.button.SButton
 import ru.qdev.lnotes.ui.view.spacer.HSpacer
 import ru.qdev.lnotes.ui.view.spacer.VSpacer
 import ru.qdev.lnotes.ui.view.text.SText
 import ru.qdev.lnotes.ui.view.text.STextField
-import ru.qdev.lnotes.utils.compose.KeyboardUtils
-import ru.qdev.lnotes.utils.compose.StateUtils.updateCounter
-import ru.qdev.lnotes.utils.live_data.LiveEvent
 import src.R
 
 @ExperimentalMaterial3Api
@@ -97,7 +81,8 @@ fun NoteEditScreen(viewModel: NoteEditScreenViewModel = hiltViewModel()) {
     BaseScreen(baseViewModel = viewModel) {
         ScreenContent(
             listener = viewModel,
-            text = viewModel.textS.value
+            text = viewModel.textS.value,
+            checkedSwitchEnabled = viewModel.checkedSwitchEnabledS.value
         )
     }
 }
@@ -105,7 +90,8 @@ fun NoteEditScreen(viewModel: NoteEditScreenViewModel = hiltViewModel()) {
 @ExperimentalMaterial3Api
 @Composable
 private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
-                          text: TextFieldValue) {
+                          text: TextFieldValue,
+                          checkedSwitchEnabled: Boolean) {
     val scope = rememberCoroutineScope()
     val focusRequester = remember { FocusRequester() }
 
@@ -173,7 +159,9 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
 
         @Composable fun ToolbarButton(
             text: String,
-            onClick: () -> Unit
+            onClick: () -> Unit,
+            fontSize: TextUnit = sp16,
+            enabled: Boolean = true
         ) {
             Box(modifier = Modifier
                 .defaultMinSize(dp40)
@@ -189,8 +177,8 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
                     SText(
                         modifier = Modifier.padding(horizontal = dp10),
                         text = text,
-                        color = MaterialTheme.colorScheme.tertiary,
-                        fontSize = sp16
+                        color = if (enabled) MaterialTheme.colorScheme.tertiary else Color.LightGray,
+                        fontSize = fontSize
                     )
                     VSpacer(dp10)
                 }
@@ -242,6 +230,18 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
                         onClick = {
                             listener?.onInsertUncheckedCharClick()
                         }
+                    )
+
+                    ToolbarDivider()
+
+                    ToolbarButton(
+                        text = stringResource(R.string.option_checked_char)
+                                +"\n"+stringResource(R.string.option_unchecked_char),
+                        onClick = {
+                            listener?.onCheckedSwitchClick()
+                        },
+                        fontSize = sp12,
+                        enabled = checkedSwitchEnabled
                     )
 
                     ToolbarDivider()
@@ -317,7 +317,30 @@ private fun ScreenContentPreview() {
     AppTheme {
         ScreenContent(
             listener = null,
-            text = TextFieldValue("Text")
+            text = TextFieldValue("Text"),
+            checkedSwitchEnabled = true
+        )
+    }
+}
+
+@ExperimentalMaterial3Api
+@Composable
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "DefaultPreviewDark"
+)
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    name = "DefaultPreviewLight"
+)
+private fun ScreenContentPreview2() {
+    val context = LocalContext.current
+    val folders = Folder.makeTestList(context)
+    AppTheme {
+        ScreenContent(
+            listener = null,
+            text = TextFieldValue("Text"),
+            checkedSwitchEnabled = false
         )
     }
 }

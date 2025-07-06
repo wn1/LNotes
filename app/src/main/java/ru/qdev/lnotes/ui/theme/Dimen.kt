@@ -12,5 +12,6 @@ val dp40 = 40.dp
 val dp44 = 44.dp
 val contentHPaddingDp = 14.dp
 
+val sp12 = 12.sp
 val sp14 = 14.sp
 val sp16 = 16.sp
