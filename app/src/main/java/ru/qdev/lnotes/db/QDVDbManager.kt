@@ -4,7 +4,11 @@ import android.content.Context
 import android.util.Log
 import androidx.room.Room
 import androidx.room.migration.Migration
+import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteDatabase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.io.File
 
 class QDVDbManager (val context: Context) {
@@ -31,7 +35,17 @@ class QDVDbManager (val context: Context) {
         }
     }
 
+    fun checkpoint() {
+        runBlocking {
+            withContext(Dispatchers.IO) {
+                val dao = notesDatabase?.notesDao()
+                dao?.checkpoint(SimpleSQLiteQuery("pragma wal_checkpoint(full)"))
+            }
+        }
+    }
+
     fun closeNotesDb() {
+        checkpoint()
         notesDatabase?.close()
         notesDatabase = null
     }

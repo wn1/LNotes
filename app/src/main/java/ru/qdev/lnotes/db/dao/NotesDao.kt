@@ -1,14 +1,15 @@
 package ru.qdev.lnotes.db.dao
 
 import android.database.Cursor
-import androidx.lifecycle.LiveData
-import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.RawQuery
+import androidx.sqlite.db.SupportSQLiteQuery
 import ru.qdev.lnotes.db.entity.NotesEntry
+
 
 @Dao
 interface NotesDao {
@@ -51,4 +52,7 @@ interface NotesDao {
 
     @Query("DELETE FROM notes WHERE folder_id = :folderId")
     fun deleteByFolderId(folderId: Long)
+
+    @RawQuery
+    fun checkpoint(supportSQLiteQuery: SupportSQLiteQuery): Int
 }
