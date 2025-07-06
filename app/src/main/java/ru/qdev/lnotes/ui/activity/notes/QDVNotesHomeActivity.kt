@@ -150,22 +150,6 @@ class QDVNotesHomeActivity : ComponentActivity() {
         }
         viewModel.oldDbUpdateIfNeeded()
     }
-
-//    @UiThread
-//    override fun onBackPressed() {
-//        val fragment = supportFragmentManager
-//            .findFragmentByTag(QDVNoteEditorFragment.FRAGMENT_TAG)
-//        if (fragment is QDVNoteEditorFragment) {
-//            fragment.goBackWithConfirm()
-//            return
-//        }
-//        if (navigationDrawerFragment!!.isDrawerOpen) {
-//            navigationDrawerFragment!!.isDrawerOpen = false
-//            return
-//        }
-//        super.onBackPressed()
-//    }
-
 //    @UiThread
 //    override fun setNavigationDrawerFolderEnabled(enabled: Boolean) {
 //        navigationDrawerFragment!!.isActive = enabled

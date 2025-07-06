@@ -44,6 +44,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 import ru.qdev.lnotes.ThisApp;
 import ru.qdev.lnotes.core.events.QDVDbManager;
 import ru.qdev.lnotes.ui.activity.notes.QDVNotesHomeActivity;
+import ru.qdev.lnotes.ui.activity.splash.SplashActivity;
 import ru.qdev.lnotes.utils.QDVFileUtils;
 import ru.qdev.lnotes.utils.QDVTempFileSendUtils;
 import src.R;
@@ -103,7 +104,7 @@ public class QDVBackupActivity extends AppCompatActivity {
 
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            finish();
+            close();
             return true;
         }
 
@@ -528,4 +529,24 @@ public class QDVBackupActivity extends AppCompatActivity {
 				break;
 		}
 	}
+
+    @Override
+    public void onBackPressed() {
+        close();
+        super.onBackPressed();
+    }
+
+    private void close() {
+        startParentActivity();
+        finish();
+    }
+
+    private void startParentActivity() {
+        Intent intent = new Intent(
+                this,
+                SplashActivity.class
+        );
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
 }
