@@ -5,12 +5,11 @@ import android.database.sqlite.SQLiteDatabase
 import androidx.annotation.AnyThread
 import com.j256.ormlite.android.apptools.OpenHelperManager
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper
-import com.j256.ormlite.support.ConnectionSource
 import com.j256.ormlite.dao.Dao
+import com.j256.ormlite.support.ConnectionSource
 import ru.qdev.lnotes.ThisApp
 import ru.qdev.lnotes.db.entity.QDVDbNote
 import java.io.File
-import java.lang.Exception
 import java.sql.SQLException
 
 
@@ -21,6 +20,7 @@ import java.sql.SQLException
 const val DATABASE_VERSION = 7
 const val DATABASE_NAME = "data.db"
 
+@Deprecated("Не используется")
 @AnyThread
 class QDVDbDatabase(context: Context?, databaseName: String?,
                     factory: SQLiteDatabase.CursorFactory?, databaseVersion: Int) :

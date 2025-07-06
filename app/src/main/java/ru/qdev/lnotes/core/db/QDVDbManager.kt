@@ -33,12 +33,12 @@ class QDVDbManager (val context: Context) {
         notesDatabase = null
     }
 
-    fun getFileDB(): File {
-        return context.getDatabasePath(NOTES_DATABASE_NAME)
-    }
-
     companion object {
         const val TAG = "DbManager"
+
+        fun getFileDB(context: Context): File {
+            return context.getDatabasePath(NOTES_DATABASE_NAME)
+        }
 
 //        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS notes (id INTEGER PRIMARY KEY, content, create_time_u INTEGER DEFAULT NULL, isready INT DEFAULT 0, folder_id INTEGER DEFAULT NULL, complete_time_u INTEGER DEFAULT NULL, update_time_u INTEGER DEFAULT NULL)")
 //        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY, label)")

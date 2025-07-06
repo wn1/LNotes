@@ -1,7 +1,5 @@
 package ru.qdev.lnotes.ui.activity.backup;
 
-import static ru.qdev.lnotes.core.events.QDVDbManager.NOTES_DATABASE_NAME;
-
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -40,7 +38,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import ru.qdev.lnotes.ThisApp;
+import ru.qdev.lnotes.core.events.QDVDbManager;
 import ru.qdev.lnotes.ui.activity.notes.QDVNotesHomeActivity;
 import ru.qdev.lnotes.utils.QDVFileUtils;
 import ru.qdev.lnotes.utils.QDVTempFileSendUtils;
@@ -50,6 +52,7 @@ import src.R;
  * Created by Vladimir Kudashov on 27.04.17.
  */
 
+@AndroidEntryPoint
 public class QDVBackupActivity extends AppCompatActivity {
 	private static final String LOG_TAG = "QDVBackupActivity";
 	private static final int SELECTFILE_RESTORE_DB_RESULT_CODE = 1;
@@ -57,7 +60,10 @@ public class QDVBackupActivity extends AppCompatActivity {
     private static final int SELECTFILE_RESTORE_DB_OLD_OS_RESULT_CODE = 3;
 	private static String passwordForBackup;
 
-	//TODO To MVP architect migration needed
+	//TODO To MVVM architect migration needed
+
+    @Inject
+    QDVDbManager dbManager;
 
     @Override
     @UiThread
@@ -231,11 +237,13 @@ public class QDVBackupActivity extends AppCompatActivity {
     }
 
     private File getFileDB() {
-        return getDatabasePath(NOTES_DATABASE_NAME);
+        return QDVDbManager.Companion.getFileDB(this);
     }
 
     @UiThread
     private boolean saveBackup (OutputStream os, boolean withoutCloseActivity, boolean withMessage) {
+        dbManager.closeNotesDb();
+
         File dbFile = getFileDB();
 
         InputStream is = null;
@@ -325,6 +333,11 @@ public class QDVBackupActivity extends AppCompatActivity {
             return;
         }
 
+        String code0 = "Code: 0";
+        String errorCode = code0;
+
+        dbManager.closeNotesDb();
+
         File dbFile = getFileDB();
         OutputStream outputStream = null;
         boolean result = false;
@@ -345,16 +358,31 @@ public class QDVBackupActivity extends AppCompatActivity {
             outputStream.close();
             outputStream = null;
             if (flag) {
-                dbFile.renameTo(backupFile);
-                result = QDVFileUtils.copyFile(decryptedFile, dbFile, false);
+                result = dbFile.renameTo(backupFile);
                 if (!result) {
-                    dbFile.delete();
-                    backupFile.renameTo(dbFile);
+                    errorCode = "Code: Rename1 file";
+                    Log.e("Restore db","rename1 file error");
                 }
+                else {
+                    result = QDVFileUtils.copyFile(decryptedFile, dbFile, false);
+                    if (!result) {
+                        dbFile.delete();
+                        result = backupFile.renameTo(dbFile);
+                        if (!result) {
+                            errorCode = "Code: Rename2 file";
+                            Log.e("Restore db", "rename2 file error");
+                        }
+                    }
+                }
+            }
+            else {
+                result = false;
+                errorCode = "Code: Copy file";
+                Log.e("Restore db","copy file error");
             }
             Log.d("Restore db","write data");
         } catch (Exception e) {
-            Log.d("Restore db","FAILED TO WRITE", e);
+            Log.e("Restore db","FAILED TO WRITE", e);
         } finally {
             try
             {
@@ -372,10 +400,18 @@ public class QDVBackupActivity extends AppCompatActivity {
             Toast.makeText(this, R.string.backup_restored, Toast.LENGTH_LONG).show();
         }
         else {
-            new AlertDialog.Builder(QDVBackupActivity.this).
-                    setMessage(R.string.password_error)
-                    .setCancelable(true)
-                    .setPositiveButton(R.string.cancel, null).show();
+            if (isCrypted && errorCode.equals(code0)) {
+                new AlertDialog.Builder(QDVBackupActivity.this).
+                        setMessage(R.string.password_error)
+                        .setCancelable(true)
+                        .setPositiveButton(R.string.cancel, null).show();
+            }
+            else {
+                new AlertDialog.Builder(QDVBackupActivity.this).
+                        setMessage(getString(R.string.error_s, errorCode))
+                        .setCancelable(true)
+                        .setPositiveButton(R.string.cancel, null).show();
+            }
             return;
         }
 

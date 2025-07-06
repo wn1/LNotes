@@ -8,7 +8,6 @@ import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import ru.qdev.lnotes.core.events.QDVDbManager
-import ru.qdev.lnotes.db.QDVDbDatabase
 import ru.qdev.lnotes.ui.activity.base.BaseActivityViewModel
 import ru.qdev.lnotes.ui.activity.notes.model.OldDbUpdateError
 import ru.qdev.lnotes.ui.view.dialog.Dialog
@@ -30,7 +29,7 @@ class QDVNotesHomeViewModel @Inject constructor(
 
     @get:AnyThread
     private val dbPath: File
-        get() = QDVDbDatabase(context).getFileDB()
+        get() = QDVDbManager.getFileDB(context)
 
     @get:AnyThread
     private val oldLNotesDbPath: File
