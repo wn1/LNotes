@@ -28,7 +28,7 @@ or
 - Use link for apk:
   https://disk.yandex.ru/d/4yIKVaZYJ6BQ0A
 
-Support Andoid 4.0 (API 14) and above
+Support Android 4.0 (API 14) and above
 
 ## Table of Contents
 
