@@ -276,12 +276,14 @@ class NoteEditScreenViewModel @Inject constructor(
         val logStr = "onInsertCheckedCharClick"
         Log.i(TAG, logStr)
         insertCheckedCharEx(context.getString(R.string.option_checked_char))
+        updateCheckedSwitch()
     }
 
     override fun onInsertUncheckedCharClick() {
         val logStr = "onInsertUncheckedCharClick"
         Log.i(TAG, logStr)
         insertCheckedCharEx(context.getString(R.string.option_unchecked_char))
+        updateCheckedSwitch()
     }
 
     private fun insertCheckedCharEx(char: String) {
@@ -343,11 +345,11 @@ class NoteEditScreenViewModel @Inject constructor(
         val unCh = context.getString(R.string.option_unchecked_char).firstOrNull()
         var isChecked = false
 
-        var pos = stPos
+        var pos = stPos - 1
         var isFound = false
-        while (pos > 0) {
+        while (pos >= 0) {
             val stCh = text.getOrNull(pos)
-            if (stCh == '\n' && pos != stPos) {
+            if (stCh == '\n') {
                 break
             }
 
