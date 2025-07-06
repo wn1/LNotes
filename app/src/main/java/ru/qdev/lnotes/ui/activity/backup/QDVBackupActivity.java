@@ -96,6 +96,12 @@ public class QDVBackupActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        dbManager.closeNotesDb();
+    }
+
+    @Override
     @UiThread
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
