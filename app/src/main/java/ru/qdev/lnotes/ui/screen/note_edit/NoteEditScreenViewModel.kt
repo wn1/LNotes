@@ -106,6 +106,7 @@ class NoteEditScreenViewModel @Inject constructor(
                 end = text.length
             )
         )
+        updateCheckedSwitch()
     }
 
     override fun onTextChange(newText: TextFieldValue) {
