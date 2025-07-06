@@ -110,10 +110,6 @@ fun NoteListScreen(viewModel: NoteListScreenViewModel = hiltViewModel()) {
             searchText = viewModel.searchText.value
         )
     }
-
-    BackHandler {
-        viewModel.onBackClick()
-    }
 }
 
 @ExperimentalMaterial3Api
@@ -134,6 +130,17 @@ private fun ScreenContent(
 
 //    val notes = notesFlow.collectAsLazyPagingItems()
     val notesColumnState = rememberLazyListState()
+
+    BackHandler {
+        if (drawerState.isOpen) {
+            scope.launch {
+                drawerState.close()
+            }
+        }
+        else {
+            listener?.onBackClick()
+        }
+    }
 
     goToFirstEvent?.getEventAndReset()?.let {
         scope.launch {
