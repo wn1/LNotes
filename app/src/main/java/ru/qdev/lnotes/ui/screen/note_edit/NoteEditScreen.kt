@@ -263,6 +263,7 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
                             .height(screenH.floatValue.toDp()),
                         textFieldModifier = Modifier
                             .fillMaxSize()
+//                            .imePadding() - не работает, почему-то
                             .focusRequester(focusRequester),
                         value = text,
                         onValueChange = {
@@ -270,7 +271,6 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
                         },
                     )
 
-                    VSpacer(dp8)
                     VSpacer(imeHInDp)
                 }
             }
