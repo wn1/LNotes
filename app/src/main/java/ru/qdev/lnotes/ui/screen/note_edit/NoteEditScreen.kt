@@ -19,12 +19,12 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
@@ -40,6 +40,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -49,6 +50,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -73,6 +75,7 @@ import ru.qdev.lnotes.ui.view.spacer.HSpacer
 import ru.qdev.lnotes.ui.view.spacer.VSpacer
 import ru.qdev.lnotes.ui.view.text.SText
 import ru.qdev.lnotes.ui.view.text.STextField
+import ru.qdev.lnotes.utils.compose.toDp
 import src.R
 
 @ExperimentalMaterial3Api
@@ -191,10 +194,16 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
             HSpacer(dp4)
         }
 
+        val screenH = remember { mutableFloatStateOf(0f) }
+        val imeHInDp = (screenH.floatValue * 0.5f).toDp()
+
         Box(modifier = Modifier
             .background(MaterialTheme.colorScheme.secondaryContainer)
             .padding(innerPadding)
             .fillMaxSize()
+            .onGloballyPositioned {
+                screenH.floatValue = it.size.height.toFloat()
+            }
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
                 Row(
@@ -248,14 +257,22 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
                 }
                 HorizontalDivider()
 
-                STextField(
-                    modifier = Modifier.weight(1f).imePadding(),
-                    textFieldModifier = Modifier.fillMaxSize().focusRequester(focusRequester),
-                    value = text,
-                    onValueChange = {
-                        listener?.onTextChange(it)
-                    },
-                )
+                Column (Modifier.weight(1f).verticalScroll(rememberScrollState())){
+                    STextField(
+                        modifier = Modifier
+                            .height(screenH.floatValue.toDp()),
+                        textFieldModifier = Modifier
+                            .fillMaxSize()
+                            .focusRequester(focusRequester),
+                        value = text,
+                        onValueChange = {
+                            listener?.onTextChange(it)
+                        },
+                    )
+
+                    VSpacer(dp8)
+                    VSpacer(imeHInDp)
+                }
             }
         }
     }
