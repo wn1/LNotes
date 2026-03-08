@@ -1039,10 +1039,10 @@ class NoteListScreenViewModel @Inject constructor(
         val logStr = "onCancelDeleteUnusedClick"
         Log.i(TAG, logStr)
 
-        cancelDeleteUnused()
+        hideDeleteUnused()
     }
 
-    private fun cancelDeleteUnused(){
+    private fun hideDeleteUnused(){
         viewTypeS.value = NotesViewType.Notes
         reloadNotesAndGoToFirst()
     }
@@ -1087,7 +1087,7 @@ class NoteListScreenViewModel @Inject constructor(
                     dao.deleteSelected()
 
                     withContext(Dispatchers.Main) {
-                        cancelDeleteUnused()
+                        hideDeleteUnused()
                     }
                 }
             }
