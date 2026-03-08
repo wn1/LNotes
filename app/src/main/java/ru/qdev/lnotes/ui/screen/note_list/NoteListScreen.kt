@@ -26,7 +26,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -89,6 +88,7 @@ import ru.qdev.lnotes.ui.theme.dp8
 import ru.qdev.lnotes.ui.theme.sp16
 import ru.qdev.lnotes.ui.view.button.MainButtonContent
 import ru.qdev.lnotes.ui.view.button.SButton
+import ru.qdev.lnotes.ui.view.checkbox.SCheckbox
 import ru.qdev.lnotes.ui.view.progress.SCircularProgressIndicator
 import ru.qdev.lnotes.ui.view.spacer.HSpacer
 import ru.qdev.lnotes.ui.view.spacer.VSpacer
@@ -566,7 +566,7 @@ private fun NotesItem(modifier: Modifier,
 
             val isSelectable = viewType == NotesViewType.PreparedForDelete
             if (isSelectable) {
-                Checkbox(
+                SCheckbox(
                     checked = note.selected == 1,
                     onCheckedChange = {
                         onCheck(note)

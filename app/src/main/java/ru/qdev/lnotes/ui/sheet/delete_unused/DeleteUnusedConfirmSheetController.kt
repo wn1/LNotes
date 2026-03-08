@@ -39,6 +39,7 @@ class DeleteUnusedConfirmSheetController(parentViewModel: BaseScreenViewModel) :
     }
 
     private fun fillStatuses() {
+        statusListS.clear()
         statusListS.addAll(
             makeDefStatuses()
         )
@@ -89,6 +90,8 @@ class DeleteUnusedConfirmSheetController(parentViewModel: BaseScreenViewModel) :
                 statuses = statuses
             )
         )
+
+        hide()
     }
 
     override fun onDaysValueChange(value: TextFieldValue) {

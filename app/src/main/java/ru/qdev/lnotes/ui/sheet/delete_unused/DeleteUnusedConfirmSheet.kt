@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalBottomSheet
@@ -37,6 +36,7 @@ import ru.qdev.lnotes.ui.theme.dp8
 import ru.qdev.lnotes.ui.theme.sp16
 import ru.qdev.lnotes.ui.view.button.MainButtonContent
 import ru.qdev.lnotes.ui.view.button.SButton
+import ru.qdev.lnotes.ui.view.checkbox.SCheckbox
 import ru.qdev.lnotes.ui.view.spacer.HSpacer
 import ru.qdev.lnotes.ui.view.spacer.VSpacer
 import ru.qdev.lnotes.ui.view.text.SText
@@ -95,13 +95,14 @@ private fun Content(listener: DeleteUnusedConfirmSheetControllerListener?,
 
             Row(modifier = Modifier
                 .heightIn(min = dp40)
+                .fillMaxWidth()
                 .clip(RoundedCornerShape(dp8))
                 .clickable {
                     listener?.onStatusClick(status)
                 },
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Checkbox(
+                SCheckbox(
                     checked = status.isSelected,
                     onCheckedChange = {
                         listener?.onStatusClick(status)

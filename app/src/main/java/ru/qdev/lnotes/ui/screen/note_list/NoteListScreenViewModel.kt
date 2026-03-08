@@ -1055,7 +1055,6 @@ class NoteListScreenViewModel @Inject constructor(
             Dialog(
                 title = "",
                 message = context.getString(R.string.delete_unused_confirm_message),
-                dialogType = DialogType.Menu,
                 buttons = listOf(),
                 menuList = listOf(
                     DialogMenuItem(
