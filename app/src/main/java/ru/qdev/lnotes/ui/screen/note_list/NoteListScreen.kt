@@ -578,6 +578,8 @@ private fun NotesItem(modifier: Modifier,
             val isSelectable = viewType == NotesViewType.PreparedForDelete
             if (isSelectable) {
                 SCheckbox(
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically),
                     checked = note.selected == 1,
                     onCheckedChange = {
                         onCheck(note)

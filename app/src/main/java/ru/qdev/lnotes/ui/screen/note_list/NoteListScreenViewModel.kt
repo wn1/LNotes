@@ -39,6 +39,7 @@ import ru.qdev.lnotes.ui.sheet.delete_unused.DeleteUnusedConfirmSheetController
 import ru.qdev.lnotes.ui.sheet.delete_unused.model.ConfirmedData
 import ru.qdev.lnotes.ui.view.dialog.Dialog
 import ru.qdev.lnotes.ui.view.dialog.DialogButton
+import ru.qdev.lnotes.ui.view.dialog.DialogButtonLayoutType
 import ru.qdev.lnotes.ui.view.dialog.DialogType
 import ru.qdev.lnotes.ui.view.menu.DialogMenuItem
 import ru.qdev.lnotes.ui.view.menu.MenuItemType
@@ -1064,7 +1065,8 @@ class NoteListScreenViewModel @Inject constructor(
                         title = context.getString(R.string.cancel),
                         id = Dialog.CANCEL_BUTTON_TAG
                     ),
-                )
+                ),
+                dialogButtonLayoutType = DialogButtonLayoutType.Vertical
             )
         )
     }
