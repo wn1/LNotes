@@ -105,4 +105,5 @@
     <string name="day_count_need">Fix the number of months</string>
     <string name="delete_cancel">Cancel deletion</string>
     <string name="delete_unused_confirm">Delete selected ones</string>
+    <string name="delete_unused_confirm_message">Attention! The operation is irreversible! The selected entries will be deleted.</string>
 </resources>

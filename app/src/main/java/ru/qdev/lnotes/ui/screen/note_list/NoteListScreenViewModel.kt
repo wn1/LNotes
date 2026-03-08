@@ -397,6 +397,10 @@ class NoteListScreenViewModel @Inject constructor(
             NOTES_SEARCH_OK_B -> {
                 notesSearch(inputText)
             }
+
+            DELETE_UNUSED_CONFIRM -> {
+                deleteUnusedDo()
+            }
         }
     }
 
@@ -1043,6 +1047,30 @@ class NoteListScreenViewModel @Inject constructor(
         val logStr = "onDeleteUnusedConfirmClick"
         Log.i(TAG, logStr)
 
+        showDialogOrMenu(
+            Dialog(
+                title = "",
+                message = context.getString(R.string.delete_unused_confirm_message),
+                dialogType = DialogType.Menu,
+                buttons = listOf(),
+                menuList = listOf(
+                    DialogMenuItem(
+                        title = context.getString(R.string.delete_unused_confirm),
+                        id = DELETE_UNUSED_CONFIRM
+                    ),
+                    DialogMenuItem(
+                        title = context.getString(R.string.cancel),
+                        id = Dialog.CANCEL_BUTTON_TAG
+                    ),
+                )
+            )
+        )
+    }
+
+    private fun deleteUnusedDo() {
+        val logStr = "onDeleteUnusedConfirmClick"
+        Log.i(TAG, logStr)
+
         if (isPrepareInWork()) {
             return
         }
@@ -1100,6 +1128,7 @@ class NoteListScreenViewModel @Inject constructor(
         private const val ADD_FOLDER_OK_B = "ADD_FOLDER_OK"
         private const val RENAME_FOLDER_OK_B = "RENAME_FOLDER_OK_B"
         private const val MENU_FOLDER_DELETE = "MENU_FOLDER_DELETE"
+        private const val DELETE_UNUSED_CONFIRM = "DELETE_UNUSED_CONFIRM"
         private const val MENU_DIVIDER = "MENU_DIVIDER"
         private const val MENU_NOTE_SET_DONE = "MENU_NOTE_SET_DONE"
         private const val MENU_NOTE_SET_IN_WORK = "MENU_NOTE_SET_IN_WORK"

@@ -104,8 +104,6 @@
     <string name="day_count_need">Исправьте количество дней</string>
     <string name="delete_cancel">Отменить удаление</string>
     <string name="delete_unused_confirm">Удалить выбранные</string>
-
-
-
+    <string name="delete_unused_confirm_message">Внимание! Операция необратима! Будут удалены выбранные записи</string>
 
 </resources>
