@@ -26,7 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -74,11 +74,14 @@ import ru.qdev.lnotes.db.entity.NotesEntry.Companion.getNotesUid
 import ru.qdev.lnotes.db.enum.StatusOfExecution
 import ru.qdev.lnotes.model.Folder
 import ru.qdev.lnotes.model.FolderType
+import ru.qdev.lnotes.model.NotesViewType
 import ru.qdev.lnotes.ui.screen.note_list.NoteListScreenListener
 import ru.qdev.lnotes.ui.screen.note_list.NoteListScreenViewModel
+import ru.qdev.lnotes.ui.sheet.base.DeleteUnusedConfirmSheet
 import ru.qdev.lnotes.ui.theme.contentHPaddingDp
 import ru.qdev.lnotes.ui.theme.dp1
 import ru.qdev.lnotes.ui.theme.dp10
+import ru.qdev.lnotes.ui.theme.dp14
 import ru.qdev.lnotes.ui.theme.dp4
 import ru.qdev.lnotes.ui.theme.dp40
 import ru.qdev.lnotes.ui.theme.dp44
@@ -86,6 +89,7 @@ import ru.qdev.lnotes.ui.theme.dp8
 import ru.qdev.lnotes.ui.theme.sp16
 import ru.qdev.lnotes.ui.view.button.MainButtonContent
 import ru.qdev.lnotes.ui.view.button.SButton
+import ru.qdev.lnotes.ui.view.progress.SCircularProgressIndicator
 import ru.qdev.lnotes.ui.view.spacer.HSpacer
 import ru.qdev.lnotes.ui.view.spacer.VSpacer
 import ru.qdev.lnotes.ui.view.text.SText
@@ -102,6 +106,7 @@ fun NoteListScreen(viewModel: NoteListScreenViewModel = hiltViewModel()) {
     BaseScreen(baseViewModel = viewModel) {
         ScreenContent(
             listener = viewModel,
+            viewType = viewModel.viewTypeS.value,
             folderList = viewModel.folderListS.value,
             selectedFolder = viewModel.selectedFolderS.value,
             notesCursor = viewModel.notesCursorS.value,
@@ -112,6 +117,8 @@ fun NoteListScreen(viewModel: NoteListScreenViewModel = hiltViewModel()) {
             folderLoading = viewModel.folderLoadingS.value,
             notesLoading = viewModel.notesLoadingS.value
         )
+
+        DeleteUnusedConfirmSheet(viewModel.deleteUnusedConfirmSheetController)
     }
 }
 
@@ -119,6 +126,7 @@ fun NoteListScreen(viewModel: NoteListScreenViewModel = hiltViewModel()) {
 @Composable
 private fun ScreenContent(
     listener: NoteListScreenListener?,
+    viewType: NotesViewType,
     folderList: List<Folder>,
     selectedFolder: Folder?,
     notesCursor: Cursor?,
@@ -317,8 +325,12 @@ private fun ScreenContent(
                                 NotesItem(
                                     modifier = Modifier.fillMaxWidth(),
                                     note = it,
+                                    viewType = viewType,
                                     onClick = {
                                         listener?.onNoteClick(it)
+                                    },
+                                    onCheck = {
+                                        listener?.onNoteSelectClick(it)
                                     },
                                     onMenuClick = {
                                         listener?.onNoteMenuClick(it)
@@ -328,40 +340,71 @@ private fun ScreenContent(
                         }
                     }
 
-                    if (searchText.isNotEmpty()) {
-                        Row(
+                    val isPrepare = viewType == NotesViewType.PreparedForDelete
+                    if (searchText.isNotEmpty() || isPrepare) {
+                        Column (
                             modifier = Modifier
                                 .onGloballyPositioned {
                                     searchViewH.value = it.size.height.toFloat()
                                 }
                                 .padding(horizontal = contentHPaddingDp, vertical = dp10),
-                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            val text = stringResource(R.string.finding_label, searchText)
-                            val countText = stringResource(R.string.finding_label_count, notesCount)
-                            Column(modifier = Modifier.weight(1f)) {
-                                SText(
-                                    modifier = Modifier,
-                                    text = text,
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis,
-                                    color = MaterialTheme.colorScheme.secondary
-                                )
-                                SText(
-                                    modifier = Modifier,
-                                    text = countText,
-                                    color = MaterialTheme.colorScheme.secondary
-                                )
+                            if (isPrepare) {
+                                Column (modifier = Modifier.fillMaxWidth()) {
+                                    SButton(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        onClick = {
+                                            listener?.onCancelDeleteUnusedClick()
+                                        },
+                                        content = MainButtonContent(stringResource(R.string.delete_cancel))
+                                    )
+                                    VSpacer(dp8)
+
+                                    SButton(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        onClick = {
+                                            listener?.onDeleteUnusedConfirmClick()
+                                        },
+                                        content = MainButtonContent(
+                                            stringResource(R.string.delete_unused_confirm)
+                                        )
+                                    )
+                                }
                             }
 
-                            HSpacer(dp10)
-                            SButton(
-                                onClick = {
-                                    listener?.onSearchCancelClick()
-                                },
-                                content = MainButtonContent(stringResource(R.string.cancel))
-                            )
+                            if (searchText.isNotEmpty()) {
+                                if (isPrepare) {
+                                    VSpacer(dp14)
+                                }
 
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    val text = stringResource(R.string.finding_label, searchText)
+                                    val countText =
+                                        stringResource(R.string.finding_label_count, notesCount)
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        SText(
+                                            modifier = Modifier,
+                                            text = text,
+                                            maxLines = 2,
+                                            overflow = TextOverflow.Ellipsis,
+                                            color = MaterialTheme.colorScheme.secondary
+                                        )
+                                        SText(
+                                            modifier = Modifier,
+                                            text = countText,
+                                            color = MaterialTheme.colorScheme.secondary
+                                        )
+                                    }
+
+                                    HSpacer(dp10)
+                                    SButton(
+                                        onClick = {
+                                            listener?.onSearchCancelClick()
+                                        },
+                                        content = MainButtonContent(stringResource(R.string.cancel))
+                                    )
+                                }
+                            }
                         }
                     }
 
@@ -377,7 +420,7 @@ private fun ScreenContent(
                 }
 
                 if (notesLoading) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    SCircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
             }
         }
@@ -474,7 +517,9 @@ fun MainDropdownMenu(modifier: Modifier,
 @Composable
 private fun NotesItem(modifier: Modifier,
                       note: NotesEntry,
+                      viewType: NotesViewType,
                       onClick: (NotesEntry) -> Unit,
+                      onCheck: (NotesEntry) -> Unit,
                       onMenuClick: (NotesEntry) -> Unit) {
     val status = note.statusOfExecution()
     val isReadyOrDone = status != StatusOfExecution.CREATED
@@ -518,6 +563,16 @@ private fun NotesItem(modifier: Modifier,
             )
 
             HSpacer(dp8)
+
+            val isSelectable = viewType == NotesViewType.PreparedForDelete
+            if (isSelectable) {
+                Checkbox(
+                    checked = note.selected == 1,
+                    onCheckedChange = {
+                        onCheck(note)
+                    }
+                )
+            }
 
             Column {
 
@@ -645,7 +700,7 @@ private fun FolderListDrawer(modifier: Modifier,
             }
 
             if (folderLoading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                SCircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
         }
     }
@@ -670,6 +725,7 @@ private fun ScreenContentPreview() {
     AppTheme {
         ScreenContent(
             listener = null,
+            viewType = NotesViewType.Notes,
             selectedFolder = folders.getOrNull(1),
             folderList = folders,
             notesCursor = null,
@@ -727,6 +783,38 @@ private fun ScreenContentPreviewSearch() {
     AppTheme {
         ScreenContent(
             listener = null,
+            viewType = NotesViewType.Notes,
+            selectedFolder = folders.getOrNull(1),
+            folderList = folders,
+            notesCursor = null,
+            notesCount = notes.size.toLong(),
+            searchText = stringResource(R.string.finding_label),
+            folderLoading = true,
+            notesLoading = true
+        )
+    }
+}
+
+@ExperimentalMaterial3Api
+@Composable
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "DefaultPreviewDark",
+    showBackground = true
+)
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    name = "DefaultPreviewLight",
+    showBackground = true
+)
+private fun ScreenContentPreviewDeleteConfirm() {
+    val context = LocalContext.current
+    val folders = Folder.makeTestList(context)
+    val notes = NotesEntry.makeTestList()
+    AppTheme {
+        ScreenContent(
+            listener = null,
+            viewType = NotesViewType.PreparedForDelete,
             selectedFolder = folders.getOrNull(1),
             folderList = folders,
             notesCursor = null,

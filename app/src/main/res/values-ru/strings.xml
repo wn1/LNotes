@@ -100,6 +100,12 @@
     <string name="statuses_select">Выберите статусы записей</string>
     <string name="month_count_for_delete_notes_title">Выбрать записи старше, месяцев:</string>
     <string name="show_and_select_records">Показать записи</string>
+    <string name="status_select_need">Нужно выбрать хотя бы один статус</string>
+    <string name="day_count_need">Исправьте количество дней</string>
+    <string name="delete_cancel">Отменить удаление</string>
+    <string name="delete_unused_confirm">Удалить выбранные</string>
+
+
 
 
 </resources>

@@ -92,6 +92,18 @@ data class Dialog(val title: String,
             )
         }
 
+        fun makeMessage(context: Context, title: String, message: String) : Dialog {
+            return Dialog(
+                title = title,
+                message = message,
+                buttons = listOf(
+                    DialogButton(
+                        title = context.getString(R.string.action_ok)
+                    )
+                ),
+            )
+        }
+
         fun makeOkCancelButtons(
             context: Context,
             onButtonId: String,

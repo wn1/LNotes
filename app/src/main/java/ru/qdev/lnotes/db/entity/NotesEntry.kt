@@ -20,6 +20,8 @@ data class NotesEntry(
     @ColumnInfo(name = "folder_id") var folderId: Long? = null,
     @ColumnInfo(name = "complete_time_u") var completeTimeU: Long? = null,
     @ColumnInfo(name = "update_time_u") var updateTimeU: Long? = null,
+    @ColumnInfo(name = "prepared") var prepared: Int = 0,
+    @ColumnInfo(name = "selected") var selected: Int = 0,
 ) {
     fun statusOfExecution() : StatusOfExecution {
         return StatusOfExecution.fromDbValue(isReady)
@@ -50,7 +52,9 @@ data class NotesEntry(
                 isReady = getInt(3),
                 folderId = getLongOrNull(4),
                 completeTimeU = getLongOrNull(5),
-                updateTimeU = getLongOrNull(6)
+                updateTimeU = getLongOrNull(6),
+                prepared = getInt(7),
+                selected = getInt(8),
             )
             return entity
         }

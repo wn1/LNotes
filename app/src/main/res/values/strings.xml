@@ -101,4 +101,8 @@
     <string name="statuses_select">Select the record statuses</string>
     <string name="month_count_for_delete_notes_title">Select entries older than months:</string>
     <string name="show_and_select_records">Show records</string>
+    <string name="status_select_need">You need to select at least one status</string>
+    <string name="day_count_need">Fix the number of months</string>
+    <string name="delete_cancel">Cancel deletion</string>
+    <string name="delete_unused_confirm">Delete selected ones</string>
 </resources>

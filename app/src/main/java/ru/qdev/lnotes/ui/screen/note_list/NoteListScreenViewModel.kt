@@ -35,6 +35,8 @@ import ru.qdev.lnotes.ui.navigation.QDVNavigator
 import ru.qdev.lnotes.ui.navigation.route.note.NoteEditScreenRoute
 import ru.qdev.lnotes.ui.screen.base.BaseScreenViewModel
 import ru.qdev.lnotes.ui.screen.note_edit.NoteEditScreenViewModel
+import ru.qdev.lnotes.ui.sheet.delete_unused.DeleteUnusedConfirmSheetController
+import ru.qdev.lnotes.ui.sheet.delete_unused.model.ConfirmedData
 import ru.qdev.lnotes.ui.view.dialog.Dialog
 import ru.qdev.lnotes.ui.view.dialog.DialogButton
 import ru.qdev.lnotes.ui.view.dialog.DialogType
@@ -53,6 +55,7 @@ interface NoteListScreenListener {
     fun onFolderLongClick(folder: Folder)
     fun onNoteClick (note: NotesEntry)
     fun onNoteMenuClick (note: NotesEntry)
+    fun onNoteSelectClick (note: NotesEntry)
     fun onNoteAddingClick()
     fun onSearchClick()
     fun onSearchCancelClick()
@@ -61,6 +64,8 @@ interface NoteListScreenListener {
     fun onMailToDeveloperClick()
     fun onBackClick()
     fun onDeleteUnusedClick()
+    fun onCancelDeleteUnusedClick()
+    fun onDeleteUnusedConfirmClick()
 }
 
 @HiltViewModel
@@ -99,26 +104,70 @@ class NoteListScreenViewModel @Inject constructor(
     private var noteMoveJob: Job? = null
     private var cursorUpdateJob: Job? = null
     private var deletePrepareJ: Job? = null
+    private var deleteUnusedJ: Job? = null
+    private var selectUnselectJ: Job? = null
     private var selectedFolderForPager: Folder? = null
 
+    val deleteUnusedConfirmSheetController = DeleteUnusedConfirmSheetController(
+        parentViewModel = this
+    ).also {
+        it.onConfirmed = {
+            onDeletePrepare(it)
+        }
+    }
+
     suspend fun getCursor() : Cursor {
+        val prepared = viewTypeS.value == NotesViewType.PreparedForDelete
+
         return withContext(Dispatchers.IO) {
+            if (prepared) {
+                return@withContext notesDao.getNotesAllCursor(
+                    searchText = textToSearch(searchTextS.value),
+                    prepared = 1
+                )
+            }
+
             when (selectedFolderForPager?.type){
                 FolderType.AllFolder -> {
-                    notesDao.getNotesAllCursor(
-                        searchText = textToSearch(searchTextS.value)
-                    )
+//                    if (prepared) {
+//                        notesDao.getNotesAllCursor(
+//                            searchText = textToSearch(searchTextS.value),
+//                            prepared = 1
+//                        )
+//                    }
+//                    else {
+                        notesDao.getNotesAllCursor(
+                            searchText = textToSearch(searchTextS.value)
+                        )
+//                    }
                 }
                 FolderType.UnknownFolder -> {
-                    notesDao.getNotesWithUnknownFolderCursor(
-                        searchText = textToSearch(searchTextS.value)
-                    )
+//                    if (prepared) {
+//                        notesDao.getNotesWithUnknownFolderCursor(
+//                            searchText = textToSearch(searchTextS.value),
+//                            prepared = 1
+//                        )
+//                    }
+//                    else {
+                        notesDao.getNotesWithUnknownFolderCursor(
+                            searchText = textToSearch(searchTextS.value)
+                        )
+//                    }
                 }
                 else -> {
-                    notesDao.getNotesByFolderIdCursor(
-                        folderId = selectedFolderForPager?.id?.toLongOrNull(),
-                        searchText = textToSearch(searchTextS.value)
-                    )
+//                    if (prepared) {
+//                        notesDao.getNotesByFolderIdCursor(
+//                            folderId = selectedFolderForPager?.id?.toLongOrNull(),
+//                            searchText = textToSearch(searchTextS.value),
+//                            prepared = 1
+//                        )
+//                    }
+//                    else {
+                        notesDao.getNotesByFolderIdCursor(
+                            folderId = selectedFolderForPager?.id?.toLongOrNull(),
+                            searchText = textToSearch(searchTextS.value)
+                        )
+//                    }
                 }
             }
         }
@@ -909,6 +958,130 @@ class NoteListScreenViewModel @Inject constructor(
         Log.i(TAG, logStr)
 
         (getActivity() as? QDVNotesHomeActivity)?.contactToDeveloper()
+    }
+
+    override fun onDeleteUnusedClick() {
+        val logStr = "onDeleteUnusedClick"
+        Log.i(TAG, logStr)
+
+        deleteUnusedConfirmSheetController.show(true)
+    }
+
+    fun isPrepareInWork() : Boolean {
+        val res = deletePrepareJ?.isActive == true || deletePrepareJ?.isActive == true
+                || selectUnselectJ?.isActive == true
+
+        if (res) {
+            Log.i(TAG, "isPrepareInWork true, return")
+        }
+
+        return res
+    }
+
+    private fun onDeletePrepare(data: ConfirmedData) {
+        if (isPrepareInWork()) {
+            return
+        }
+
+        deletePrepareJ?.cancel()
+        deletePrepareJ = viewModelScope.launch {
+            loading(notesLoadingS) {
+                withContext(Dispatchers.IO) {
+                    val dao = notesDao
+                    val olderThan = Date().time + (data.dayCount * 24 * 60 * 60 * 1000L)
+
+                    dao.resetPrepare()
+
+                    when (selectedFolderForPager?.type) {
+                        FolderType.AllFolder -> {
+                            dao.prepareAndSelectAllFolder(
+                                 statuses = data.statuses.map {
+                                    it.dbValue
+                                },
+                                olderThan = olderThan
+                            )
+                        }
+
+                        FolderType.UnknownFolder -> {
+                            dao.prepareAndSelectUnknownFolder(
+                                statuses = data.statuses.map {
+                                    it.dbValue
+                                },
+                                olderThan = olderThan
+                            )
+                        }
+
+                        else -> {
+                            dao.prepareAndSelectByFolder(
+                                folderId = selectedFolderForPager?.id?.toLongOrNull(),
+                                statuses = data.statuses.map {
+                                    it.dbValue
+                                },
+                                olderThan = olderThan
+                            )
+                        }
+                    }
+
+                    withContext(Dispatchers.Main) {
+                        viewTypeS.value = NotesViewType.PreparedForDelete
+                        reloadNotesAndGoToFirst()
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onCancelDeleteUnusedClick() {
+        val logStr = "onCancelDeleteUnusedClick"
+        Log.i(TAG, logStr)
+
+        viewTypeS.value = NotesViewType.Notes
+        reloadNotesAndGoToFirst()
+    }
+
+    override fun onDeleteUnusedConfirmClick() {
+        val logStr = "onDeleteUnusedConfirmClick"
+        Log.i(TAG, logStr)
+
+        if (isPrepareInWork()) {
+            return
+        }
+
+        deleteUnusedJ?.cancel()
+        deleteUnusedJ = viewModelScope.launch {
+            loading(notesLoadingS) {
+                withContext(Dispatchers.IO) {
+                    val dao = notesDao
+                    dao.deleteSelected()
+
+                    withContext(Dispatchers.Main) {
+                        viewTypeS.value = NotesViewType.Notes
+                        reloadNotesAndGoToFirst()
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onNoteSelectClick(note: NotesEntry) {
+        val logStr = "onNoteSelectClick"
+        Log.i(TAG, "$logStr, id: ${note.uid}")
+
+        if (isPrepareInWork()) {
+            return
+        }
+
+        selectUnselectJ?.cancel()
+        selectUnselectJ = viewModelScope.launch {
+            loading(notesLoadingS) {
+                withContext(Dispatchers.IO) {
+                    val dao = notesDao
+                    note.selected = if (note.selected == 1) 0 else 1
+                    dao.insertAll(note)
+                    reloadNotes()
+                }
+            }
+        }
     }
 
     override fun onBackClick() {

@@ -60,7 +60,7 @@ fun DeleteUnusedConfirmSheet(controller: DeleteUnusedConfirmSheetController) {
             Content(
                 listener = controller,
                 statuses = controller.statusListS,
-                monthInputValue = controller.monthInputValueS.value
+                monthInputValue = controller.daysInputValueS.value
             )
         }
     }
@@ -132,7 +132,7 @@ private fun Content(listener: DeleteUnusedConfirmSheetControllerListener?,
                 imeAction = ImeAction.Done
             ),
             onValueChange = {
-                listener?.onMonthValueChange(it)
+                listener?.onDaysValueChange(it)
             },
         )
 
