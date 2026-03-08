@@ -18,6 +18,8 @@ data class Dialog(val title: String,
                       DialogButtonLayoutType.Horizontal,
                   val dialogType: DialogType = DialogType.Dialog) {
     companion object {
+        const val CANCEL_BUTTON_TAG = "CANCEL_BUTTON_TAG"
+
         fun makeTestInputText(context: Context) : Dialog {
             return Dialog(
                 title = "Input text",
