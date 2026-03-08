@@ -105,5 +105,7 @@
     <string name="delete_cancel">Отменить удаление</string>
     <string name="delete_unused_confirm">Удалить выбранные</string>
     <string name="delete_unused_confirm_message">Внимание! Операция необратима! Будут удалены выбранные записи</string>
+    <string name="check_the_box_for_entries_to_delete">Отметьте галочкой записи для удаления</string>
+
 
 </resources>

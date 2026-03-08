@@ -59,6 +59,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight.Companion.W600
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -177,6 +178,9 @@ private fun ScreenContent(
     val searchViewH = remember { mutableStateOf(0f) }
     val animateSearchViewH = animateFloatAsState( targetValue = searchViewH.value)
 
+    val isPrepare = viewType == NotesViewType.PreparedForDelete
+    val isBottomPanelVisible = searchText.isNotEmpty() || isPrepare
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -240,7 +244,7 @@ private fun ScreenContent(
             )
         },
         floatingActionButton = {
-            val modifier = if (searchText.isNotEmpty()) {
+            val modifier = if (isBottomPanelVisible) {
                 Modifier.padding(bottom = animateSearchViewH.value.toDp().plus(10.dp))
             }
             else {
@@ -296,6 +300,16 @@ private fun ScreenContent(
                         }
                     }
 
+                    if (isPrepare) {
+                        VSpacer(dp8)
+                        SText(
+                            modifier = Modifier.padding(horizontal = contentHPaddingDp),
+                            text = stringResource(R.string.check_the_box_for_entries_to_delete),
+                            fontWeight = W600
+                        )
+                        VSpacer(dp8)
+                    }
+
                     LazyColumn(
                         modifier = Modifier
                             .weight(1f)
@@ -340,8 +354,7 @@ private fun ScreenContent(
                         }
                     }
 
-                    val isPrepare = viewType == NotesViewType.PreparedForDelete
-                    if (searchText.isNotEmpty() || isPrepare) {
+                    if (isBottomPanelVisible) {
                         Column (
                             modifier = Modifier
                                 .onGloballyPositioned {
