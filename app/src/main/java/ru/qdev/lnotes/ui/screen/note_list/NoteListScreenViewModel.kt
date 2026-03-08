@@ -19,6 +19,7 @@ import kotlinx.coroutines.withContext
 import ru.qdev.lnotes.core.QDVAppConst.NoteAddingId
 import ru.qdev.lnotes.core.events.AppEvents
 import ru.qdev.lnotes.core.pref.NotesPreferenceHelper
+import ru.qdev.lnotes.core.values.AppValues
 import ru.qdev.lnotes.db.QDVDbManager
 import ru.qdev.lnotes.db.dao.FolderDao
 import ru.qdev.lnotes.db.dao.NotesDao
@@ -27,6 +28,7 @@ import ru.qdev.lnotes.db.entity.NotesEntry
 import ru.qdev.lnotes.db.enum.StatusOfExecution
 import ru.qdev.lnotes.model.Folder
 import ru.qdev.lnotes.model.FolderType
+import ru.qdev.lnotes.model.NotesViewType
 import ru.qdev.lnotes.ui.activity.backup.QDVBackupActivity
 import ru.qdev.lnotes.ui.activity.notes.QDVNotesHomeActivity
 import ru.qdev.lnotes.ui.navigation.QDVNavigator
@@ -58,6 +60,7 @@ interface NoteListScreenListener {
     fun onAboutAppClick()
     fun onMailToDeveloperClick()
     fun onBackClick()
+    fun onDeleteUnusedClick()
 }
 
 @HiltViewModel
@@ -67,7 +70,8 @@ class NoteListScreenViewModel @Inject constructor(
     private val notesPreferenceHelper: NotesPreferenceHelper,
     private val navigator: QDVNavigator,
     private val savedStateHandle: SavedStateHandle,
-    private val appEvents: AppEvents
+    private val appEvents: AppEvents,
+    private val appValues: AppValues
 ): BaseScreenViewModel(), NoteListScreenListener {
     private lateinit var notesDao: NotesDao
     private lateinit var folderDao: FolderDao
@@ -77,9 +81,11 @@ class NoteListScreenViewModel @Inject constructor(
     val goToFirstEvent = mutableStateOf<LiveEvent<Boolean>?>(null)
     val drawerHideEvent = mutableStateOf<LiveEvent<Boolean>?>(null)
     val folderLoadingS = mutableStateOf(false)
+    val notesLoadingS = mutableStateOf(false)
     val notesCountS = mutableStateOf(0L)
-    val searchText = mutableStateOf("") //TODO сохранять searchText
+    val searchTextS = appValues.notesSearchText
     val notesCursorS = mutableStateOf<Cursor?>(null)
+    val viewTypeS = appValues.notesViewTypeS
 
     private var folderForMenu: Folder? = null
     private var noteForMenu: NotesEntry? = null
@@ -92,6 +98,7 @@ class NoteListScreenViewModel @Inject constructor(
     private var noteEditJob: Job? = null
     private var noteMoveJob: Job? = null
     private var cursorUpdateJob: Job? = null
+    private var deletePrepareJ: Job? = null
     private var selectedFolderForPager: Folder? = null
 
     suspend fun getCursor() : Cursor {
@@ -99,18 +106,18 @@ class NoteListScreenViewModel @Inject constructor(
             when (selectedFolderForPager?.type){
                 FolderType.AllFolder -> {
                     notesDao.getNotesAllCursor(
-                        searchText = textToSearch(searchText.value)
+                        searchText = textToSearch(searchTextS.value)
                     )
                 }
                 FolderType.UnknownFolder -> {
                     notesDao.getNotesWithUnknownFolderCursor(
-                        searchText = textToSearch(searchText.value)
+                        searchText = textToSearch(searchTextS.value)
                     )
                 }
                 else -> {
                     notesDao.getNotesByFolderIdCursor(
                         folderId = selectedFolderForPager?.id?.toLongOrNull(),
-                        searchText = textToSearch(searchText.value)
+                        searchText = textToSearch(searchTextS.value)
                     )
                 }
             }
@@ -870,14 +877,14 @@ class NoteListScreenViewModel @Inject constructor(
     }
 
     private fun notesSearch(inputText: String) {
-        searchText.value = inputText
+        searchTextS.value = inputText
         reloadNotesAndGoToFirst()
     }
 
     override fun onSearchCancelClick() {
         val logStr = "onSearchCancelClick"
         Log.i(TAG, logStr)
-        searchText.value = ""
+        searchTextS.value = ""
         reloadNotesAndGoToFirst()
     }
 
@@ -907,6 +914,9 @@ class NoteListScreenViewModel @Inject constructor(
     override fun onBackClick() {
         val logStr = "onBackClick"
         Log.i(TAG, logStr)
+
+        searchTextS.value = ""
+        viewTypeS.value = NotesViewType.Notes
 
         (getActivity() as? QDVNotesHomeActivity)?.moveToBackground()
     }

@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -107,7 +108,9 @@ fun NoteListScreen(viewModel: NoteListScreenViewModel = hiltViewModel()) {
             notesCount = viewModel.notesCountS.value,
             goToFirstEvent = viewModel.goToFirstEvent.value,
             drawerHideEvent = viewModel.drawerHideEvent.value,
-            searchText = viewModel.searchText.value
+            searchText = viewModel.searchTextS.value,
+            folderLoading = viewModel.folderLoadingS.value,
+            notesLoading = viewModel.notesLoadingS.value
         )
     }
 }
@@ -123,7 +126,9 @@ private fun ScreenContent(
     goToFirstEvent: LiveEvent<Boolean>? = null,
     drawerHideEvent: LiveEvent<Boolean>? = null,
     drawerShowEvent: LiveEvent<Boolean>? = null,
-    searchText: String
+    searchText: String,
+    notesLoading: Boolean,
+    folderLoading: Boolean
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -264,107 +269,115 @@ private fun ScreenContent(
                     },
                     onFolderLongClick = {
                         listener?.onFolderLongClick(it)
-                    }
+                    },
+                    folderLoading = folderLoading
                 )
             },
         ) {
-            Column (modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.secondaryContainer)
-            ){
-                val newCount = notesCount.toInt()
-                val scrollValue = remember {
-                    derivedStateOf {
-                        notesColumnState.firstVisibleItemIndex
-                    }
-                }
 
-                LazyColumn(
+            Box() {
+                Column(
                     modifier = Modifier
-                        .weight(1f)
-                        .drawVerticalScrollbar(
-                            maxValue = newCount,
-                            value = scrollValue.value
-                        ),
-                    verticalArrangement = Arrangement.spacedBy(0.dp),
-                    state = notesColumnState,
-                    contentPadding = PaddingValues(bottom = 80.dp)
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.secondaryContainer)
                 ) {
-                    items(
-                        count = notesCursor?.count ?: 0,
-                        key = { index ->
-                            notesCursor?.moveToPosition(index)
-                            notesCursor?.getNotesUid() ?: index
-                        }
-                    ) { index ->
-                        notesCursor?.moveToPosition(index)
-                        val note = notesCursor?.getNotesEntry()
-
-                        note?.let {
-                            if (index != 0) {
-                                HorizontalDivider()
-                            }
-
-                            NotesItem(
-                                modifier = Modifier.fillMaxWidth(),
-                                note = it,
-                                onClick = {
-                                    listener?.onNoteClick(it)
-                                },
-                                onMenuClick = {
-                                    listener?.onNoteMenuClick(it)
-                                }
-                            )
+                    val newCount = notesCount.toInt()
+                    val scrollValue = remember {
+                        derivedStateOf {
+                            notesColumnState.firstVisibleItemIndex
                         }
                     }
-                }
 
-                if (searchText.isNotEmpty()) {
-                    Row(
+                    LazyColumn(
                         modifier = Modifier
-                            .onGloballyPositioned {
-                                searchViewH.value = it.size.height.toFloat()
-                            }
-                            .padding(horizontal = contentHPaddingDp, vertical = dp10)
-                        ,
-                        verticalAlignment = Alignment.CenterVertically
+                            .weight(1f)
+                            .drawVerticalScrollbar(
+                                maxValue = newCount,
+                                value = scrollValue.value
+                            ),
+                        verticalArrangement = Arrangement.spacedBy(0.dp),
+                        state = notesColumnState,
+                        contentPadding = PaddingValues(bottom = 80.dp)
                     ) {
-                        val text = stringResource(R.string.finding_label, searchText)
-                        val countText = stringResource(R.string.finding_label_count, notesCount)
-                        Column (modifier = Modifier.weight(1f)) {
-                            SText(
-                                modifier = Modifier,
-                                text = text,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis,
-                                color = MaterialTheme.colorScheme.secondary
-                            )
-                            SText(
-                                modifier = Modifier,
-                                text = countText,
-                                color = MaterialTheme.colorScheme.secondary
-                            )
+                        items(
+                            count = notesCursor?.count ?: 0,
+                            key = { index ->
+                                notesCursor?.moveToPosition(index)
+                                notesCursor?.getNotesUid() ?: index
+                            }
+                        ) { index ->
+                            notesCursor?.moveToPosition(index)
+                            val note = notesCursor?.getNotesEntry()
+
+                            note?.let {
+                                if (index != 0) {
+                                    HorizontalDivider()
+                                }
+
+                                NotesItem(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    note = it,
+                                    onClick = {
+                                        listener?.onNoteClick(it)
+                                    },
+                                    onMenuClick = {
+                                        listener?.onNoteMenuClick(it)
+                                    }
+                                )
+                            }
                         }
+                    }
 
-                        HSpacer(dp10)
-                        SButton (
-                            onClick = {
-                                listener?.onSearchCancelClick()
-                            },
-                            content = MainButtonContent(stringResource(R.string.cancel))
+                    if (searchText.isNotEmpty()) {
+                        Row(
+                            modifier = Modifier
+                                .onGloballyPositioned {
+                                    searchViewH.value = it.size.height.toFloat()
+                                }
+                                .padding(horizontal = contentHPaddingDp, vertical = dp10),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            val text = stringResource(R.string.finding_label, searchText)
+                            val countText = stringResource(R.string.finding_label_count, notesCount)
+                            Column(modifier = Modifier.weight(1f)) {
+                                SText(
+                                    modifier = Modifier,
+                                    text = text,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                                SText(
+                                    modifier = Modifier,
+                                    text = countText,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                            }
+
+                            HSpacer(dp10)
+                            SButton(
+                                onClick = {
+                                    listener?.onSearchCancelClick()
+                                },
+                                content = MainButtonContent(stringResource(R.string.cancel))
+                            )
+
+                        }
+                    }
+
+                    Row(modifier = Modifier.padding(horizontal = contentHPaddingDp)) {
+                        SText(
+                            text = stringResource(
+                                R.string.fetch_count,
+                                notesCursor?.count.toString()
+                            ),
+                            color = MaterialTheme.colorScheme.secondary
                         )
-
                     }
                 }
 
-                Row(modifier = Modifier.padding(horizontal = contentHPaddingDp)) {
-                    SText(
-                        text = stringResource(
-                            R.string.fetch_count,
-                            notesCursor?.count.toString()
-                        ),
-                        color = MaterialTheme.colorScheme.secondary
-                    )
+                if (notesLoading) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
             }
         }
@@ -411,6 +424,18 @@ fun MainDropdownMenu(modifier: Modifier,
                 onClick = {
                     expandedS.value = false
                     listener?.onBackupClick()
+                }
+            )
+
+            DropdownMenuItem(
+                text = {
+                    SText(
+                        text = stringResource(R.string.clearing_outdated)
+                    )
+                },
+                onClick = {
+                    expandedS.value = false
+                    listener?.onDeleteUnusedClick()
                 }
             )
 
@@ -560,63 +585,67 @@ private fun NotesItem(modifier: Modifier,
 private fun FolderListDrawer(modifier: Modifier,
                              folders: List<Folder>,
                              selectedFolder: Folder?,
+                             folderLoading: Boolean,
                              onFolderClick: (Folder) -> Unit,
                              onFolderLongClick: (Folder) -> Unit) {
     ModalDrawerSheet {
         val vScrollState = rememberScrollState()
-        Column (modifier = Modifier
-            .drawVerticalScrollbar(vScrollState)
-            .verticalScroll(vScrollState)
-        ){
-            folders.forEach {
-                val textColor: Color
-                val isSelected = if (selectedFolder?.type == FolderType.Folder) {
-                    if (selectedFolder.id == it.id && selectedFolder.id != null) {
+        Box() {
+            Column(
+                modifier = Modifier
+                    .drawVerticalScrollbar(vScrollState)
+                    .verticalScroll(vScrollState)
+            ) {
+                folders.forEach {
+                    val textColor: Color
+                    val isSelected = if (selectedFolder?.type == FolderType.Folder) {
+                        if (selectedFolder.id == it.id && selectedFolder.id != null) {
+                            true
+                        } else {
+                            false
+                        }
+                    } else if (selectedFolder?.type == it.type) {
                         true
-                    }
-                    else {
+                    } else {
                         false
                     }
-                }
-                else if (selectedFolder?.type == it.type) {
-                    true
-                }
-                else {
-                    false
-                }
 
-                val selectedM = if (isSelected) {
-                    textColor = MaterialTheme.colorScheme.primary
-                    Modifier.background(MaterialTheme.colorScheme.primaryContainer)
-                }
-                else {
-                    textColor = MaterialTheme.colorScheme.secondary
-                    Modifier.background(MaterialTheme.colorScheme.secondaryContainer)
-                }
+                    val selectedM = if (isSelected) {
+                        textColor = MaterialTheme.colorScheme.primary
+                        Modifier.background(MaterialTheme.colorScheme.primaryContainer)
+                    } else {
+                        textColor = MaterialTheme.colorScheme.secondary
+                        Modifier.background(MaterialTheme.colorScheme.secondaryContainer)
+                    }
 
-                Row (
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .defaultMinSize(minHeight = dp40)
-                        .combinedClickable (
-                            onClick = {
-                                onFolderClick(it)
-                            },
-                            onLongClick = {
-                                onFolderLongClick(it)
-                            }
-                        )
-                        .then(selectedM)
-                        .padding(contentHPaddingDp),
-                    verticalAlignment = Alignment.CenterVertically
-                ){
-                    SText(
+                    Row(
                         modifier = Modifier
-                            .fillMaxWidth(),
-                        text = it.title,
-                        color = textColor
-                    )
+                            .fillMaxWidth()
+                            .defaultMinSize(minHeight = dp40)
+                            .combinedClickable(
+                                onClick = {
+                                    onFolderClick(it)
+                                },
+                                onLongClick = {
+                                    onFolderLongClick(it)
+                                }
+                            )
+                            .then(selectedM)
+                            .padding(contentHPaddingDp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        SText(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            text = it.title,
+                            color = textColor
+                        )
+                    }
                 }
+            }
+
+            if (folderLoading) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
         }
     }
@@ -645,7 +674,9 @@ private fun ScreenContentPreview() {
             folderList = folders,
             notesCursor = null,
             notesCount = notes.size.toLong(),
-            searchText = ""
+            searchText = "",
+            folderLoading = true,
+            notesLoading = true
         )
     }
 }
@@ -671,7 +702,8 @@ private fun ScreenContentPreviewDrawer() {
             folders = folders,
             selectedFolder = folders.getOrNull(1),
             onFolderClick = {},
-            onFolderLongClick = {}
+            onFolderLongClick = {},
+            folderLoading = true,
         )
     }
 }
@@ -699,7 +731,9 @@ private fun ScreenContentPreviewSearch() {
             folderList = folders,
             notesCursor = null,
             notesCount = notes.size.toLong(),
-            searchText = stringResource(R.string.finding_label)
+            searchText = stringResource(R.string.finding_label),
+            folderLoading = true,
+            notesLoading = true
         )
     }
 }

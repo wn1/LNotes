@@ -44,6 +44,8 @@
     <string name="copy_data_message">Copy...</string>
     <string name="action_backup">Backup...</string>
     <string name="action_backup_restore">Backup and restore</string>
+    <string name="clearing_outdated">Clearing outdated ones...</string>
+    <string name="clearing_outdated_title">Clearing outdated records</string>
     <string name="backup_title">Backup</string>
     <string name="copy_base_from_old_lnotes">LNotes database update</string>
     <string name="action_about">About</string>
@@ -96,4 +98,7 @@
     <string name="option_unchecked_char">☐</string>
     <string name="action_send_text">Share</string>
     <string name="fetch_count">Сount: %s</string>
+    <string name="statuses_select">Select the record statuses</string>
+    <string name="month_count_for_delete_notes_title">Select entries older than months:</string>
+    <string name="show_and_select_records">Show records</string>
 </resources>

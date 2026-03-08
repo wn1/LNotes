@@ -41,6 +41,8 @@
     <string name="restore_db_confirm">Восстановить заметки из разервной копии?", "Внимание! Восстановление из резервной копии удалит существующие данные!</string>
     <string name="copy_data_message">Копирование...</string>
     <string name="action_backup">Резервное копирование...</string>
+    <string name="clearing_outdated">Очистка устаревших...</string>
+    <string name="clearing_outdated_title">Очистка устаревших записей</string>
     <string name="action_backup_restore">Резервное копирование и восстановление</string>
     <string name="backup_title">Резервное копирование</string>
     <string name="copy_base_from_old_lnotes">Обновление базы данных LNotes</string>
@@ -95,4 +97,9 @@
     <string name="option_unchecked_char">☐</string>
     <string name="action_send_text">Поделиться</string>
     <string name="fetch_count">Количество: %s</string>
+    <string name="statuses_select">Выберите статусы записей</string>
+    <string name="month_count_for_delete_notes_title">Выбрать записи старше, месяцев:</string>
+    <string name="show_and_select_records">Показать записи</string>
+
+
 </resources>

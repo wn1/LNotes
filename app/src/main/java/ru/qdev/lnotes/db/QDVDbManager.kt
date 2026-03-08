@@ -29,7 +29,8 @@ class QDVDbManager (val context: Context) {
                     context,
                     NotesDatabase::class.java, NOTES_DATABASE_NAME
                 )
-                .addMigrations(MIGRATION_7_8).build()
+                .addMigrations(MIGRATION_7_8)
+                .addMigrations(MIGRATION_8_9).build()
 
             prevNotesDatabase = notesDatabase
         }
@@ -104,6 +105,21 @@ class QDVDbManager (val context: Context) {
                 updateQuery = "ALTER TABLE categoriestmp RENAME TO categories"
                 db.execSQL(updateQuery)
 
+            }
+        }
+
+
+        private val MIGRATION_8_9 = object : Migration(8, 9) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                Log.i(TAG, "MIGRATION_7_8")
+
+                var updateQuery = "ALTER TABLE notes ADD COLUMN prepared INTEGER DEFAULT 0"
+                db.execSQL(updateQuery)
+
+                updateQuery = "ALTER TABLE notes ADD COLUMN selected INTEGER DEFAULT 0"
+                db.execSQL(updateQuery)
+
+                db.execSQL("UPDATE conf SET vers = 9")
             }
         }
 

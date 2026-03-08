@@ -7,6 +7,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ru.qdev.lnotes.core.events.AppEvents
+import ru.qdev.lnotes.core.values.AppValues
 import ru.qdev.lnotes.db.QDVDbManager
 import javax.inject.Singleton
 
@@ -24,5 +25,11 @@ class ManagerModule {
     @Singleton
     fun provideAppEvents(@ApplicationContext context: Context) : AppEvents {
         return AppEvents(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAppValues(@ApplicationContext context: Context) : AppValues {
+        return AppValues(context)
     }
 }
