@@ -4,9 +4,8 @@ import androidx.annotation.AnyThread
 import com.j256.ormlite.field.DataType
 import com.j256.ormlite.field.DatabaseField
 import com.j256.ormlite.table.DatabaseTable
-import ru.qdev.lnotes.db.entity.QDVDbEntity
-import ru.qdev.lnotes.db.enum.StatusOfExecution
-import java.util.*
+import ru.qdev.lnotes.db.model.StatusOfExecution
+import java.util.Date
 
 @DatabaseTable(tableName="notes")
 @AnyThread

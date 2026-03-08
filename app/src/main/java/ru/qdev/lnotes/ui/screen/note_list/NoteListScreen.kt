@@ -71,7 +71,7 @@ import kotlinx.coroutines.launch
 import ru.qdev.lnotes.db.entity.NotesEntry
 import ru.qdev.lnotes.db.entity.NotesEntry.Companion.getNotesEntry
 import ru.qdev.lnotes.db.entity.NotesEntry.Companion.getNotesUid
-import ru.qdev.lnotes.db.enum.StatusOfExecution
+import ru.qdev.lnotes.db.model.StatusOfExecution
 import ru.qdev.lnotes.model.Folder
 import ru.qdev.lnotes.model.FolderType
 import ru.qdev.lnotes.model.NotesViewType

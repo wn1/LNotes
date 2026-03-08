@@ -6,7 +6,7 @@ import androidx.core.database.getStringOrNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import ru.qdev.lnotes.db.enum.StatusOfExecution
+import ru.qdev.lnotes.db.model.StatusOfExecution
 import java.util.Date
 
 

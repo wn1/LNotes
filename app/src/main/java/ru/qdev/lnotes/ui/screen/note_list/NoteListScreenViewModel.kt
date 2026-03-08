@@ -25,7 +25,7 @@ import ru.qdev.lnotes.db.dao.FolderDao
 import ru.qdev.lnotes.db.dao.NotesDao
 import ru.qdev.lnotes.db.entity.FolderEntry
 import ru.qdev.lnotes.db.entity.NotesEntry
-import ru.qdev.lnotes.db.enum.StatusOfExecution
+import ru.qdev.lnotes.db.model.StatusOfExecution
 import ru.qdev.lnotes.model.Folder
 import ru.qdev.lnotes.model.FolderType
 import ru.qdev.lnotes.model.NotesViewType

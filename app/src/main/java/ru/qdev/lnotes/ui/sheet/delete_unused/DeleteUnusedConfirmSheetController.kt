@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.input.TextFieldValue
-import ru.qdev.lnotes.db.enum.StatusOfExecution
+import ru.qdev.lnotes.db.model.StatusOfExecution
 import ru.qdev.lnotes.ui.screen.base.BaseScreenViewModel
 import ru.qdev.lnotes.ui.sheet.delete_unused.model.ConfirmedData
 import ru.qdev.lnotes.ui.sheet.delete_unused.model.SelectedStatus

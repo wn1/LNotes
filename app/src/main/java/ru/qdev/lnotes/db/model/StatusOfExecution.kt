@@ -1,4 +1,4 @@
-package ru.qdev.lnotes.db.enum
+package ru.qdev.lnotes.db.model
 
 import android.content.Context
 import src.R
