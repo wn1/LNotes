@@ -12,6 +12,7 @@ import androidx.navigation.toRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.qdev.lnotes.core.QDVAppConst.NoteAddingId
@@ -64,6 +65,8 @@ class NoteEditScreenViewModel @Inject constructor(
 
     val textS = mutableStateOf(TextFieldValue())
     val checkedSwitchEnabledS = mutableStateOf(false)
+
+    private var saveJ: Job? = null
 
     override fun provideContext(): Context {
         return context
@@ -129,7 +132,16 @@ class NoteEditScreenViewModel @Inject constructor(
             return
         }
 
-        viewModelScope.launch {
+        if (saveJ?.isActive == true) {
+            return
+        }
+
+        if (isClose) {
+            return
+        }
+
+        saveJ?.cancel()
+        saveJ = viewModelScope.launch {
             val newText = textS.value.text
             withContext(Dispatchers.IO) {
                 try {
