@@ -562,8 +562,6 @@ private fun NotesItem(modifier: Modifier,
                 colorFilter = ColorFilter.tint(color)
             )
 
-            HSpacer(dp8)
-
             val isSelectable = viewType == NotesViewType.PreparedForDelete
             if (isSelectable) {
                 SCheckbox(
@@ -572,6 +570,9 @@ private fun NotesItem(modifier: Modifier,
                         onCheck(note)
                     }
                 )
+            }
+            else {
+                HSpacer(dp8)
             }
 
             Column {

@@ -992,7 +992,7 @@ class NoteListScreenViewModel @Inject constructor(
             loading(notesLoadingS) {
                 withContext(Dispatchers.IO) {
                     val dao = notesDao
-                    val olderThan = Date().time + (data.dayCount * 24 * 60 * 60 * 1000L)
+                    val olderThan = Date().time - (data.dayCount * 24 * 60 * 60 * 1000L)
 
                     dao.resetPrepare()
 
@@ -1055,13 +1055,12 @@ class NoteListScreenViewModel @Inject constructor(
             Dialog(
                 title = "",
                 message = context.getString(R.string.delete_unused_confirm_message),
-                buttons = listOf(),
-                menuList = listOf(
-                    DialogMenuItem(
+                buttons = listOf(
+                    DialogButton(
                         title = context.getString(R.string.delete_unused_confirm),
                         id = DELETE_UNUSED_CONFIRM
                     ),
-                    DialogMenuItem(
+                    DialogButton(
                         title = context.getString(R.string.cancel),
                         id = Dialog.CANCEL_BUTTON_TAG
                     ),

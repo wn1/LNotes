@@ -68,13 +68,13 @@ interface NotesDao {
     @Query("UPDATE notes SET prepared = 0, selected = 0 WHERE prepared != 0 OR selected != 0")
     fun resetPrepare()
 
-    @Query("UPDATE notes SET prepared = 1, selected = 1 WHERE folder_id is :folderId AND isready IN (:statuses) AND create_time_u < :olderThan AND complete_time_u < :olderThan AND update_time_u < :olderThan")
+    @Query("UPDATE notes SET prepared = 1, selected = 1 WHERE folder_id is :folderId AND isready IN (:statuses) AND create_time_u < :olderThan AND (complete_time_u IS NULL OR complete_time_u < :olderThan) AND (update_time_u IS NULL OR update_time_u < :olderThan)")
     fun prepareAndSelectByFolder(folderId: Long?, statuses: List<Int>, olderThan: Long)
 
-    @Query("UPDATE notes SET prepared = 1, selected = 1 WHERE isready IN (:statuses) AND create_time_u < :olderThan AND complete_time_u < :olderThan AND update_time_u < :olderThan")
+    @Query("UPDATE notes SET prepared = 1, selected = 1 WHERE isready IN (:statuses) AND create_time_u < :olderThan AND (complete_time_u IS NULL OR complete_time_u < :olderThan) AND (update_time_u IS NULL OR update_time_u < :olderThan)")
     fun prepareAndSelectAllFolder(statuses: List<Int>, olderThan: Long)
 
-    @Query("UPDATE notes SET prepared = 1, selected = 1 WHERE (folder_id is NULL OR folder_id is 0) AND isready IN (:statuses) AND create_time_u < :olderThan AND complete_time_u < :olderThan AND update_time_u < :olderThan")
+    @Query("UPDATE notes SET prepared = 1, selected = 1 WHERE (folder_id is NULL OR folder_id is 0) AND isready IN (:statuses) AND create_time_u < :olderThan AND (complete_time_u IS NULL OR complete_time_u < :olderThan) AND (update_time_u IS NULL OR update_time_u < :olderThan)")
     fun prepareAndSelectUnknownFolder(statuses: List<Int>, olderThan: Long)
 
     @Query("DELETE FROM notes WHERE selected = 1 AND prepared = 1")
