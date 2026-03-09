@@ -55,12 +55,12 @@ android {
 
     productFlavors {
         free {
-            applicationId "ru.q_dev.LNote"
+            applicationId "ru.q_dev.LNotes.no_store"
             dimension "dafault"
         }
 
         plusVersion {
-            applicationId "ru.q_dev.LNoteP"
+            applicationId "ru.q_dev.LNotesP.no_store"
             dimension "dafault"
         }
     }
