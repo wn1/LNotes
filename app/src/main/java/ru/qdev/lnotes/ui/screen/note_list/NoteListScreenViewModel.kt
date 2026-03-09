@@ -335,6 +335,18 @@ class NoteListScreenViewModel @Inject constructor(
         selectedFolderS.value = folder
         reloadNotesAndGoToFirst()
         drawerHideEvent.value = LiveEvent(true)
+
+        if (viewTypeS.value == NotesViewType.PreparedForDelete) {
+            showDialogOrMenu(
+                Dialog.makeMessage(
+                    provideContext(),
+                    message = provideContext().getString(
+                        R.string.delete_mode_undo_need_message
+                    ),
+                    title = ""
+                )
+            )
+        }
     }
 
     override fun onFolderLongClick(folder: Folder) {
@@ -969,7 +981,13 @@ class NoteListScreenViewModel @Inject constructor(
         val logStr = "onDeleteUnusedClick"
         Log.i(TAG, logStr)
 
-        deleteUnusedConfirmSheetController.show(true)
+        selectedFolderForPager?.let {
+            deleteUnusedConfirmSheetController.show(
+                init = DeleteUnusedConfirmSheetController.InitData(
+                    folder = it
+                )
+            )
+        }
     }
 
     fun isPrepareInWork() : Boolean {

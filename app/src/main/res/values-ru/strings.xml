@@ -106,6 +106,8 @@
     <string name="delete_unused_confirm">Удалить выбранные</string>
     <string name="delete_unused_confirm_message">Внимание! Операция необратима! Будут удалены выбранные записи</string>
     <string name="check_the_box_for_entries_to_delete">Отметьте галочкой записи для удаления</string>
-
+    <string name="delete_mode_undo_need_message">Чтобы просмотреть записи отмените удаление</string>
+    <string name="in_all_folders">Во всех папках</string>
+    <string name="in_folder_s">В папке: %s</string>
 
 </resources>

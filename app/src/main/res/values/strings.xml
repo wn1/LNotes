@@ -107,4 +107,8 @@
     <string name="delete_unused_confirm">Delete selected ones</string>
     <string name="delete_unused_confirm_message">Attention! The operation is irreversible! The selected entries will be deleted.</string>
     <string name="check_the_box_for_entries_to_delete">Check the box for entries to delete</string>
+    <string name="delete_mode_undo_need_message">To view the recordings, cancel the deletion</string>
+    <string name="in_all_folders">In all folders</string>
+    <string name="in_folder_s">In the folder: %s</string>
+
 </resources>

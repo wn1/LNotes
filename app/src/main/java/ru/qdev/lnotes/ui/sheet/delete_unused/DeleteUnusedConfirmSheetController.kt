@@ -1,10 +1,12 @@
 package ru.qdev.lnotes.ui.sheet.delete_unused
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.input.TextFieldValue
 import ru.qdev.lnotes.db.model.StatusOfExecution
+import ru.qdev.lnotes.model.Folder
 import ru.qdev.lnotes.ui.screen.base.BaseScreenViewModel
 import ru.qdev.lnotes.ui.sheet.delete_unused.model.ConfirmedData
 import ru.qdev.lnotes.ui.sheet.delete_unused.model.SelectedStatus
@@ -20,7 +22,20 @@ interface DeleteUnusedConfirmSheetControllerListener {
 }
 
 class DeleteUnusedConfirmSheetController(parentViewModel: BaseScreenViewModel) :
-    DialogControllerBase<Boolean>(parentViewModel), DeleteUnusedConfirmSheetControllerListener {
+    DialogControllerBase<DeleteUnusedConfirmSheetController.InitData>(parentViewModel),
+    DeleteUnusedConfirmSheetControllerListener {
+    data class InitData(
+        val folder: Folder
+    ) {
+        companion object {
+            fun makeTest(context: Context): InitData {
+                return InitData(
+                    folder = Folder.makeTestList(context).first()
+                )
+            }
+        }
+    }
+
     val statusListS = mutableStateListOf<SelectedStatus>()
     val daysInputValueS = mutableStateOf(TextFieldValue())
 
@@ -28,7 +43,7 @@ class DeleteUnusedConfirmSheetController(parentViewModel: BaseScreenViewModel) :
 
     private val TAG = this.javaClass.simpleName
 
-    override fun show(init: Boolean) {
+    override fun show(init: InitData) {
         super.show(init)
         fillStatuses()
         fillDays()

@@ -20,15 +20,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight.Companion.W500
 import androidx.compose.ui.text.font.FontWeight.Companion.W600
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import ru.qdev.lnotes.model.FolderType
 import ru.qdev.lnotes.ui.sheet.delete_unused.DeleteUnusedConfirmSheetController
 import ru.qdev.lnotes.ui.sheet.delete_unused.DeleteUnusedConfirmSheetController.Companion.makeDefStatuses
 import ru.qdev.lnotes.ui.sheet.delete_unused.DeleteUnusedConfirmSheetControllerListener
 import ru.qdev.lnotes.ui.sheet.delete_unused.model.SelectedStatus
+import ru.qdev.lnotes.ui.theme.contentHPaddingDp
 import ru.qdev.lnotes.ui.theme.dp1
 import ru.qdev.lnotes.ui.theme.dp14
 import ru.qdev.lnotes.ui.theme.dp40
@@ -59,6 +62,7 @@ fun DeleteUnusedConfirmSheet(controller: DeleteUnusedConfirmSheetController) {
         ) {
             Content(
                 listener = controller,
+                init = controller.initS.value,
                 statuses = controller.statusListS,
                 monthInputValue = controller.daysInputValueS.value
             )
@@ -68,6 +72,7 @@ fun DeleteUnusedConfirmSheet(controller: DeleteUnusedConfirmSheetController) {
 
 @Composable
 private fun Content(listener: DeleteUnusedConfirmSheetControllerListener?,
+                    init: DeleteUnusedConfirmSheetController.InitData?,
                     statuses: List<SelectedStatus>,
                     monthInputValue: TextFieldValue) {
     val context = LocalContext.current
@@ -78,8 +83,23 @@ private fun Content(listener: DeleteUnusedConfirmSheetControllerListener?,
     ) {
         SText(
             text = stringResource(R.string.clearing_outdated_title),
-            fontSize = sp16
+            fontSize = sp16,
+            fontWeight = W600
         )
+        VSpacer(dp8)
+
+        val text = if (init?.folder?.type == FolderType.AllFolder)  {
+            stringResource(R.string.in_all_folders)
+        }
+        else {
+            stringResource(R.string.in_folder_s, init?.folder?.title ?: "")
+        }
+        SText(
+            modifier = Modifier.padding(horizontal = contentHPaddingDp),
+            text = text,
+            fontWeight = W500
+        )
+
         VSpacer(dp14)
 
         SText(
@@ -124,9 +144,11 @@ private fun Content(listener: DeleteUnusedConfirmSheetControllerListener?,
         VSpacer(dp8)
 
         STextField(
-            modifier = TextFieldBorderedModifier(
-                Modifier
-            ),
+            modifier = Modifier
+                .padding(horizontal = contentHPaddingDp)
+                then(TextFieldBorderedModifier(
+                    Modifier
+                )),
             value = monthInputValue,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
@@ -168,9 +190,11 @@ private fun Content(listener: DeleteUnusedConfirmSheetControllerListener?,
 @Composable
 @Preview(showBackground = true)
 private fun Preview() {
+    val context = LocalContext.current
     Content(
         listener = null,
         statuses = makeDefStatuses(),
-        monthInputValue = TextFieldValue("36")
+        monthInputValue = TextFieldValue("36"),
+        init = DeleteUnusedConfirmSheetController.InitData.makeTest(context)
     )
 }
