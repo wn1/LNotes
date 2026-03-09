@@ -109,5 +109,7 @@
     <string name="delete_mode_undo_need_message">Чтобы просмотреть записи отмените удаление</string>
     <string name="in_all_folders">Во всех папках</string>
     <string name="in_folder_s">В папке: %s</string>
+    <string name="there_are_no_records">Записи отсутствуют</string>
+
 
 </resources>

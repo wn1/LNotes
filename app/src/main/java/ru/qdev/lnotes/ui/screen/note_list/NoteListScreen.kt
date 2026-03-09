@@ -310,6 +310,17 @@ private fun ScreenContent(
                         VSpacer(dp8)
                     }
 
+                    if (notesCount == 0L) {
+                        VSpacer(dp14)
+                        SText(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            text = stringResource(R.string.there_are_no_records),
+                            color = MaterialTheme.colorScheme.tertiary,
+                            textAlign = TextAlign.Center
+                        )
+                        VSpacer(dp8)
+                    }
+
                     LazyColumn(
                         modifier = Modifier
                             .weight(1f)

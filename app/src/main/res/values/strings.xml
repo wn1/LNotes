@@ -110,5 +110,6 @@
     <string name="delete_mode_undo_need_message">To view the recordings, cancel the deletion</string>
     <string name="in_all_folders">In all folders</string>
     <string name="in_folder_s">In the folder: %s</string>
+    <string name="there_are_no_records">There are no records</string>
 
 </resources>
