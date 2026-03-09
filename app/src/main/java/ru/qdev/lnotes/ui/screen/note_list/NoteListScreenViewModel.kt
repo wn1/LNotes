@@ -324,6 +324,20 @@ class NoteListScreenViewModel @Inject constructor(
 
     override fun onSelectFolder(folder: Folder) {
         Log.i(TAG, "onSelectFolder: ${folder.id}")
+        if (viewTypeS.value == NotesViewType.PreparedForDelete) {
+            Log.i(TAG, "onSelectFolder delete prepare, ignore click")
+            showDialogOrMenu(
+                Dialog.makeMessage(
+                    provideContext(),
+                    message = provideContext().getString(
+                        R.string.delete_mode_undo_need_message
+                    ),
+                    title = ""
+                )
+            )
+            return
+        }
+
         when (folder.type) {
             FolderType.AddFolderItem -> {
                 addFolderClick()
@@ -336,17 +350,7 @@ class NoteListScreenViewModel @Inject constructor(
         reloadNotesAndGoToFirst()
         drawerHideEvent.value = LiveEvent(true)
 
-        if (viewTypeS.value == NotesViewType.PreparedForDelete) {
-            showDialogOrMenu(
-                Dialog.makeMessage(
-                    provideContext(),
-                    message = provideContext().getString(
-                        R.string.delete_mode_undo_need_message
-                    ),
-                    title = ""
-                )
-            )
-        }
+
     }
 
     override fun onFolderLongClick(folder: Folder) {

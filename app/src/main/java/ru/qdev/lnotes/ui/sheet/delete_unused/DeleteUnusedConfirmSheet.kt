@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalBottomSheet
@@ -50,7 +52,9 @@ import src.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeleteUnusedConfirmSheet(controller: DeleteUnusedConfirmSheetController) {
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
 
     val isVisible = controller.isShowedS.value
     if (isVisible) {
@@ -78,7 +82,10 @@ private fun Content(listener: DeleteUnusedConfirmSheetControllerListener?,
     val context = LocalContext.current
 
     Column(
-        modifier = Modifier.fillMaxWidth().padding(dp14),
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+            .padding(dp14),
         horizontalAlignment = Alignment.Start
     ) {
         SText(
