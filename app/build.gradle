@@ -19,8 +19,8 @@ android {
         applicationId "ru.q_dev.LNote"
         minSdkVersion 23
         targetSdkVersion 36
-        versionCode 47
-        versionName "2.4.0"
+        versionCode 48
+        versionName "2.4.1"
         vectorDrawables.useSupportLibrary = true
         setProperty("archivesBaseName", "LNotes-$versionName-b$versionCode")
     }
