@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -432,7 +433,9 @@ private fun ScreenContent(
                         }
                     }
 
-                    Row(modifier = Modifier.padding(horizontal = contentHPaddingDp)) {
+                    Row(modifier = Modifier
+                        .padding(horizontal = contentHPaddingDp)
+                        .navigationBarsPadding()) {
                         SText(
                             text = stringResource(
                                 R.string.fetch_count,
