@@ -11,14 +11,14 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 35
+    compileSdkVersion 36
 //    remove for update Android Gradle Plugin to 7.0.1.
 //    buildToolsVersion '28.0.3'
 
     defaultConfig {
         applicationId "ru.q_dev.LNote"
         minSdkVersion 23
-        targetSdkVersion 33
+        targetSdkVersion 36
         versionCode 47
         versionName "2.4.0"
         vectorDrawables.useSupportLibrary = true
