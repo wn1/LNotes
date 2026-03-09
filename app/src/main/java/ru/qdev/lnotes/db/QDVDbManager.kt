@@ -113,10 +113,10 @@ class QDVDbManager (val context: Context) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 Log.i(TAG, "MIGRATION_7_8")
 
-                var updateQuery = "ALTER TABLE notes ADD COLUMN prepared INTEGER DEFAULT 0"
+                var updateQuery = "ALTER TABLE notes ADD COLUMN prepared INTEGER NOT NULL DEFAULT 0"
                 db.execSQL(updateQuery)
 
-                updateQuery = "ALTER TABLE notes ADD COLUMN selected INTEGER DEFAULT 0"
+                updateQuery = "ALTER TABLE notes ADD COLUMN selected INTEGER NOT NULL DEFAULT 0"
                 db.execSQL(updateQuery)
 
                 db.execSQL("UPDATE conf SET vers = 9")
