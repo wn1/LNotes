@@ -954,6 +954,10 @@ class NoteListScreenViewModel @Inject constructor(
     override fun onSearchCancelClick() {
         val logStr = "onSearchCancelClick"
         Log.i(TAG, logStr)
+        cancelSearch()
+    }
+
+    private fun cancelSearch() {
         searchTextS.value = ""
         reloadNotesAndGoToFirst()
     }
@@ -1008,6 +1012,10 @@ class NoteListScreenViewModel @Inject constructor(
     private fun onDeletePrepare(data: ConfirmedData) {
         if (isPrepareInWork()) {
             return
+        }
+
+        if (searchTextS.value.isNotEmpty()) {
+            cancelSearch()
         }
 
         deletePrepareJ?.cancel()
@@ -1073,6 +1081,18 @@ class NoteListScreenViewModel @Inject constructor(
     override fun onDeleteUnusedConfirmClick() {
         val logStr = "onDeleteUnusedConfirmClick"
         Log.i(TAG, logStr)
+
+        if (searchTextS.value.isNotEmpty()) {
+            cancelSearch()
+            showDialogOrMenu(
+                Dialog.makeMessage(
+                    context = provideContext(),
+                    title = "",
+                    message = provideContext().getString(R.string.search_canceled_check_again)
+                )
+            )
+            return
+        }
 
         showDialogOrMenu(
             Dialog(

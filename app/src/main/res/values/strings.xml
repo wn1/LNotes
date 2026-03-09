@@ -111,5 +111,6 @@
     <string name="in_all_folders">In all folders</string>
     <string name="in_folder_s">In the folder: %s</string>
     <string name="there_are_no_records">There are no records</string>
+    <string name="search_canceled_check_again">The search is disabled. Please check the records and repeat the operation</string>
 
 </resources>

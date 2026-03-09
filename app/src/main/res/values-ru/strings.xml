@@ -110,6 +110,6 @@
     <string name="in_all_folders">Во всех папках</string>
     <string name="in_folder_s">В папке: %s</string>
     <string name="there_are_no_records">Записи отсутствуют</string>
-
+    <string name="search_canceled_check_again">Поиск отключён. Пожалуйста, проверьте записи и повторите операцию</string>
 
 </resources>
