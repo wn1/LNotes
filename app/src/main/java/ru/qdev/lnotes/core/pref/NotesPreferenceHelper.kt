@@ -2,11 +2,10 @@ package ru.qdev.lnotes.core.pref
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import com.google.gson.GsonBuilder
-import ru.qdev.lnotes.db.entity.QDVDbFolderOrMenuItem
 import ru.qdev.lnotes.model.Folder
 import ru.qdev.lnotes.model.FolderType
-import androidx.core.content.edit
 
 class NotesPreferenceHelper (private val context: Context) {
 
@@ -28,32 +27,9 @@ class NotesPreferenceHelper (private val context: Context) {
         return context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
     }
 
-    var selectedFolderOrMenu: QDVDbFolderOrMenuItem? = null
-        set(value) {
-            if (field == value) {
-                return
-            }
-            field = value
-            val editor = getPreferencesDrawer().edit()
-            if (value==null) {
-                editor.remove(PREFERENCE_NAME_SELECTED).apply()
-                return
-            }
-            val builder = GsonBuilder()
-            val gson = builder.create()
-            val jsonStr = gson.toJson(value)
-            editor.putString(PREFERENCE_NAME_SELECTED, jsonStr).apply()
-        }
-
     init {
         val builder = GsonBuilder()
         val gson = builder.create()
-        selectedFolderOrMenu = try {
-            gson.fromJson(getPreferencesDrawer().getString(PREFERENCE_NAME_SELECTED, ""),
-                QDVDbFolderOrMenuItem::class.java)
-        } catch (e: Exception) {
-            null
-        }
     }
 
     var isUserLearned: Boolean

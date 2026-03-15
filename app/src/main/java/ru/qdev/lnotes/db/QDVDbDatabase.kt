@@ -5,12 +5,9 @@ import android.database.sqlite.SQLiteDatabase
 import androidx.annotation.AnyThread
 import com.j256.ormlite.android.apptools.OpenHelperManager
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper
-import com.j256.ormlite.dao.Dao
 import com.j256.ormlite.support.ConnectionSource
 import ru.qdev.lnotes.ThisApp
-import ru.qdev.lnotes.db.entity.QDVDbNote
 import java.io.File
-import java.sql.SQLException
 
 
 /**
@@ -149,30 +146,6 @@ class QDVDbDatabase(context: Context?, databaseName: String?,
             i = 7
             sqLiteDatabase.execSQL("UPDATE conf SET vers = $i")
         }
-    }
-
-    @Throws(SQLException::class)
-    override fun <D : Dao<T, *>, T> getDao(clazz: Class<T>): D {
-        val dao = super.getDao(clazz) ?: throw SQLException("Exception on get notesDao")
-        @Suppress("UNCHECKED_CAST")
-        return dao as D
-    }
-
-    @Throws(SQLException::class)
-    fun <D : Dao<T, T_ID>, T, T_ID> getDao(clazz: Class<T>, clazzId: Class<T_ID>): D {
-        val dao = super.getDao(clazz) ?: throw SQLException("Exception on get notesDao")
-        @Suppress("UNCHECKED_CAST")
-        return dao as D
-    }
-
-    @Throws(SQLException::class)
-    fun <D : Dao<T, Long>, T> getDaoWithIdLong(clazz: Class<T>): D {
-        return getDao(clazz, Long::class.java)
-    }
-
-    @Throws(SQLException::class)
-    fun getNotesDao(): Dao<QDVDbNote, Int> {
-        return getDao(QDVDbNote::class.java)
     }
 
     fun getFileDB(): File {
