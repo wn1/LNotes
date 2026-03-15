@@ -1,18 +1,11 @@
 package ru.qdev.lnotes.db
 
-import android.content.Context
-import android.database.sqlite.SQLiteDatabase
-import androidx.annotation.AnyThread
-import com.j256.ormlite.android.apptools.OpenHelperManager
-import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper
-import com.j256.ormlite.support.ConnectionSource
-import ru.qdev.lnotes.ThisApp
-import java.io.File
-
 
 /**
  * Created by Vladimir Kudashov on 24.09.18.
+ * Оставил для сравнения текстов SQL
  */
+/*
 
 const val DATABASE_VERSION = 7
 const val DATABASE_NAME = "data.db"
@@ -153,3 +146,5 @@ class QDVDbDatabase(context: Context?, databaseName: String?,
     }
 
 }
+
+ */
