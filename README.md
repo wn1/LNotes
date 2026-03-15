@@ -14,6 +14,7 @@ Basic features:
 - Simple and effective search;
 - Automatic backup to your Google account if this option is enabled in your smartphone settings (for Android 6.0 and above);
 - Backup and restore. You can set a password for backup files;
+- Removing obsolete items;
 - Nice design.
 
 Older versions of Android (up to 4.3 inclusive) require write permissions to the vault for the backup feature.
