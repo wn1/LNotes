@@ -1,4 +1,4 @@
-package ru.qdev.lnotes.db
+package ru.qdev.lnotes.db.legacy
 
 
 /**
