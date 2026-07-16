@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -20,18 +21,28 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.lifecycleScope
 import com.example.reply.ui.theme.AppTheme
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import ru.qdev.lnotes.core.pref.NotesPreferenceHelper
 import ru.qdev.lnotes.ui.activity.backup.QDVBackupActivity
 import ru.qdev.lnotes.ui.activity.notes.QDVNotesHomeActivity
+import ru.qdev.lnotes.ui.screen.license.LicenseScreen
 import ru.qdev.lnotes.ui.theme.dp14
 import ru.qdev.lnotes.ui.view.button.MainButtonContent
 import ru.qdev.lnotes.ui.view.button.SButton
 import src.R
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
     private var launchTimerJob: Job? = null
+
+    @Inject
+    lateinit var preferenceHelper: NotesPreferenceHelper
+
+    private val isLicenseAcceptedState = mutableStateOf(false)
 
     @ExperimentalMaterial3Api
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,28 +58,49 @@ class SplashActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        startLaunchTimer()
+        fillLicenseState()
+
+        if (preferenceHelper.isLicenseAccepted) {
+            startLaunchTimer()
+        }
     }
 
+    private fun fillLicenseState() {
+        isLicenseAcceptedState.value = preferenceHelper.isLicenseAccepted
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun ActivityContent(){
-        Box (modifier = Modifier.fillMaxSize()) {
-            Image(
-                modifier = Modifier.align(Alignment.Center),
-                painter = painterResource(R.drawable.logo_notes_app_144dp),
-                contentDescription = stringResource(R.string.app_name)
-            )
+        if (isLicenseAcceptedState.value) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                Image(
+                    modifier = Modifier.align(Alignment.Center),
+                    painter = painterResource(R.drawable.logo_notes_app_144dp),
+                    contentDescription = stringResource(R.string.app_name)
+                )
 
-            SButton (
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .zIndex(10f)
-                    .padding(bottom = dp14)
-                    .navigationBarsPadding(),
-                onClick = {
-                    startBackupActivity()
-                },
-                content = MainButtonContent(stringResource(R.string.action_backup_restore))
+                SButton(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .zIndex(10f)
+                        .padding(bottom = dp14)
+                        .navigationBarsPadding(),
+                    onClick = {
+                        startBackupActivity()
+                    },
+                    content = MainButtonContent(stringResource(R.string.action_backup_restore))
+                )
+            }
+        }
+        else {
+            LicenseScreen(
+                onAccept = {
+                    fillLicenseState()
+                    if (preferenceHelper.isLicenseAccepted) {
+                        startLaunchTimer()
+                    }
+                }
             )
         }
     }

@@ -112,5 +112,7 @@
     <string name="in_folder_s">In the folder: %s</string>
     <string name="there_are_no_records">There are no records</string>
     <string name="search_canceled_check_again">The search is disabled. Please check the records and repeat the operation</string>
+    <string name="license_lang">en</string>
+    <string name="accept_btn">I agree</string>
 
 </resources>

@@ -3,9 +3,13 @@ package ru.qdev.lnotes.ui.screen.base
 import android.content.Context
 import android.content.ContextWrapper
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import ru.qdev.lnotes.ui.view.dialog.Dialog
@@ -13,6 +17,7 @@ import ru.qdev.lnotes.ui.view.dialog.DialogView
 
 @Composable
 fun BaseScreen(baseViewModel: BaseScreenViewModel,
+               backgroundColor: Color = Color.Transparent,
                content: @Composable () -> Unit) {
     val owner = LocalLifecycleOwner.current
     val context = LocalContext.current
@@ -30,7 +35,9 @@ fun BaseScreen(baseViewModel: BaseScreenViewModel,
         baseViewModel.bind(context.getActivity())
     }
 
-    content()
+    Column(modifier = Modifier.background(backgroundColor)) {
+        content()
+    }
 
     BaseScreenContent(
         listener = baseViewModel,

@@ -18,6 +18,7 @@ class NotesPreferenceHelper (private val context: Context) {
     private val PREFERENCE_EDIT_NOTE_ID = "PREFERENCE_EDIT_NOTE_ID"
     private val PREFERENCE_EDIT_NOTE_TEXT = "PREFERENCE_EDIT_NOTE_TEXT"
     private val PREFERENCE_EDIT_NOTE_TO_ADDING_FOLDER_ID = "PREFERENCE_EDIT_NOTE_TO_ADDING_FOLDER_ID"
+    private val PREFERENCE_LICENSE_ACCEPTED = "PREFERENCE_LICENSE_ACCEPTED"
 
     private fun getPreferencesDrawer(): SharedPreferences {
         return context.getSharedPreferences(PREFERENCES_NAME_DRAWER, Context.MODE_PRIVATE)
@@ -38,6 +39,14 @@ class NotesPreferenceHelper (private val context: Context) {
         }
         set (value) {
             getPreferencesDrawer().edit().putBoolean(PREFERENCE_NAME_USER_LEARNED, value).apply()
+        }
+
+    var isLicenseAccepted: Boolean
+        get() {
+            return getPreferencesDrawer().getBoolean(PREFERENCE_LICENSE_ACCEPTED, false)
+        }
+        set (value) {
+            getPreferencesDrawer().edit().putBoolean(PREFERENCE_LICENSE_ACCEPTED, value).apply()
         }
 
     var selectedFolderId: String?

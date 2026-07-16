@@ -16,7 +16,6 @@
 
 package com.example.reply.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -38,5 +37,15 @@ fun Black(isDark: Boolean) : Color {
     }
     else {
         Color.Black
+    }
+}
+
+@Composable
+fun secondaryTextColor() : Color {
+    return if (MaterialTheme.colorScheme.isDark()) {
+        Color.DarkGray
+    }
+    else {
+        Color.LightGray
     }
 }

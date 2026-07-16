@@ -14,8 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.semantics.Role.Companion.Button
-import androidx.compose.ui.unit.sp
 import ru.qdev.lnotes.ui.theme.dp1
 import ru.qdev.lnotes.ui.theme.dp10
 import ru.qdev.lnotes.ui.view.text.SText
@@ -27,22 +25,29 @@ import ru.qdev.lnotes.ui.view.text.SText
     disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer
 )
 
+@Composable fun SecondaryButtonColors() = ButtonDefaults.buttonColors().copy(
+    contentColor = MaterialTheme.colorScheme.secondary,
+    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+    disabledContentColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f),
+    disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer
+)
+
 @Composable
-fun MainButtonBorderStroke() =
-    BorderStroke(dp1, MaterialTheme.colorScheme.primaryContainer)
+fun MainButtonBorderStroke(contentColor: Color) =
+    BorderStroke(dp1, contentColor)
 
 @Composable
 fun MainButtonContent(
-    text: String,
-    color: Color = MaterialTheme.colorScheme.tertiary
-): @Composable RowScope.() -> Unit {
+    text: String
+): @Composable RowScope.(Color) -> Unit {
     return {
         SText(
             text = text,
-            color = color
+            color = it
         )
     }
 }
+
 
 @Composable
 fun SButton(
@@ -52,11 +57,15 @@ fun SButton(
     shape: Shape = RoundedCornerShape(dp10),
     colors: ButtonColors = MainButtonColors(),
     elevation: ButtonElevation? = ButtonDefaults.buttonElevation(),
-    border: BorderStroke? = MainButtonBorderStroke(),
+    border: @Composable (Color) -> BorderStroke? = {
+        MainButtonBorderStroke(it)
+    },
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     interactionSource: MutableInteractionSource? = null,
-    content: @Composable RowScope.() -> Unit
+    content: @Composable RowScope.(Color) -> Unit
 ) {
+    val b = border(if (enabled) colors.contentColor else colors.disabledContentColor)
+
     Button (
         onClick = onClick,
         modifier = modifier,
@@ -64,9 +73,14 @@ fun SButton(
         shape = shape,
         colors = colors,
         elevation = elevation,
-        border = border,
+        border = b,
         contentPadding = contentPadding,
         interactionSource = interactionSource,
-        content = content
+        content = {
+            content.invoke(
+                this,
+                if (enabled) colors.contentColor else colors.disabledContentColor
+            )
+        }
     )
 }
