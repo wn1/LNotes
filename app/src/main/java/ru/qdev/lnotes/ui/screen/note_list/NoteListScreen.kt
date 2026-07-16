@@ -3,7 +3,9 @@ package ru.qdev.lnotes.ui.screen.base
 import android.content.res.Configuration
 import android.database.Cursor
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.slideIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -44,6 +46,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -64,10 +67,12 @@ import androidx.compose.ui.text.font.FontWeight.Companion.W600
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.reply.ui.theme.AppTheme
 import drawVerticalScrollbar
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.qdev.lnotes.db.entity.NotesEntry
 import ru.qdev.lnotes.db.entity.NotesEntry.Companion.getNotesEntry
@@ -252,19 +257,31 @@ private fun ScreenContent(
                 Modifier
             }
 
-            FloatingActionButton (
-                modifier = modifier,
-                shape = FloatingActionButtonDefaults.largeShape,
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                onClick = {
-                    listener?.onNoteAddingClick()
-                }
+            val buttonVisible = remember { mutableStateOf(false) }
+
+            LaunchedEffect("fab_visible") {
+                delay(500)
+                buttonVisible.value = true
+            }
+
+            AnimatedVisibility(
+                visible = buttonVisible.value,
+                enter = slideIn(initialOffset = { IntOffset(x = 0, y = it.height  * 3) })
             ) {
-                Image(
-                    modifier = Modifier.size(dp44),
-                    painter = painterResource(R.drawable.ic_add_24dp),
-                    contentDescription = stringResource(R.string.add_note_button_description)
-                )
+                FloatingActionButton(
+                    modifier = modifier,
+                    shape = FloatingActionButtonDefaults.largeShape,
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    onClick = {
+                        listener?.onNoteAddingClick()
+                    }
+                ) {
+                    Image(
+                        modifier = Modifier.size(dp44),
+                        painter = painterResource(R.drawable.ic_add_24dp),
+                        contentDescription = stringResource(R.string.add_note_button_description)
+                    )
+                }
             }
         }
     ) { innerPadding ->
