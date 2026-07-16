@@ -54,13 +54,18 @@ android {
     flavorDimensions "dafault"
 
     productFlavors {
-        free {
-            applicationId "ru.q_dev.LNotes.no_store"
-            dimension "dafault"
-        }
+//        free {
+//            applicationId "ru.q_dev.LNotes.no_store"
+//            dimension "dafault"
+//        }
 
         plusVersion {
             applicationId "ru.q_dev.LNotesP.no_store"
+            dimension "dafault"
+        }
+
+        rustore {
+            applicationId "ru.q_dev.LNotesP.rustore"
             dimension "dafault"
         }
     }
