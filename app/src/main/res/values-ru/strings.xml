@@ -112,6 +112,6 @@
     <string name="there_are_no_records">Записи отсутствуют</string>
     <string name="search_canceled_check_again">Поиск отключён. Пожалуйста, проверьте записи и повторите операцию</string>
     <string name="license_lang">ru</string>
-    <string name="accept_btn">Согласен</string>
+    <string name="accept_btn">Я согласен</string>
 
 </resources>

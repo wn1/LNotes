@@ -3,6 +3,7 @@ package ru.qdev.lnotes.ui.activity.splash
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
@@ -102,6 +103,10 @@ class SplashActivity : AppCompatActivity() {
                     }
                 }
             )
+
+            BackHandler {
+                finishAffinity()
+            }
         }
     }
 
