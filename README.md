@@ -104,4 +104,4 @@ Thanks to the [habr](https://habr.com) community for the knowledge base and the 
 
 ## License
 
-[MIT En](license_en) [MIT Ru](license_ru) © Vladimir Kudashov
+[MIT En](license_en.txt) [MIT Ru](license_ru.txt) © Vladimir Kudashov
