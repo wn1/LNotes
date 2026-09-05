@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -257,21 +258,24 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
                 }
                 HorizontalDivider()
 
-                Column (Modifier.weight(1f).verticalScroll(rememberScrollState())){
+                Column (Modifier.weight(1f)){
                     STextField(
                         modifier = Modifier
                             .height(screenH.floatValue.toDp()),
                         textFieldModifier = Modifier
                             .fillMaxSize()
 //                            .imePadding() - не работает, почему-то
-                            .focusRequester(focusRequester),
+                            .focusRequester(focusRequester)
+                            .verticalScroll(rememberScrollState())
+                            .padding(bottom = imeHInDp)
+                            .imePadding(),
                         value = text,
                         onValueChange = {
                             listener?.onTextChange(it)
                         },
                     )
 
-                    VSpacer(imeHInDp)
+//                    VSpacer(imeHInDp)
                 }
             }
         }
