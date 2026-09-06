@@ -10,3 +10,10 @@ fun Float.toDp() : Dp {
         this@toDp.toDp()
     }
 }
+
+@Composable
+fun Dp.toPx() : Float {
+    return with(LocalDensity.current) {
+        this@toPx.toPx()
+    }
+}

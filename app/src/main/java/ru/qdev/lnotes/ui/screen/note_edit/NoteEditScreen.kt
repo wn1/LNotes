@@ -2,6 +2,7 @@
 
 package ru.qdev.lnotes.ui.screen.note_edit
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -14,11 +15,13 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -53,6 +56,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -91,6 +95,7 @@ fun NoteEditScreen(viewModel: NoteEditScreenViewModel = hiltViewModel()) {
     }
 }
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @ExperimentalMaterial3Api
 @Composable
 private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
@@ -98,13 +103,50 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
                           checkedSwitchEnabled: Boolean) {
     val scope = rememberCoroutineScope()
     val focusRequester = remember { FocusRequester() }
+    val scrollState = rememberScrollState()
 
     val menuExpandedS = remember { mutableStateOf(false) }
+
+    val screenH = remember { mutableFloatStateOf(0f) }
+    val imeHInDp = (screenH.floatValue * 0.5f).toDp()
+
+    val density = LocalDensity.current
 
     LaunchedEffect("focus")
     {
         focusRequester.requestFocus()
+
     }
+
+//    val isScrolledFirst = remember { mutableStateOf(false) }
+//    val isKeyboardVisible = WindowInsets.isImeVisible
+    val kbHPx = WindowInsets.ime.getBottom(density).toFloat()
+    val kbH = kbHPx.toDp()
+//    val lastKbH = remember { mutableStateOf(0.dp) }
+//    val lastKbHPx = remember { mutableStateOf(0f) }
+//
+//    LaunchedEffect(isKeyboardVisible) {
+//        if (isKeyboardVisible) {
+//            // Клавиатура появилась
+//            delay(1000.milliseconds) // небольшая задержка для анимации
+//            lastKbH.value = kbH
+//            lastKbHPx.value = kbHPx
+//            scrollState.scrollBy(kbHPx)
+//        }
+//        else {
+////            delay(1000.milliseconds) // небольшая задержка для анимации
+//            scrollState.scrollBy(-lastKbHPx.value)
+//        }
+//    }
+//
+//    if (imeHInDp.value > 0 && !isScrolledFirst.value) {
+//        isScrolledFirst.value  = true
+//        scope.launch {
+//            scrollState.scrollTo(scrollState.maxValue)
+//            scrollState.scrollBy(imeHInDp.value)
+//        }
+//    }
+
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -195,9 +237,6 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
             HSpacer(dp4)
         }
 
-        val screenH = remember { mutableFloatStateOf(0f) }
-        val imeHInDp = (screenH.floatValue * 0.5f).toDp()
-
         Box(modifier = Modifier
             .background(MaterialTheme.colorScheme.secondaryContainer)
             .padding(innerPadding)
@@ -261,21 +300,20 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
                 Column (Modifier.weight(1f)){
                     STextField(
                         modifier = Modifier
-                            .height(screenH.floatValue.toDp()),
+                            .weight(1f),
                         textFieldModifier = Modifier
                             .fillMaxSize()
-//                            .imePadding() - не работает, почему-то
                             .focusRequester(focusRequester)
-                            .verticalScroll(rememberScrollState())
-                            .padding(bottom = imeHInDp)
-                            .imePadding(),
+                            .verticalScroll(scrollState)
+                            .imePadding()
+                            .padding(bottom = imeHInDp - kbH),
                         value = text,
                         onValueChange = {
                             listener?.onTextChange(it)
                         },
                     )
 
-//                    VSpacer(imeHInDp)
+                    VSpacer(kbH)
                 }
             }
         }
