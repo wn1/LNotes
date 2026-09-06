@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
@@ -63,7 +64,7 @@ private fun ScreenContent(listener: LicenseScreenViewModelListener?,
 
             Spacer(Modifier.height(dp8))
 
-            Row(Modifier.padding(horizontal = contentHPaddingDp)) {
+            Row(Modifier.padding(horizontal = contentHPaddingDp).navigationBarsPadding()) {
                 SButton(
                     modifier = Modifier.weight(1f),
                     onClick = {
