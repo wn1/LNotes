@@ -2,6 +2,7 @@ package ru.qdev.lnotes.ui.screen.base
 
 import android.content.res.Configuration
 import android.database.Cursor
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -136,6 +137,8 @@ fun NoteListScreen(viewModel: NoteListScreenViewModel = hiltViewModel()) {
     }
 }
 
+private const val TAG = "NoteListScreen"
+
 @ExperimentalMaterial3Api
 @Composable
 private fun ScreenContent(
@@ -174,61 +177,66 @@ private fun ScreenContent(
         if (nextPrevJob.value?.isActive == true) return
 
         nextPrevJob.value = scope.launch {
-            val orgIndex = notesColumnState.firstVisibleItemIndex
-            var index = notesColumnState.firstVisibleItemIndex + 1
-            if (index > (notesCursor?.count ?: 0) - 1) index = (notesCursor?.count ?: 0) - 1
-            notesCursor?.moveToPosition(index)
-            val note = notesCursor?.getNotesEntry() ?: return@launch
+            try {
+                val orgIndex = notesColumnState.firstVisibleItemIndex
+                var index = notesColumnState.firstVisibleItemIndex + 1
+                if (index > (notesCursor?.count ?: 0) - 1) index = (notesCursor?.count ?: 0) - 1
+                notesCursor?.moveToPosition(index)
+                val note = notesCursor?.getNotesEntry() ?: return@launch
 
-            if (note.statusOfExecution().isCompleteOrNotNeed()) {
-                var iterationIndex = index - 1
-                var isFirstIteration = true
-                do {
-                    if (iterationIndex < 0) return@launch
+                if (note.statusOfExecution().isCompleteOrNotNeed()) {
+                    var iterationIndex = index - 1
+                    var isFirstIteration = true
+                    do {
+                        if (iterationIndex < 0) return@launch
 
-                    notesCursor.moveToPosition(iterationIndex)
-                    val iterationNote = notesCursor.getNotesEntry()
-                    if (isFirstIteration
-                        && iterationNote?.statusOfExecution() == StatusOfExecution.CREATED) {
+                        notesCursor.moveToPosition(iterationIndex)
+                        val iterationNote = notesCursor.getNotesEntry()
+                        if (isFirstIteration
+                            && iterationNote?.statusOfExecution() == StatusOfExecution.CREATED) {
 
-                        val sV = createdTempPosition.intValue
-                        if (sV >= 0 && sV < notesCursor.count) {
-                            scrollToIndex(sV)
+                            val sV = createdTempPosition.intValue
+                            if (sV >= 0 && sV < notesCursor.count) {
+                                scrollToIndex(sV)
+                            }
+                            else {
+                                scrollToIndex(0)
+                            }
+                            return@launch
                         }
-                        else {
-                            scrollToIndex(0)
-                        }
-                        return@launch
-                    }
-                    isFirstIteration = false
+                        isFirstIteration = false
 
-                    if (iterationNote?.statusOfExecution() == StatusOfExecution.CREATED) {
-                        val prevI = iterationIndex
+                        if (iterationNote?.statusOfExecution() == StatusOfExecution.CREATED) {
+                            val prevI = iterationIndex
 
-                        val sV = completeTempPosition.intValue
-                        if (sV > 0 && sV < notesCursor.count && sV < orgIndex && sV > iterationIndex) {
-                            scrollToIndex(sV)
+                            val sV = completeTempPosition.intValue
+                            if (sV > 0 && sV < notesCursor.count && sV < orgIndex && sV > iterationIndex) {
+                                scrollToIndex(sV)
+                                return@launch
+                            }
+
+                            scrollToIndex(prevI)
                             return@launch
                         }
 
-                        scrollToIndex(prevI)
+                        iterationIndex--
+                    } while (iterationIndex >= 0)
+
+                    val sV = completeTempPosition.intValue
+                    if (sV > 0 && sV < notesCursor.count && sV < orgIndex) {
+                        scrollToIndex(sV)
                         return@launch
                     }
 
-                    iterationIndex--
-                } while (iterationIndex >= 0)
-
-                val sV = completeTempPosition.intValue
-                if (sV > 0 && sV < notesCursor.count && sV < orgIndex) {
-                    scrollToIndex(sV)
+                    scrollToIndex(0)
+                }
+                else {
+                    scrollToIndex(0)
                     return@launch
                 }
-
-                scrollToIndex(0)
             }
-            else {
-                scrollToIndex(0)
-                return@launch
+            catch (ex: Throwable) {
+                Log.w(TAG, "onPreviousPartScrollClick ex: $ex")
             }
         }
     }
@@ -237,56 +245,58 @@ private fun ScreenContent(
         if (nextPrevJob.value?.isActive == true) return
 
         nextPrevJob.value = scope.launch {
-            val orgIndex = notesColumnState.firstVisibleItemIndex
-            var index = notesColumnState.firstVisibleItemIndex + 1
-            if (index > (notesCursor?.count ?: 0) - 1) index = (notesCursor?.count ?: 0) - 1
-            notesCursor?.moveToPosition(index)
-            val note = notesCursor?.getNotesEntry() ?: return@launch
+            try {
+                val orgIndex = notesColumnState.firstVisibleItemIndex
+                var index = notesColumnState.firstVisibleItemIndex + 1
+                if (index > (notesCursor?.count ?: 0) - 1) index = (notesCursor?.count ?: 0) - 1
+                notesCursor?.moveToPosition(index)
+                val note = notesCursor?.getNotesEntry() ?: return@launch
 
-            if (note.statusOfExecution() == StatusOfExecution.CREATED) {
-                var iterationIndex = index + 1
-                var isFirstIteration = true
-                do {
-                    notesCursor.moveToPosition(iterationIndex)
-                    val iterationNote = notesCursor.getNotesEntry()
-                    if (iterationNote?.statusOfExecution()?.isCompleteOrNotNeed() == true) {
-                        var nextI = iterationIndex - 1
-                        if (nextI < 0) nextI = 0
+                if (note.statusOfExecution() == StatusOfExecution.CREATED) {
+                    var iterationIndex = index + 1
+                    var isFirstIteration = true
+                    do {
+                        notesCursor.moveToPosition(iterationIndex)
+                        val iterationNote = notesCursor.getNotesEntry()
+                        if (iterationNote?.statusOfExecution()?.isCompleteOrNotNeed() == true) {
+                            var nextI = iterationIndex - 1
+                            if (nextI < 0) nextI = 0
 
-                        val sV = createdTempPosition.intValue
-                        if (sV > 0 && sV < notesCursor.count && orgIndex < sV) {
-                            scrollToIndex(sV)
+                            val sV = createdTempPosition.intValue
+                            if (sV > 0 && sV < notesCursor.count && orgIndex < sV) {
+                                scrollToIndex(sV)
+                                return@launch
+                            }
+
+                            scrollToIndex(nextI)
                             return@launch
                         }
 
-                        scrollToIndex(nextI)
-                        return@launch
-                    }
+                        isFirstIteration = false
+                        iterationIndex++
+                    } while (iterationIndex < notesCursor.count)
 
-                    isFirstIteration = false
-                    iterationIndex++
-                } while (iterationIndex < notesCursor.count)
-
-                scrollToIndex(notesCursor.count)
-                return@launch
-            }
-            else {
-                notesCursor.moveToPosition(orgIndex)
-                val iterationNote = notesCursor.getNotesEntry()
-                if (iterationNote?.statusOfExecution()?.isCompleteOrNotNeed() == true) {
-//                    completeTempPosition.intValue = orgIndex
                     scrollToIndex(notesCursor.count)
-                }
-                else {
-                    val sV = completeTempPosition.intValue
-                    if (sV > 0 && sV < notesCursor.count) {
-                        scrollToIndex(sV)
-                    }
-                    else {
+                    return@launch
+                } else {
+                    notesCursor.moveToPosition(orgIndex)
+                    val iterationNote = notesCursor.getNotesEntry()
+                    if (iterationNote?.statusOfExecution()?.isCompleteOrNotNeed() == true) {
+//                    completeTempPosition.intValue = orgIndex
                         scrollToIndex(notesCursor.count)
+                    } else {
+                        val sV = completeTempPosition.intValue
+                        if (sV > 0 && sV < notesCursor.count) {
+                            scrollToIndex(sV)
+                        } else {
+                            scrollToIndex(notesCursor.count)
+                        }
                     }
+                    return@launch
                 }
-                return@launch
+            }
+            catch (ex: Throwable) {
+                Log.w(TAG, "onNextPartScrollClick ex: $ex")
             }
         }
     }
