@@ -67,6 +67,7 @@ interface NoteListScreenListener {
     fun onDeleteUnusedClick()
     fun onCancelDeleteUnusedClick()
     fun onDeleteUnusedConfirmClick()
+    fun onSendNoteClick(note: NotesEntry)
 }
 
 @HiltViewModel
@@ -501,6 +502,12 @@ class NoteListScreenViewModel @Inject constructor(
                 moveNoteMenuPrepare()
             }
 
+            MENU_NOTE_SEND -> {
+                noteForMenu?.let {
+                    onSendNoteClick(it)
+                }
+            }
+
             MENU_NOTE_DELETE -> {
                 showDialogOrMenu(
                     Dialog(
@@ -872,6 +879,15 @@ class NoteListScreenViewModel @Inject constructor(
                     title = context.getString(R.string.menu_delete),
                     id = MENU_NOTE_DELETE
                 ),
+                DialogMenuItem(
+                    title = "",
+                    id = MENU_DIVIDER,
+                    type = MenuItemType.Divider
+                ),
+                DialogMenuItem(
+                    title = context.getString(R.string.action_send_text),
+                    id = MENU_NOTE_SEND
+                ),
             )
         )
 
@@ -1157,6 +1173,13 @@ class NoteListScreenViewModel @Inject constructor(
         }
     }
 
+    override fun onSendNoteClick(note: NotesEntry) {
+        Log.i(TAG, "onSendNoteClick")
+        (getActivity() as? QDVNotesHomeActivity)?.sendText(
+            note.content ?: ""
+        )
+    }
+
     override fun onBackClick() {
         val logStr = "onBackClick"
         Log.i(TAG, logStr)
@@ -1180,6 +1203,7 @@ class NoteListScreenViewModel @Inject constructor(
         private const val MENU_NOTE_SET_NO_NEEDED = "MENU_NOTE_SET_NO_NEEDED"
         private const val MENU_NOTE_MOVE = "MENU_NOTE_MOVE"
         private const val MENU_NOTE_DELETE = "MENU_NOTE_DELETE"
+        private const val MENU_NOTE_SEND = "MENU_NOTE_SEND"
         private const val MENU_TEST1 = "MENU_TEST1"
         private const val NOTE_DELETE_CONFIRM_B = "NOTE_DELETE_CONFIRM_B"
         private const val FOLDER_DELETE_CONFIRM_B = "FOLDER_DELETE_CONFIRM_B"
