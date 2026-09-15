@@ -49,6 +49,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -268,9 +269,16 @@ private fun ScreenContent(
     val nextPartDisabled = remember { mutableStateOf(true) }
 
     val firstVisibleIndex = remember { mutableIntStateOf(0) }
+//    val lastVisibleIndex = remember { mutableIntStateOf(0) }
+
+    val lastVisibleIndex by remember {
+        derivedStateOf {
+            notesColumnState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+        }
+    }
 
     prevPartDisabled.value = firstVisibleIndex.intValue == 0
-    nextPartDisabled.value = firstVisibleIndex.intValue >= (notesCursor?.count ?: 0)
+    nextPartDisabled.value = lastVisibleIndex >= (notesCursor?.count ?: 1) - 1
 
     LaunchedEffect(notesColumnState) {
         snapshotFlow { notesColumnState.firstVisibleItemIndex }
