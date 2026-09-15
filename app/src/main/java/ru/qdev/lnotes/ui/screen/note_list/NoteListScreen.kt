@@ -76,6 +76,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.reply.ui.theme.AppTheme
 import drawVerticalScrollbar
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.qdev.lnotes.db.entity.NotesEntry
@@ -161,6 +162,7 @@ private fun ScreenContent(
     val createdTempPosition = remember { mutableIntStateOf(-1) }
     val completeTempPosition = remember { mutableIntStateOf(-1) }
     val isScrollingToPosition = remember { mutableStateOf(false) }
+    val nextPrevJob = remember { mutableStateOf<Job?>(null) }
 
     suspend fun scrollToIndex(index: Int) {
         isScrollingToPosition.value = true
@@ -169,7 +171,9 @@ private fun ScreenContent(
     }
 
     fun onPreviousPartScrollClick() {
-        scope.launch {
+        if (nextPrevJob.value?.isActive == true) return
+
+        nextPrevJob.value = scope.launch {
             val orgIndex = notesColumnState.firstVisibleItemIndex
             var index = notesColumnState.firstVisibleItemIndex + 1
             if (index > (notesCursor?.count ?: 0) - 1) index = (notesCursor?.count ?: 0) - 1
@@ -230,7 +234,9 @@ private fun ScreenContent(
     }
 
     fun onNextPartScrollClick() {
-        scope.launch {
+        if (nextPrevJob.value?.isActive == true) return
+
+        nextPrevJob.value = scope.launch {
             val orgIndex = notesColumnState.firstVisibleItemIndex
             var index = notesColumnState.firstVisibleItemIndex + 1
             if (index > (notesCursor?.count ?: 0) - 1) index = (notesCursor?.count ?: 0) - 1
