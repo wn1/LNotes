@@ -160,9 +160,12 @@ private fun ScreenContent(
 
     val createdTempPosition = remember { mutableIntStateOf(-1) }
     val completeTempPosition = remember { mutableIntStateOf(-1) }
+    val isScrollingToPosition = remember { mutableStateOf(false) }
 
     suspend fun scrollToIndex(index: Int) {
+        isScrollingToPosition.value = true
         notesColumnState.animateScrollToItem(index)
+        isScrollingToPosition.value = false
     }
 
     fun onPreviousPartScrollClick() {
@@ -184,21 +187,26 @@ private fun ScreenContent(
                     if (isFirstIteration
                         && iterationNote?.statusOfExecution() == StatusOfExecution.CREATED) {
 
-                        val sV = createdTempPosition.intValue + 1
+                        val sV = createdTempPosition.intValue
                         if (sV >= 0 && sV < notesCursor.count) {
                             scrollToIndex(sV)
                         }
                         else {
-                            scrollToIndex(iterationIndex)
+                            scrollToIndex(0)
                         }
                         return@launch
                     }
                     isFirstIteration = false
 
                     if (iterationNote?.statusOfExecution() == StatusOfExecution.CREATED) {
-                        var prevI = iterationIndex
-//                        if (prevI < 0) prevI = 0
-                        completeTempPosition.intValue = orgIndex
+                        val prevI = iterationIndex
+
+                        val sV = completeTempPosition.intValue
+                        if (sV > 0 && sV < notesCursor.count && sV < orgIndex && sV > iterationIndex) {
+                            scrollToIndex(sV)
+                            return@launch
+                        }
+
                         scrollToIndex(prevI)
                         return@launch
                     }
@@ -206,7 +214,12 @@ private fun ScreenContent(
                     iterationIndex--
                 } while (iterationIndex >= 0)
 
-                createdTempPosition.intValue = orgIndex
+                val sV = completeTempPosition.intValue
+                if (sV > 0 && sV < notesCursor.count && sV < orgIndex) {
+                    scrollToIndex(sV)
+                    return@launch
+                }
+
                 scrollToIndex(0)
             }
             else {
@@ -226,6 +239,7 @@ private fun ScreenContent(
 
             if (note.statusOfExecution() == StatusOfExecution.CREATED) {
                 var iterationIndex = index + 1
+                var isFirstIteration = true
                 do {
                     notesCursor.moveToPosition(iterationIndex)
                     val iterationNote = notesCursor.getNotesEntry()
@@ -233,25 +247,32 @@ private fun ScreenContent(
                         var nextI = iterationIndex - 1
                         if (nextI < 0) nextI = 0
 
-                        if (orgIndex > 0) {
-                            createdTempPosition.intValue = orgIndex
+                        val sV = createdTempPosition.intValue
+                        if (sV > 0 && sV < notesCursor.count && orgIndex < sV) {
+                            scrollToIndex(sV)
+                            return@launch
                         }
+
                         scrollToIndex(nextI)
                         return@launch
                     }
 
+                    isFirstIteration = false
                     iterationIndex++
                 } while (iterationIndex < notesCursor.count)
+
+                scrollToIndex(notesCursor.count)
+                return@launch
             }
             else {
                 notesCursor.moveToPosition(orgIndex)
                 val iterationNote = notesCursor.getNotesEntry()
                 if (iterationNote?.statusOfExecution()?.isCompleteOrNotNeed() == true) {
-                    completeTempPosition.intValue = orgIndex
+//                    completeTempPosition.intValue = orgIndex
                     scrollToIndex(notesCursor.count)
                 }
                 else {
-                    val sV = completeTempPosition.intValue + 1
+                    val sV = completeTempPosition.intValue
                     if (sV > 0 && sV < notesCursor.count) {
                         scrollToIndex(sV)
                     }
@@ -318,6 +339,9 @@ private fun ScreenContent(
         }
     }
 
+    val notesCursorState = remember { mutableStateOf(notesCursor) }
+    notesCursorState.value = notesCursor
+
     prevPartDisabled.value = firstVisibleIndex.intValue == 0
     nextPartDisabled.value = lastVisibleIndex >= (notesCursor?.count ?: 1) - 1
 
@@ -325,6 +349,27 @@ private fun ScreenContent(
         snapshotFlow { notesColumnState.firstVisibleItemIndex }
             .collect {
                 firstVisibleIndex.intValue = it
+
+                val notesCursor = notesCursorState.value
+
+                if (it > 0 && !isScrollingToPosition.value) {
+                    val tmpI = it + 1
+                    if (tmpI < (notesCursor?.count ?: 0)) {
+                        notesCursor?.moveToPosition(it)
+                        val note = notesCursor?.getNotesEntry()
+                        notesCursor?.moveToPosition(tmpI)
+                        val nextNote = notesCursor?.getNotesEntry()
+
+                        if (note?.statusOfExecution()?.isCompleteOrNotNeed() == false &&
+                            nextNote?.statusOfExecution()?.isCompleteOrNotNeed() == false) {
+                            createdTempPosition.intValue = it
+                        }
+                        else if (note?.statusOfExecution()?.isCompleteOrNotNeed() == true &&
+                            nextNote?.statusOfExecution()?.isCompleteOrNotNeed() == true) {
+                            completeTempPosition.intValue = it
+                        }
+                    }
+                }
             }
     }
 
