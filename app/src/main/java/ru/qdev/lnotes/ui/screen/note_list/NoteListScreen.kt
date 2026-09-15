@@ -49,9 +49,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -158,7 +160,8 @@ private fun ScreenContent(
 
     fun onPreviousPartScrollClick() {
         scope.launch {
-            val index = notesColumnState.firstVisibleItemIndex
+            var index = notesColumnState.firstVisibleItemIndex - 1
+            if (index > (notesCursor?.count ?: 0)) index = (notesCursor?.count ?: 0)
             notesCursor?.moveToPosition(index)
             val note = notesCursor?.getNotesEntry() ?: return@launch
 
@@ -166,6 +169,8 @@ private fun ScreenContent(
                 var iterationIndex = index - 1
                 var isFirstIteration = true
                 do {
+                    if (iterationIndex < 0) return@launch
+
                     notesCursor.moveToPosition(iterationIndex)
                     val iterationNote = notesCursor.getNotesEntry()
                     if (isFirstIteration
@@ -175,8 +180,17 @@ private fun ScreenContent(
                     }
                     isFirstIteration = false
 
+                    if (iterationNote?.statusOfExecution() == StatusOfExecution.CREATED) {
+                        var prevI = iterationIndex
+//                        if (prevI < 0) prevI = 0
+                        scrollToIndex(prevI)
+                        return@launch
+                    }
+
                     iterationIndex--
                 } while (iterationIndex >= 0)
+
+                scrollToIndex(0)
             }
             else {
                 scrollToIndex(0)
@@ -187,7 +201,8 @@ private fun ScreenContent(
 
     fun onNextPartScrollClick() {
         scope.launch {
-            val index = notesColumnState.firstVisibleItemIndex
+            var index = notesColumnState.firstVisibleItemIndex + 1
+            if (index > (notesCursor?.count ?: 0)) index = (notesCursor?.count ?: 0)
             notesCursor?.moveToPosition(index)
             val note = notesCursor?.getNotesEntry() ?: return@launch
 
@@ -197,7 +212,9 @@ private fun ScreenContent(
                     notesCursor.moveToPosition(iterationIndex)
                     val iterationNote = notesCursor.getNotesEntry()
                     if (iterationNote?.statusOfExecution()?.isCompleteOrNotNeed() == true) {
-                        scrollToIndex(iterationIndex)
+                        var nextI = iterationIndex - 1
+                        if (nextI < 0) nextI = 0
+                        scrollToIndex(nextI)
                         return@launch
                     }
 
@@ -247,8 +264,20 @@ private fun ScreenContent(
     val isPrepare = viewType == NotesViewType.PreparedForDelete
     val isBottomPanelVisible = searchText.isNotEmpty() || isPrepare
 
-    val prevPartDisabled = notesColumnState.firstVisibleItemIndex == 0
-    val nextPartDisabled = notesColumnState.firstVisibleItemIndex >= (notesCursor?.count ?: 0)
+    val prevPartDisabled = remember { mutableStateOf(true) }
+    val nextPartDisabled = remember { mutableStateOf(true) }
+
+    val firstVisibleIndex = remember { mutableIntStateOf(0) }
+
+    prevPartDisabled.value = firstVisibleIndex.intValue == 0
+    nextPartDisabled.value = firstVisibleIndex.intValue >= (notesCursor?.count ?: 0)
+
+    LaunchedEffect(notesColumnState) {
+        snapshotFlow { notesColumnState.firstVisibleItemIndex }
+            .collect {
+                firstVisibleIndex.intValue = it
+            }
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -360,7 +389,7 @@ private fun ScreenContent(
                             modifier = Modifier
                                 .size(40.dp)
                                 .thenIf(
-                                    prevPartDisabled,
+                                    prevPartDisabled.value,
                                     disabledM
                                 ),
                             shape = FloatingActionButtonDefaults.largeShape,
@@ -383,7 +412,7 @@ private fun ScreenContent(
                             modifier = Modifier
                                 .size(40.dp)
                                 .thenIf(
-                                    nextPartDisabled,
+                                    nextPartDisabled.value,
                                     disabledM
                                 ),
                             shape = FloatingActionButtonDefaults.largeShape,
