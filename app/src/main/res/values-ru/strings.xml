@@ -97,6 +97,7 @@
     <string name="option_unchecked_char">☐</string>
     <string name="action_send_text">Поделиться</string>
     <string name="fetch_count">Количество: %s</string>
+    <string name="record_s">Запись: %s</string>
     <string name="statuses_select">Выберите статусы записей</string>
     <string name="month_count_for_delete_notes_title">Выбрать записи старше, дней:</string>
     <string name="show_and_select_records">Показать записи</string>

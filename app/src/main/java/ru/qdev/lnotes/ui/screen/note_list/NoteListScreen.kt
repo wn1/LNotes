@@ -162,7 +162,7 @@ private fun ScreenContent(
     fun onPreviousPartScrollClick() {
         scope.launch {
             var index = notesColumnState.firstVisibleItemIndex - 1
-            if (index > (notesCursor?.count ?: 0)) index = (notesCursor?.count ?: 0)
+            if (index > (notesCursor?.count ?: 0) - 1) index = (notesCursor?.count ?: 0) - 1
             notesCursor?.moveToPosition(index)
             val note = notesCursor?.getNotesEntry() ?: return@launch
 
@@ -203,7 +203,7 @@ private fun ScreenContent(
     fun onNextPartScrollClick() {
         scope.launch {
             var index = notesColumnState.firstVisibleItemIndex + 1
-            if (index > (notesCursor?.count ?: 0)) index = (notesCursor?.count ?: 0)
+            if (index > (notesCursor?.count ?: 0) - 1) index = (notesCursor?.count ?: 0) - 1
             notesCursor?.moveToPosition(index)
             val note = notesCursor?.getNotesEntry() ?: return@launch
 
@@ -613,6 +613,9 @@ private fun ScreenContent(
                             text = stringResource(
                                 R.string.fetch_count,
                                 notesCursor?.count.toString()
+                            ) + ", " + stringResource(
+                                R.string.record_s,
+                                (firstVisibleIndex.intValue + 1).toString()
                             ),
                             color = MaterialTheme.colorScheme.secondary
                         )

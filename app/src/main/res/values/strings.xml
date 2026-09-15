@@ -98,6 +98,7 @@
     <string name="option_unchecked_char">☐</string>
     <string name="action_send_text">Share</string>
     <string name="fetch_count">Сount: %s</string>
+    <string name="record_s">Record: %s</string>
     <string name="statuses_select">Select the record statuses</string>
     <string name="month_count_for_delete_notes_title">Select entries older than months:</string>
     <string name="show_and_select_records">Show records</string>
