@@ -18,6 +18,10 @@ enum class StatusOfExecution (val dbValue: Int) {
         )
     }
 
+    fun isCompleteOrNotNeed() : Boolean {
+        return this == COMPLETED || this == NOT_NEED
+    }
+
     companion object {
         fun fromDbValue(v: Int) : StatusOfExecution {
             return entries.firstOrNull { it.dbValue == v } ?: CREATED

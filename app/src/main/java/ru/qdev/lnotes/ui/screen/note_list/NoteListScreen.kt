@@ -100,6 +100,7 @@ import ru.qdev.lnotes.ui.view.progress.SCircularProgressIndicator
 import ru.qdev.lnotes.ui.view.spacer.HSpacer
 import ru.qdev.lnotes.ui.view.spacer.VSpacer
 import ru.qdev.lnotes.ui.view.text.SText
+import ru.qdev.lnotes.utils.compose.thenIf
 import ru.qdev.lnotes.utils.compose.toDp
 import ru.qdev.lnotes.utils.live_data.LiveEvent
 import src.R
@@ -151,6 +152,65 @@ private fun ScreenContent(
 //    val notes = notesFlow.collectAsLazyPagingItems()
     val notesColumnState = rememberLazyListState()
 
+    suspend fun scrollToIndex(index: Int) {
+        notesColumnState.animateScrollToItem(index)
+    }
+
+    fun onPreviousPartScrollClick() {
+        scope.launch {
+            val index = notesColumnState.firstVisibleItemIndex
+            notesCursor?.moveToPosition(index)
+            val note = notesCursor?.getNotesEntry() ?: return@launch
+
+            if (note.statusOfExecution().isCompleteOrNotNeed()) {
+                var iterationIndex = index - 1
+                var isFirstIteration = true
+                do {
+                    notesCursor.moveToPosition(iterationIndex)
+                    val iterationNote = notesCursor.getNotesEntry()
+                    if (isFirstIteration
+                        && iterationNote?.statusOfExecution() == StatusOfExecution.CREATED) {
+                        scrollToIndex(iterationIndex)
+                        return@launch
+                    }
+                    isFirstIteration = false
+
+                    iterationIndex--
+                } while (iterationIndex >= 0)
+            }
+            else {
+                scrollToIndex(0)
+                return@launch
+            }
+        }
+    }
+
+    fun onNextPartScrollClick() {
+        scope.launch {
+            val index = notesColumnState.firstVisibleItemIndex
+            notesCursor?.moveToPosition(index)
+            val note = notesCursor?.getNotesEntry() ?: return@launch
+
+            if (note.statusOfExecution() == StatusOfExecution.CREATED) {
+                var iterationIndex = index + 1
+                do {
+                    notesCursor.moveToPosition(iterationIndex)
+                    val iterationNote = notesCursor.getNotesEntry()
+                    if (iterationNote?.statusOfExecution()?.isCompleteOrNotNeed() == true) {
+                        scrollToIndex(iterationIndex)
+                        return@launch
+                    }
+
+                    iterationIndex++
+                } while (iterationIndex < notesCursor.count)
+            }
+            else {
+                scrollToIndex(notesCursor.count)
+                return@launch
+            }
+        }
+    }
+
     BackHandler {
         if (drawerState.isOpen) {
             scope.launch {
@@ -186,6 +246,9 @@ private fun ScreenContent(
 
     val isPrepare = viewType == NotesViewType.PreparedForDelete
     val isBottomPanelVisible = searchText.isNotEmpty() || isPrepare
+
+    val prevPartDisabled = notesColumnState.firstVisibleItemIndex == 0
+    val nextPartDisabled = notesColumnState.firstVisibleItemIndex >= (notesCursor?.count ?: 0)
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -264,23 +327,79 @@ private fun ScreenContent(
                 buttonVisible.value = true
             }
 
+            val disabledM = Modifier.alpha(0.5f)
+
             AnimatedVisibility(
                 visible = buttonVisible.value,
                 enter = slideIn(initialOffset = { IntOffset(x = 0, y = it.height  * 3) })
             ) {
-                FloatingActionButton(
+                Row (
                     modifier = modifier,
-                    shape = FloatingActionButtonDefaults.largeShape,
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    onClick = {
-                        listener?.onNoteAddingClick()
-                    }
+                    verticalAlignment = Alignment.Bottom
                 ) {
-                    Image(
-                        modifier = Modifier.size(dp44),
-                        painter = painterResource(R.drawable.ic_add_24dp),
-                        contentDescription = stringResource(R.string.add_note_button_description)
-                    )
+
+                    FloatingActionButton(
+                        modifier = Modifier,
+                        shape = FloatingActionButtonDefaults.largeShape,
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        onClick = {
+                            listener?.onNoteAddingClick()
+                        }
+                    ) {
+                        Image(
+                            modifier = Modifier.size(dp44),
+                            painter = painterResource(R.drawable.ic_add_24dp),
+                            contentDescription = stringResource(R.string.add_note_button_description)
+                        )
+                    }
+
+                    HSpacer(dp4)
+
+                    Column() {
+                        FloatingActionButton(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .thenIf(
+                                    prevPartDisabled,
+                                    disabledM
+                                ),
+                            shape = FloatingActionButtonDefaults.largeShape,
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            onClick = {
+                                onPreviousPartScrollClick()
+                            }
+                        ) {
+                            Image(
+                                modifier = Modifier.size(dp44),
+                                painter = painterResource(R.drawable.ic_arrow_circle_up_24),
+                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+                                contentDescription = stringResource(R.string.prev_part_scroll_cd)
+                            )
+                        }
+
+                        VSpacer(dp4)
+
+                        FloatingActionButton(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .thenIf(
+                                    nextPartDisabled,
+                                    disabledM
+                                ),
+                            shape = FloatingActionButtonDefaults.largeShape,
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            onClick = {
+                                onNextPartScrollClick()
+                            }
+                        ) {
+                            Image(
+                                modifier = Modifier.size(dp44),
+                                painter = painterResource(R.drawable.ic_arrow_circle_down_24),
+                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+                                contentDescription = stringResource(R.string.next_part_scroll_cd)
+                            )
+                        }
+                    }
                 }
             }
         }

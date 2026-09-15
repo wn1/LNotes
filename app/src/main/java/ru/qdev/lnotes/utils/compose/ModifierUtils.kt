@@ -20,3 +20,12 @@ fun Modifier.clickableStyled(
         onClick()
     }
 }
+
+@Composable
+fun Modifier.thenIf(
+    ifValue: Boolean,
+    thenModifier: Modifier
+) : Modifier {
+    if (ifValue) return this.then(thenModifier)
+    return this
+}

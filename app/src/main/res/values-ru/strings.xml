@@ -113,5 +113,8 @@
     <string name="search_canceled_check_again">Поиск отключён. Пожалуйста, проверьте записи и повторите операцию</string>
     <string name="license_lang">ru</string>
     <string name="accept_btn">Я согласен</string>
+    <string name="next_part_scroll_cd">К следующей позиции</string>
+    <string name="prev_part_scroll_cd">К предыдущей позиции</string>
+
 
 </resources>

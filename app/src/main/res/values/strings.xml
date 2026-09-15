@@ -114,5 +114,7 @@
     <string name="search_canceled_check_again">The search is disabled. Please check the records and repeat the operation</string>
     <string name="license_lang">en</string>
     <string name="accept_btn">I agree</string>
+    <string name="next_part_scroll_cd">To the next position</string>
+    <string name="prev_part_scroll_cd">To the previous position</string>
 
 </resources>
