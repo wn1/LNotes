@@ -158,13 +158,17 @@ private fun ScreenContent(
 //    val notes = notesFlow.collectAsLazyPagingItems()
     val notesColumnState = rememberLazyListState()
 
+    val createdTempPosition = remember { mutableIntStateOf(-1) }
+    val completeTempPosition = remember { mutableIntStateOf(-1) }
+
     suspend fun scrollToIndex(index: Int) {
         notesColumnState.animateScrollToItem(index)
     }
 
     fun onPreviousPartScrollClick() {
         scope.launch {
-            var index = notesColumnState.firstVisibleItemIndex - 1
+            val orgIndex = notesColumnState.firstVisibleItemIndex
+            var index = notesColumnState.firstVisibleItemIndex + 1
             if (index > (notesCursor?.count ?: 0) - 1) index = (notesCursor?.count ?: 0) - 1
             notesCursor?.moveToPosition(index)
             val note = notesCursor?.getNotesEntry() ?: return@launch
@@ -179,7 +183,14 @@ private fun ScreenContent(
                     val iterationNote = notesCursor.getNotesEntry()
                     if (isFirstIteration
                         && iterationNote?.statusOfExecution() == StatusOfExecution.CREATED) {
-                        scrollToIndex(iterationIndex)
+
+                        val sV = createdTempPosition.intValue + 1
+                        if (sV >= 0 && sV < notesCursor.count) {
+                            scrollToIndex(sV)
+                        }
+                        else {
+                            scrollToIndex(iterationIndex)
+                        }
                         return@launch
                     }
                     isFirstIteration = false
@@ -187,6 +198,7 @@ private fun ScreenContent(
                     if (iterationNote?.statusOfExecution() == StatusOfExecution.CREATED) {
                         var prevI = iterationIndex
 //                        if (prevI < 0) prevI = 0
+                        completeTempPosition.intValue = orgIndex
                         scrollToIndex(prevI)
                         return@launch
                     }
@@ -194,6 +206,7 @@ private fun ScreenContent(
                     iterationIndex--
                 } while (iterationIndex >= 0)
 
+                createdTempPosition.intValue = orgIndex
                 scrollToIndex(0)
             }
             else {
@@ -205,6 +218,7 @@ private fun ScreenContent(
 
     fun onNextPartScrollClick() {
         scope.launch {
+            val orgIndex = notesColumnState.firstVisibleItemIndex
             var index = notesColumnState.firstVisibleItemIndex + 1
             if (index > (notesCursor?.count ?: 0) - 1) index = (notesCursor?.count ?: 0) - 1
             notesCursor?.moveToPosition(index)
@@ -218,6 +232,10 @@ private fun ScreenContent(
                     if (iterationNote?.statusOfExecution()?.isCompleteOrNotNeed() == true) {
                         var nextI = iterationIndex - 1
                         if (nextI < 0) nextI = 0
+
+                        if (orgIndex > 0) {
+                            createdTempPosition.intValue = orgIndex
+                        }
                         scrollToIndex(nextI)
                         return@launch
                     }
@@ -226,7 +244,21 @@ private fun ScreenContent(
                 } while (iterationIndex < notesCursor.count)
             }
             else {
-                scrollToIndex(notesCursor.count)
+                notesCursor.moveToPosition(orgIndex)
+                val iterationNote = notesCursor.getNotesEntry()
+                if (iterationNote?.statusOfExecution()?.isCompleteOrNotNeed() == true) {
+                    completeTempPosition.intValue = orgIndex
+                    scrollToIndex(notesCursor.count)
+                }
+                else {
+                    val sV = completeTempPosition.intValue + 1
+                    if (sV > 0 && sV < notesCursor.count) {
+                        scrollToIndex(sV)
+                    }
+                    else {
+                        scrollToIndex(notesCursor.count)
+                    }
+                }
                 return@launch
             }
         }
