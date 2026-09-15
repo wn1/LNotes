@@ -128,7 +128,7 @@ public class QDVBackupActivity extends AppCompatActivity {
                 setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                InputMethodManager inputMethodManager = (InputMethodManager) ThisApp.getContext()
+                InputMethodManager inputMethodManager = (InputMethodManager) ThisApp.Companion.getContext()
                         .getSystemService(Context.INPUT_METHOD_SERVICE);
                 if (inputMethodManager != null) {
                     inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
@@ -151,7 +151,7 @@ public class QDVBackupActivity extends AppCompatActivity {
         }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                InputMethodManager inputMethodManager = (InputMethodManager) ThisApp.getContext()
+                InputMethodManager inputMethodManager = (InputMethodManager) ThisApp.Companion.getContext()
                         .getSystemService(Context.INPUT_METHOD_SERVICE);
                 if (inputMethodManager != null) {
                     inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
@@ -160,7 +160,7 @@ public class QDVBackupActivity extends AppCompatActivity {
         }).setNeutralButton(R.string.action_without_password, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                InputMethodManager inputMethodManager = (InputMethodManager) ThisApp.getContext()
+                InputMethodManager inputMethodManager = (InputMethodManager) ThisApp.Companion.getContext()
                         .getSystemService(Context.INPUT_METHOD_SERVICE);
                 if (inputMethodManager != null) {
                     inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
@@ -491,7 +491,7 @@ public class QDVBackupActivity extends AppCompatActivity {
                                 .setView(editText).setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                InputMethodManager inputMethodManager = (InputMethodManager) ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                InputMethodManager inputMethodManager = (InputMethodManager) ThisApp.Companion.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                                 inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
                                 final String password = editText != null ? editText.getText().toString() : "";
                                 restoreBackup(finalInputStream, finalIsCrypted, password);
@@ -499,7 +499,7 @@ public class QDVBackupActivity extends AppCompatActivity {
                         }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                InputMethodManager inputMethodManager = (InputMethodManager) ThisApp.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                InputMethodManager inputMethodManager = (InputMethodManager) ThisApp.Companion.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                                 inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
                             }
                         }).show();
