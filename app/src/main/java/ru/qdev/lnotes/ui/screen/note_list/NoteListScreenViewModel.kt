@@ -49,13 +49,14 @@ import src.BuildConfig
 import src.R
 import java.util.Date
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 interface NoteListScreenListener {
     fun onFolderMenuClick()
     fun onSelectFolder(folder: Folder)
     fun onFolderLongClick(folder: Folder)
     fun onNoteClick (note: NotesEntry)
-    fun onNoteMenuClick (note: NotesEntry)
+    fun onNoteMenuClick (note: NotesEntry, currentIndex: Int?)
     fun onNoteSelectClick (note: NotesEntry)
     fun onNoteAddingClick()
     fun onSearchClick()
@@ -86,6 +87,7 @@ class NoteListScreenViewModel @Inject constructor(
     val selectedFolderS = mutableStateOf<Folder?>(null)
     val folderListS = mutableStateOf<List<Folder>>(listOf())
     val goToFirstEvent = mutableStateOf<LiveEvent<Boolean>?>(null)
+    val goToIndexEvent = mutableStateOf<LiveEvent<Int>?>(null)
     val drawerHideEvent = mutableStateOf<LiveEvent<Boolean>?>(null)
     val folderLoadingS = mutableStateOf(false)
     val notesLoadingS = mutableStateOf(false)
@@ -96,6 +98,7 @@ class NoteListScreenViewModel @Inject constructor(
 
     private var folderForMenu: Folder? = null
     private var noteForMenu: NotesEntry? = null
+    private var currentIndexForMenu: Int? = null
 
     private var fillFolderJob: Job? = null
     private var moveFolderJob: Job? = null
@@ -301,7 +304,7 @@ class NoteListScreenViewModel @Inject constructor(
         reloadNotes(gotoFirst = true)
     }
 
-    fun reloadNotes(gotoFirst: Boolean = false) {
+    fun reloadNotes(gotoFirst: Boolean = false, gotoToIndex: Int? = null) {
         val logStr = "reloadNotes"
         selectedFolderForPager = selectedFolderS.value
 
@@ -314,6 +317,11 @@ class NoteListScreenViewModel @Inject constructor(
 
             if (gotoFirst){
                 goToFirstEvent.value = LiveEvent(true)
+            }
+
+            if (gotoToIndex != null) {
+                delay(50.milliseconds)
+                goToIndexEvent.value = LiveEvent(gotoToIndex)
             }
         }
     }
@@ -422,12 +430,14 @@ class NoteListScreenViewModel @Inject constructor(
         }
     }
 
-    override fun onDialogMenuItemClick(dialog: Dialog, dialogMenuItem: DialogMenuItem) {
+    override fun onDialogMenuItemClick(dialog: Dialog,
+                                       dialogMenuItem: DialogMenuItem) {
         super.onDialogMenuItemClick(dialog, dialogMenuItem)
 
         val logStr = "onDialogMenuItemClick"
 
         val folder = folderForMenu
+        val currentIndexForSetStatusOfEx = if (currentIndexForMenu == 0) 0 else null
         val folderIsEmptyLog = "$logStr: folder is empty"
 
         if (dialog.id == NOTE_MOVE_SELECT_DIALOG){
@@ -487,15 +497,27 @@ class NoteListScreenViewModel @Inject constructor(
             }
 
             MENU_NOTE_SET_DONE -> {
-                setStatusToNote(noteForMenu, StatusOfExecution.COMPLETED)
+                setStatusToNote(
+                    note = noteForMenu,
+                    statusOfExecution = StatusOfExecution.COMPLETED,
+                    gotoToIndex = currentIndexForSetStatusOfEx
+                )
             }
 
             MENU_NOTE_SET_IN_WORK -> {
-                setStatusToNote(noteForMenu, StatusOfExecution.CREATED)
+                setStatusToNote(
+                    note = noteForMenu,
+                    statusOfExecution = StatusOfExecution.CREATED,
+                    gotoToIndex = currentIndexForSetStatusOfEx
+                )
             }
 
             MENU_NOTE_SET_NO_NEEDED -> {
-                setStatusToNote(noteForMenu, StatusOfExecution.NOT_NEED)
+                setStatusToNote(
+                    note = noteForMenu,
+                    statusOfExecution = StatusOfExecution.NOT_NEED,
+                    gotoToIndex = currentIndexForSetStatusOfEx
+                )
             }
 
             MENU_NOTE_MOVE -> {
@@ -594,7 +616,9 @@ class NoteListScreenViewModel @Inject constructor(
         }
     }
 
-    private fun setStatusToNote(note: NotesEntry?, statusOfExecution: StatusOfExecution) {
+    private fun setStatusToNote(note: NotesEntry?,
+                                statusOfExecution: StatusOfExecution,
+                                gotoToIndex: Int? = null) {
         val logStr = "setStatusToNote"
         if (note == null) {
             Log.e(TAG, "$logStr note is null")
@@ -605,11 +629,13 @@ class NoteListScreenViewModel @Inject constructor(
 
         noteEditJob?.cancel()
         noteEditJob = viewModelScope.launch {
-            setStatusToNoteTask(note, statusOfExecution)
+            setStatusToNoteTask(note, statusOfExecution, gotoToIndex = gotoToIndex)
         }
     }
 
-    private suspend fun setStatusToNoteTask(note: NotesEntry, statusOfExecution: StatusOfExecution) {
+    private suspend fun setStatusToNoteTask(note: NotesEntry,
+                                            statusOfExecution: StatusOfExecution,
+                                            gotoToIndex: Int? = null) {
         note.isReady = statusOfExecution.dbValue
         when (statusOfExecution) {
             StatusOfExecution.CREATED -> {
@@ -624,7 +650,7 @@ class NoteListScreenViewModel @Inject constructor(
         withContext(Dispatchers.IO) {
             notesDao.insertAll(note)
         }
-        reloadNotes()
+        reloadNotes(gotoToIndex = gotoToIndex)
     }
 
     private fun moveNoteMenuPrepare(delayMs: Long = 200) {
@@ -827,11 +853,12 @@ class NoteListScreenViewModel @Inject constructor(
         }
     }
 
-    override fun onNoteMenuClick (note: NotesEntry) {
+    override fun onNoteMenuClick (note: NotesEntry, currentIndex: Int?) {
         val logStr = "onNoteMenuClick"
         Log.i(TAG, "$logStr, id: ${note.uid}")
 
         noteForMenu = note
+        currentIndexForMenu = currentIndex
 
         val menuList = mutableListOf<DialogMenuItem>()
 

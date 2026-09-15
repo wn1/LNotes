@@ -123,6 +123,7 @@ fun NoteListScreen(viewModel: NoteListScreenViewModel = hiltViewModel()) {
             notesCursor = viewModel.notesCursorS.value,
             notesCount = viewModel.notesCountS.value,
             goToFirstEvent = viewModel.goToFirstEvent.value,
+            goToIndexEvent = viewModel.goToIndexEvent.value,
             drawerHideEvent = viewModel.drawerHideEvent.value,
             searchText = viewModel.searchTextS.value,
             folderLoading = viewModel.folderLoadingS.value,
@@ -143,6 +144,7 @@ private fun ScreenContent(
     notesCursor: Cursor?,
     notesCount: Long,
     goToFirstEvent: LiveEvent<Boolean>? = null,
+    goToIndexEvent: LiveEvent<Int>? = null,
     drawerHideEvent: LiveEvent<Boolean>? = null,
     drawerShowEvent: LiveEvent<Boolean>? = null,
     searchText: String,
@@ -243,6 +245,12 @@ private fun ScreenContent(
     goToFirstEvent?.getEventAndReset()?.let {
         scope.launch {
             notesColumnState.scrollToItem(0)
+        }
+    }
+
+    goToIndexEvent?.getEventAndReset()?.let {
+        scope.launch {
+            notesColumnState.scrollToItem(it)
         }
     }
 
@@ -532,7 +540,10 @@ private fun ScreenContent(
                                         listener?.onNoteSelectClick(it)
                                     },
                                     onMenuClick = {
-                                        listener?.onNoteMenuClick(it)
+                                        listener?.onNoteMenuClick(
+                                            it,
+                                            firstVisibleIndex.intValue
+                                        )
                                     }
                                 )
                             }
