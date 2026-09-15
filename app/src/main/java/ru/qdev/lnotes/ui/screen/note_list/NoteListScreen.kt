@@ -59,6 +59,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
@@ -416,7 +417,7 @@ private fun ScreenContent(
                         ) {
                             Image(
                                 modifier = Modifier.size(dp44),
-                                painter = painterResource(R.drawable.ic_arrow_circle_up_24),
+                                painter = painterResource(R.drawable.ic_arrow_shape_up_24),
                                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
                                 contentDescription = stringResource(R.string.prev_part_scroll_cd)
                             )
@@ -438,8 +439,8 @@ private fun ScreenContent(
                             }
                         ) {
                             Image(
-                                modifier = Modifier.size(dp44),
-                                painter = painterResource(R.drawable.ic_arrow_circle_down_24),
+                                modifier = Modifier.size(40.dp).rotate(180f),
+                                painter = painterResource(R.drawable.ic_arrow_shape_up_24),
                                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
                                 contentDescription = stringResource(R.string.next_part_scroll_cd)
                             )
