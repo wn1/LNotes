@@ -99,6 +99,8 @@ If you want to promote the app, please [contact me](mailto:v.kudashov.83@yandex.
 ### Sponsors
 If you want to become a sponsor, please [contact me](mailto:v.kudashov.83@yandex.ru).
 
+You can support the project with a small amount using the link https://pay.cloudtips.ru/p/b4126b14
+
 ### Thanks
 Thanks to the [stackoverflow](https://stackoverflow.com) community for the knowledge base and the source of ideas for new code solutions.
 
