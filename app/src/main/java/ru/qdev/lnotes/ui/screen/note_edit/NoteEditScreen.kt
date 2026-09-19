@@ -81,6 +81,7 @@ import ru.qdev.lnotes.ui.view.spacer.VSpacer
 import ru.qdev.lnotes.ui.view.text.SText
 import ru.qdev.lnotes.ui.view.text.STextField
 import ru.qdev.lnotes.utils.compose.toDp
+import ru.qdev.lnotes.utils.compose.tryRequestFocus
 import src.R
 
 @ExperimentalMaterial3Api
@@ -114,8 +115,7 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
 
     LaunchedEffect("focus")
     {
-        focusRequester.requestFocus()
-
+        focusRequester.tryRequestFocus()
     }
 
 //    val isScrolledFirst = remember { mutableStateOf(false) }
