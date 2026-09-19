@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_matrika_key" translatable="false">1f484329-9fdb-4d41-bc73-cc2cb5926ea7</string>
+    <string name="tips_link" translatable="false">https://pay.cloudtips.ru/p/b4126b14</string>
 </resources>

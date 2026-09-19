@@ -49,3 +49,7 @@ fun secondaryTextColor() : Color {
         Color.LightGray
     }
 }
+
+fun linkColor() : Color {
+    return Color.Blue
+}

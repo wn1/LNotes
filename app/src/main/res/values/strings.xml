@@ -118,4 +118,13 @@
     <string name="next_part_scroll_cd">To the next position</string>
     <string name="prev_part_scroll_cd">To the previous position</string>
 
+    <string name="action_tips">Tips (to help the project)</string>
+    <string name="help_the_project_title">Help the project</string>
+    <string name="help_the_project_title_desc">Leave the developer a tip; it will help make the app better. You can open the link to send a tip in your browser or scan the QR code:</string>
+    <string name="open_in_browser">Open in browser</string>
+    <string name="i_helped">I helped</string>
+    <string name="i_do_not_want">I do not want</string>
+    <string name="remind_later">Later</string>
+    <string name="qr_code_cd">QR code</string>
+
 </resources>

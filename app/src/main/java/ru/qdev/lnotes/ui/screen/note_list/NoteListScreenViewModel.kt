@@ -13,6 +13,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -37,6 +38,7 @@ import ru.qdev.lnotes.ui.screen.base.BaseScreenViewModel
 import ru.qdev.lnotes.ui.screen.note_edit.NoteEditScreenViewModel
 import ru.qdev.lnotes.ui.sheet.delete_unused.DeleteUnusedConfirmSheetController
 import ru.qdev.lnotes.ui.sheet.delete_unused.model.ConfirmedData
+import ru.qdev.lnotes.ui.sheet.tips.TipsSheetController
 import ru.qdev.lnotes.ui.view.dialog.Dialog
 import ru.qdev.lnotes.ui.view.dialog.DialogButton
 import ru.qdev.lnotes.ui.view.dialog.DialogButtonLayoutType
@@ -50,6 +52,7 @@ import src.R
 import java.util.Date
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 interface NoteListScreenListener {
     fun onFolderMenuClick()
@@ -64,6 +67,7 @@ interface NoteListScreenListener {
     fun onBackupClick()
     fun onAboutAppClick()
     fun onMailToDeveloperClick()
+    fun onTipsClick()
     fun onBackClick()
     fun onDeleteUnusedClick()
     fun onCancelDeleteUnusedClick()
@@ -111,6 +115,7 @@ class NoteListScreenViewModel @Inject constructor(
     private var deletePrepareJ: Job? = null
     private var deleteUnusedJ: Job? = null
     private var selectUnselectJ: Job? = null
+    private var tipsShowJ: Job? = null
     private var selectedFolderForPager: Folder? = null
 
     val deleteUnusedConfirmSheetController = DeleteUnusedConfirmSheetController(
@@ -120,6 +125,11 @@ class NoteListScreenViewModel @Inject constructor(
             onDeletePrepare(it)
         }
     }
+
+    val tipsSheetController = TipsSheetController(
+        parentViewModel = this,
+        notesPreferenceHelper = notesPreferenceHelper
+    )
 
     suspend fun getCursor() : Cursor {
         val prepared = viewTypeS.value == NotesViewType.PreparedForDelete
@@ -231,6 +241,22 @@ class NoteListScreenViewModel @Inject constructor(
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
         reloadNotes()
+
+        tipsShowJ?.cancel()
+        tipsShowJ = viewModelScope.launch {
+            while (isActive) {
+                if (Date().time >= notesPreferenceHelper.tipsNextShowTime) {
+                    tipsSheetController.show(TipsSheetController.InitData())
+                }
+                delay(60.seconds)
+            }
+        }
+    }
+
+    override fun onPause(owner: LifecycleOwner) {
+        tipsShowJ?.cancel()
+
+        super.onPause(owner)
     }
 
     override fun onCreate(owner: LifecycleOwner) {
@@ -1205,6 +1231,11 @@ class NoteListScreenViewModel @Inject constructor(
         (getActivity() as? QDVNotesHomeActivity)?.sendText(
             note.content ?: ""
         )
+    }
+
+    override fun onTipsClick() {
+        Log.i(TAG, "onTipsClick")
+        tipsSheetController.show(TipsSheetController.InitData())
     }
 
     override fun onBackClick() {

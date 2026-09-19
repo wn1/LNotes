@@ -19,6 +19,7 @@ class NotesPreferenceHelper (private val context: Context) {
     private val PREFERENCE_EDIT_NOTE_TEXT = "PREFERENCE_EDIT_NOTE_TEXT"
     private val PREFERENCE_EDIT_NOTE_TO_ADDING_FOLDER_ID = "PREFERENCE_EDIT_NOTE_TO_ADDING_FOLDER_ID"
     private val PREFERENCE_LICENSE_ACCEPTED = "PREFERENCE_LICENSE_ACCEPTED"
+    private val PEREF_TIPS_NEX_SHOW_TIME = "PREFERENCE_TIPS_NEX_SHOW_TIME"
 
     private fun getPreferencesDrawer(): SharedPreferences {
         return context.getSharedPreferences(PREFERENCES_NAME_DRAWER, Context.MODE_PRIVATE)
@@ -64,6 +65,14 @@ class NotesPreferenceHelper (private val context: Context) {
         }
         set (value) {
             getPreferences().edit() { putLong(PREFERENCE_EDIT_NOTE_ID, value) }
+        }
+
+    var tipsNextShowTime: Long
+        get() {
+            return getPreferences().getLong(PEREF_TIPS_NEX_SHOW_TIME, 0)
+        }
+        set (value) {
+            getPreferences().edit() { putLong(PEREF_TIPS_NEX_SHOW_TIME, value) }
         }
 
     var editNoteText: String?

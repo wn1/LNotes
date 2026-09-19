@@ -90,6 +90,7 @@ import ru.qdev.lnotes.model.NotesViewType
 import ru.qdev.lnotes.ui.screen.note_list.NoteListScreenListener
 import ru.qdev.lnotes.ui.screen.note_list.NoteListScreenViewModel
 import ru.qdev.lnotes.ui.sheet.base.DeleteUnusedConfirmSheet
+import ru.qdev.lnotes.ui.sheet.base.TipsSheet
 import ru.qdev.lnotes.ui.theme.contentHPaddingDp
 import ru.qdev.lnotes.ui.theme.dp1
 import ru.qdev.lnotes.ui.theme.dp10
@@ -133,6 +134,7 @@ fun NoteListScreen(viewModel: NoteListScreenViewModel = hiltViewModel()) {
             notesLoading = viewModel.notesLoadingS.value
         )
 
+        TipsSheet(viewModel.tipsSheetController)
         DeleteUnusedConfirmSheet(viewModel.deleteUnusedConfirmSheetController)
     }
 }
@@ -811,6 +813,18 @@ fun MainDropdownMenu(modifier: Modifier,
                 onClick = {
                     expandedS.value = false
                     listener?.onMailToDeveloperClick()
+                }
+            )
+
+            DropdownMenuItem(
+                text = {
+                    SText(
+                        text = stringResource(R.string.action_tips)
+                    )
+                },
+                onClick = {
+                    expandedS.value = false
+                    listener?.onTipsClick()
                 }
             )
 

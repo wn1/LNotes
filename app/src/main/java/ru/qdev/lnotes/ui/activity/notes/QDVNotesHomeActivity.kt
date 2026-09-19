@@ -3,7 +3,6 @@ package ru.qdev.lnotes.ui.activity.notes
 //import butterknife.ButterKnife
 import android.content.DialogInterface
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -24,6 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.qdev.lnotes.ui.navigation.QDVNavigator
 import ru.qdev.lnotes.ui.navigation.route.note.NoteListScreenRoute
 import ru.qdev.lnotes.ui.view.QDVViewFabric
+import ru.qdev.lnotes.utils.CommonUtils.openLinkInBrowser
 import ru.qdev.lnotes.utils.QDVStatisticState.addTimeForShowUserRatingQuest
 import ru.qdev.lnotes.utils.QDVStatisticState.userRatingQuestShownNoNeed
 import ru.qdev.lnotes.utils.QDVTempFileSendUtils
@@ -234,12 +234,7 @@ class QDVNotesHomeActivity : ComponentActivity() {
             .setPositiveButton(
                 R.string.open_google_play,
                 DialogInterface.OnClickListener { dialog, which ->
-                    startActivity(
-                        Intent(
-                            Intent.ACTION_VIEW,
-                            Uri.parse(getString(R.string.google_play_link))
-                        )
-                    )
+                    openLinkInBrowser(this, getString(R.string.google_play_link))
                     userRatingQuestShownNoNeed = true
                 })
             .setNeutralButton(

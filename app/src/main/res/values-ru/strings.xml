@@ -117,5 +117,13 @@
     <string name="next_part_scroll_cd">К следующей позиции</string>
     <string name="prev_part_scroll_cd">К предыдущей позиции</string>
 
+    <string name="action_tips">Чаевые (помочь проекту)</string>
+    <string name="help_the_project_title">Помогите проекту</string>
+    <string name="help_the_project_title_desc">Оставьте разработчику чаевые, они помогут сделать приложение лучше. Вы можете открыть ссылку для отправки чаевых в браузере или отсканировать qr-код:</string>
+    <string name="open_in_browser">Открыть в браузере</string>
+    <string name="i_helped">Я помог</string>
+    <string name="i_do_not_want">Не хочу</string>
+    <string name="remind_later">Позже</string>
+    <string name="qr_code_cd">QR код</string>
 
 </resources>

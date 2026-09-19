@@ -5,8 +5,12 @@ import android.content.Context
 import dagger.hilt.android.HiltAndroidApp
 import io.appmetrica.analytics.AppMetrica
 import io.appmetrica.analytics.AppMetricaConfig
+import ru.qdev.lnotes.core.QDVAppConst
+import ru.qdev.lnotes.core.pref.NotesPreferenceHelper
 import src.BuildConfig
 import src.R
+import java.util.Date
+import javax.inject.Inject
 
 /**
  * Created by Vladimir Kudashov on 13.04.17.
@@ -14,6 +18,10 @@ import src.R
 
 @HiltAndroidApp
 class ThisApp : Application() {
+    @Inject
+    lateinit var notesPreferenceHelper: NotesPreferenceHelper
+
+
     override fun onCreate() {
         super.onCreate()
 
@@ -27,6 +35,10 @@ class ThisApp : Application() {
 
             // Initializing the AppMetrica SDK.
             AppMetrica.activate(this, config)
+        }
+
+        if (notesPreferenceHelper.tipsNextShowTime == 0L) {
+            notesPreferenceHelper.tipsNextShowTime = Date().time + QDVAppConst.NextShowTimeLaterDelay
         }
     }
 
