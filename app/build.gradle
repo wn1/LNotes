@@ -59,13 +59,11 @@ android {
         free {
             applicationId "ru.q_dev.LNotesP.free"
             dimension "dafault"
-            setProperty("archivesBaseName", "LNotes-$versionName-b$versionCode-free")
         }
 
         plusVersion {
             applicationId "ru.q_dev.LNotesP.no_store"
             dimension "dafault"
-            setProperty("archivesBaseName", "LNotes-$versionName-b$versionCode-plus")
         }
 
         //Эта версия на случай, если будут платные подписки
@@ -74,6 +72,17 @@ android {
 //            dimension "dafault"
 //            setProperty("archivesBaseName", "LNotes-$versionName-b$versionCode-rustore")
 //        }
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def flavor = variant.flavorName          // имя flavor
+            def buildType = variant.buildType.name   // debug/release
+            def versionName = variant.versionName
+            def versionCode = variant.versionCode
+
+            outputFileName = "LNotes-${flavor}-${versionName}-b${versionCode}.apk"
+        }
     }
 }
 
