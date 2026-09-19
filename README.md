@@ -46,7 +46,7 @@ Support Android 4.0 (API 14) and above
 
 
 ## Version 
-### 2.5.0
+### 2.6.0
 
 ## Background
 
