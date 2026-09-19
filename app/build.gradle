@@ -64,9 +64,9 @@ android {
             dimension "dafault"
         }
 
-        //этот вариант сборки добавлен на случай создания версии с платными функциями
+        //Планируется публикация только этой сборки
         rustore {
-            applicationId "ru.q_dev.LNotesP.rustore"
+            applicationId "ru.q_dev.LNotesP"
             dimension "dafault"
         }
     }
