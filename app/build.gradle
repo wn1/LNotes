@@ -68,12 +68,12 @@ android {
             setProperty("archivesBaseName", "LNotes-$versionName-b$versionCode-plus")
         }
 
-
-        rustore {
-            applicationId "ru.q_dev.LNotesP.free"
-            dimension "dafault"
-            setProperty("archivesBaseName", "LNotes-$versionName-b$versionCode-rustore")
-        }
+        //Эта версия на случай, если будут платные подписки
+//        rustore {
+//            applicationId "ru.q_dev.LNotesP.rustore"
+//            dimension "dafault"
+//            setProperty("archivesBaseName", "LNotes-$versionName-b$versionCode-rustore")
+//        }
     }
 }
 
