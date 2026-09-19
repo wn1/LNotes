@@ -27,7 +27,7 @@ You can:
 or
 
 - Use link for apk:
-https://disk.yandex.ru/d/kVlZIB6aaEp_Sw
+https://disk.yandex.ru/d/WPl_73fhNHpWcg
 
 Link for all versions: https://disk.yandex.ru/d/1Ecqgb1JqR2uPw
 
