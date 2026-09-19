@@ -60,7 +60,7 @@ android {
 //        }
 
         plusVersion {
-            applicationId "ru.q_dev.LNotesP.no_store.test"
+            applicationId "ru.q_dev.LNotesP.no_store"
             dimension "dafault"
         }
 
