@@ -22,7 +22,7 @@ android {
         versionCode 56
         versionName "2.6.0"
         vectorDrawables.useSupportLibrary = true
-        setProperty("archivesBaseName", "LNotes-$versionName-b$versionCode-no_store")
+        setProperty("archivesBaseName", "LNotes-$versionName-b$versionCode")
     }
 
     compileOptions {
@@ -54,20 +54,25 @@ android {
     flavorDimensions "dafault"
 
     productFlavors {
-//        free {
-//            applicationId "ru.q_dev.LNotes.no_store"
-//            dimension "dafault"
-//        }
+        //Планируется публикация только этой сборки
+
+        free {
+            applicationId "ru.q_dev.LNotesP.free"
+            dimension "dafault"
+            setProperty("archivesBaseName", "LNotes-$versionName-b$versionCode-free")
+        }
 
         plusVersion {
             applicationId "ru.q_dev.LNotesP.no_store"
             dimension "dafault"
+            setProperty("archivesBaseName", "LNotes-$versionName-b$versionCode-plus")
         }
 
-        //Планируется публикация только этой сборки
+
         rustore {
             applicationId "ru.q_dev.LNotesP.free"
             dimension "dafault"
+            setProperty("archivesBaseName", "LNotes-$versionName-b$versionCode-rustore")
         }
     }
 }
