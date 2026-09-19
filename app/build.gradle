@@ -64,6 +64,7 @@ android {
             dimension "dafault"
         }
 
+        //этот вариант сборки добавлен на случай создания версии с платными функциями
         rustore {
             applicationId "ru.q_dev.LNotesP.rustore"
             dimension "dafault"
