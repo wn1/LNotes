@@ -31,7 +31,7 @@ https://disk.yandex.ru/d/ppkiuJze4ICtgA
 
 Link for all versions: https://disk.yandex.ru/d/1Ecqgb1JqR2uPw
 
-Support Android 4.0 (API 14) and above
+Support Android 6.0 (API level 23) and above
 
 ## Table of Contents
 
