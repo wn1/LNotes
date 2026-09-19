@@ -41,7 +41,6 @@ Support Android 4.0 (API 14) and above
 - [Usage](#usage)
 - [Related Efforts](#related-efforts)
 - [Maintainers](#maintainers)
-- [Contribute](#contribute)
 - [License](#license)
 
 
@@ -59,6 +58,7 @@ Database: SQLite with Room
 Architecture: MVVM
 
 Also use:
+Compose,
 [Gson](https://github.com/google/gson),
 [Material Design for Android](https://developer.android.com/design/material/)
 and etc.
@@ -85,16 +85,6 @@ If you have a question, please [send me an email](mailto:v.kudashov.83@yandex.ru
 ## Maintainers
 
 [@VladimirKudashov](https://github.com/wn1).
-
-## Contribute
-
-### Contributors
-If you want to make a donation, please buy the app in Google Play ([Light Notes Plus](https://play.google.com/store/apps/details?id=ru.q_dev.LNoteP)) or [contact me](mailto:v.kudashov.83@yandex.ru).
-
-If you want to help in another way, please [contact me](mailto:v.kudashov.83@yandex.ru).
-
-### Backers
-If you want to promote the app, please [contact me](mailto:v.kudashov.83@yandex.ru).
 
 ### Sponsors
 If you want to become a sponsor, please [contact me](mailto:v.kudashov.83@yandex.ru).
