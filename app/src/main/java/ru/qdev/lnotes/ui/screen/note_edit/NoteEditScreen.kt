@@ -62,6 +62,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.reply.ui.theme.AppTheme
 import ru.qdev.lnotes.model.Folder
@@ -306,7 +308,7 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
                             .focusRequester(focusRequester)
                             .verticalScroll(scrollState)
                             .imePadding()
-                            .padding(bottom = imeHInDp - kbH),
+                            .padding(bottom = max(imeHInDp - kbH, 0.dp)),
                         value = text,
                         onValueChange = {
                             listener?.onTextChange(it)
