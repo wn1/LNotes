@@ -58,7 +58,7 @@
     <string name="backup_saved">Резервная копия успешно сохранена</string>
     <string name="backup_db_close_wait">Попробуйте позже, данные подготавливаются</string>
     <string name="backup_saved_to">Резервная копия успешно сохранена в: </string>
-    <string name="backup_send_title">Отправить резервную копию</string>
+    <string name="backup_send_title">Резервная копия Лёгких заметок</string>
     <string name="backup_sent">Резервная копия отправлена</string>
     <string name="backup_restored">База данных успешно восстановлена</string>
     <string name="password_error">Ошибка. Возможно, вы ошиблись при вводе пароля.</string>
