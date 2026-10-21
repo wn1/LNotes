@@ -58,6 +58,7 @@ android {
 
         free {
             applicationId "ru.q_dev.LNotesP.free"
+//            applicationId "ru.q_dev.LNotesP.free.test"
             dimension "dafault"
         }
 
