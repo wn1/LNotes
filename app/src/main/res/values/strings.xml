@@ -126,5 +126,6 @@
     <string name="i_do_not_want">I do not want</string>
     <string name="remind_later">Later</string>
     <string name="qr_code_cd">QR code</string>
+    <string name="text_move_down">At the end of the text</string>
 
 </resources>

@@ -38,7 +38,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -66,6 +65,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.reply.ui.theme.AppTheme
+import kotlinx.coroutines.launch
 import ru.qdev.lnotes.model.Folder
 import ru.qdev.lnotes.ui.screen.base.BaseScreen
 import ru.qdev.lnotes.ui.theme.contentHPaddingDp
@@ -149,10 +149,11 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
 //        }
 //    }
 
-
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
+    Box() {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+//        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        ) {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -182,10 +183,15 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
                     MainDropdownMenu(
                         modifier = Modifier,
                         listener = listener,
-                        expandedS = menuExpandedS
+                        expandedS = menuExpandedS,
+                        onMoveDownClick = {
+                            scope.launch {
+                                scrollState.scrollTo(Int.MAX_VALUE)
+                            }
+                        }
                     )
 
-                    Box (
+                    Box(
                         modifier = Modifier.defaultMinSize(minWidth = dp44, minHeight = dp40)
                             .clip(RoundedCornerShape(dp8))
                             .clickable {
@@ -202,120 +208,122 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
                     HSpacer(dp14)
                 }
             )
-        },
-    ) { innerPadding ->
 
-        @Composable fun ToolbarButton(
-            text: String,
-            onClick: () -> Unit,
-            fontSize: TextUnit = sp16,
-            enabled: Boolean = true
-        ) {
-            Box(modifier = Modifier
-                .defaultMinSize(dp40)
-                .clickable {
-                    onClick()
-                }
+            @Composable
+            fun ToolbarButton(
+                text: String,
+                onClick: () -> Unit,
+                fontSize: TextUnit = sp16,
+                enabled: Boolean = true
             ) {
-                Column (
+                Box(
                     modifier = Modifier
-                        .align(Alignment.Center)
-                ){
-                    VSpacer(dp10)
-                    SText(
-                        modifier = Modifier.padding(horizontal = dp10),
-                        text = text,
-                        color = if (enabled) MaterialTheme.colorScheme.tertiary else Color.LightGray,
-                        fontSize = fontSize
-                    )
-                    VSpacer(dp10)
-                }
-            }
-        }
-
-        @Composable fun RowScope.ToolbarDivider() {
-            HSpacer(dp4)
-            Spacer(modifier = Modifier.width(dp1).background(Color.LightGray).fillMaxHeight())
-            HSpacer(dp4)
-        }
-
-        Box(modifier = Modifier
-            .background(MaterialTheme.colorScheme.secondaryContainer)
-            .padding(innerPadding)
-            .fillMaxSize()
-            .onGloballyPositioned {
-                screenH.floatValue = it.size.height.toFloat()
-            }
-        ) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                Row(
-                    modifier = Modifier
-                        .height(intrinsicSize = IntrinsicSize.Max)
-                        .fillMaxWidth()
-                        .padding(horizontal = contentHPaddingDp)
-                        .horizontalScroll(rememberScrollState()),
-                    verticalAlignment = Alignment.CenterVertically
+                        .defaultMinSize(dp40)
+                        .clickable {
+                            onClick()
+                        }
                 ) {
-                    ToolbarDivider()
-
-                    ToolbarButton(
-                        text = stringResource(R.string.add_time_text),
-                        onClick = {
-                            listener?.onAddTimeClick()
-                        }
-                    )
-
-                    ToolbarDivider()
-
-                    ToolbarButton(
-                        text = stringResource(R.string.option_checked_char),
-                        onClick = {
-                            listener?.onInsertCheckedCharClick()
-                        }
-                    )
-
-                    ToolbarDivider()
-
-                    ToolbarButton(
-                        text = stringResource(R.string.option_unchecked_char),
-                        onClick = {
-                            listener?.onInsertUncheckedCharClick()
-                        }
-                    )
-
-                    ToolbarDivider()
-
-                    ToolbarButton(
-                        text = stringResource(R.string.option_checked_char)
-                                +"\n"+stringResource(R.string.option_unchecked_char),
-                        onClick = {
-                            listener?.onCheckedSwitchClick()
-                        },
-                        fontSize = sp12,
-                        enabled = checkedSwitchEnabled
-                    )
-
-                    ToolbarDivider()
-                }
-                HorizontalDivider()
-
-                Column (Modifier.weight(1f)){
-                    STextField(
+                    Column(
                         modifier = Modifier
-                            .weight(1f),
-                        textFieldModifier = Modifier
-                            .fillMaxSize()
-                            .focusRequester(focusRequester)
-                            .verticalScroll(scrollState)
-                            .imePadding()
-                            .padding(bottom = max(imeHInDp - kbH, 0.dp)),
-                        value = text,
-                        onValueChange = {
-                            listener?.onTextChange(it)
-                        },
-                    )
+                            .align(Alignment.Center)
+                    ) {
+                        VSpacer(dp10)
+                        SText(
+                            modifier = Modifier.padding(horizontal = dp10),
+                            text = text,
+                            color = if (enabled) MaterialTheme.colorScheme.tertiary else Color.LightGray,
+                            fontSize = fontSize
+                        )
+                        VSpacer(dp10)
+                    }
+                }
+            }
 
-                    VSpacer(kbH)
+            @Composable
+            fun RowScope.ToolbarDivider() {
+                HSpacer(dp4)
+                Spacer(modifier = Modifier.width(dp1).background(Color.LightGray).fillMaxHeight())
+                HSpacer(dp4)
+            }
+
+            Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.secondaryContainer)
+                    .fillMaxSize()
+                    .onGloballyPositioned {
+                        screenH.floatValue = it.size.height.toFloat()
+                    }
+            ) {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    Row(
+                        modifier = Modifier
+                            .height(intrinsicSize = IntrinsicSize.Max)
+                            .fillMaxWidth()
+                            .padding(horizontal = contentHPaddingDp)
+                            .horizontalScroll(rememberScrollState()),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        ToolbarDivider()
+
+                        ToolbarButton(
+                            text = stringResource(R.string.add_time_text),
+                            onClick = {
+                                listener?.onAddTimeClick()
+                            }
+                        )
+
+                        ToolbarDivider()
+
+                        ToolbarButton(
+                            text = stringResource(R.string.option_checked_char),
+                            onClick = {
+                                listener?.onInsertCheckedCharClick()
+                            }
+                        )
+
+                        ToolbarDivider()
+
+                        ToolbarButton(
+                            text = stringResource(R.string.option_unchecked_char),
+                            onClick = {
+                                listener?.onInsertUncheckedCharClick()
+                            }
+                        )
+
+                        ToolbarDivider()
+
+                        ToolbarButton(
+                            text = stringResource(R.string.option_checked_char)
+                                    + "\n" + stringResource(R.string.option_unchecked_char),
+                            onClick = {
+                                listener?.onCheckedSwitchClick()
+                            },
+                            fontSize = sp12,
+                            enabled = checkedSwitchEnabled
+                        )
+
+                        ToolbarDivider()
+                    }
+                    HorizontalDivider()
+
+                    Column(Modifier.weight(1f)) {
+                        STextField(
+                            modifier = Modifier
+                                .weight(1f),
+                            textFieldModifier = Modifier
+                                .fillMaxSize()
+                                .focusRequester(focusRequester)
+                                .verticalScroll(scrollState)
+                                .imePadding()
+                                .padding(bottom = max(imeHInDp - kbH, 0.dp)),
+                            value = text,
+                            onValueChange = {
+                                listener?.onTextChange(it)
+                            },
+                        )
+
+                        VSpacer(kbH)
+                    }
                 }
             }
         }
@@ -329,7 +337,8 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
 @Composable
 fun MainDropdownMenu(modifier: Modifier,
                      listener: NoteEditScreenViewModelListener?,
-                     expandedS: MutableState<Boolean>
+                     expandedS: MutableState<Boolean>,
+                     onMoveDownClick: () -> Unit
 ) {
     Box(
         modifier = modifier
@@ -355,6 +364,18 @@ fun MainDropdownMenu(modifier: Modifier,
                 onClick = {
                     expandedS.value = false
                     listener?.onSendNoteClick()
+                }
+            )
+
+            DropdownMenuItem(
+                text = {
+                    SText(
+                        text = stringResource(R.string.text_move_down)
+                    )
+                },
+                onClick = {
+                    expandedS.value = false
+                    onMoveDownClick()
                 }
             )
         }
