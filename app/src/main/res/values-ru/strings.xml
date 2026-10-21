@@ -126,5 +126,6 @@
     <string name="remind_later">Позже</string>
     <string name="qr_code_cd">QR код</string>
     <string name="text_move_down">В конец текста</string>
+    <string name="text_move_up">В начало текста</string>
 
 </resources>

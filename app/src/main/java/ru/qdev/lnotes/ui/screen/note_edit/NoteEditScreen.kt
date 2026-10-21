@@ -188,6 +188,11 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
                             scope.launch {
                                 scrollState.scrollTo(Int.MAX_VALUE)
                             }
+                        },
+                        onMoveUpClick = {
+                            scope.launch {
+                                scrollState.scrollTo(0)
+                            }
                         }
                     )
 
@@ -338,7 +343,8 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
 fun MainDropdownMenu(modifier: Modifier,
                      listener: NoteEditScreenViewModelListener?,
                      expandedS: MutableState<Boolean>,
-                     onMoveDownClick: () -> Unit
+                     onMoveDownClick: () -> Unit,
+                     onMoveUpClick: () -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -376,6 +382,18 @@ fun MainDropdownMenu(modifier: Modifier,
                 onClick = {
                     expandedS.value = false
                     onMoveDownClick()
+                }
+            )
+
+            DropdownMenuItem(
+                text = {
+                    SText(
+                        text = stringResource(R.string.text_move_up)
+                    )
+                },
+                onClick = {
+                    expandedS.value = false
+                    onMoveUpClick()
                 }
             )
         }
