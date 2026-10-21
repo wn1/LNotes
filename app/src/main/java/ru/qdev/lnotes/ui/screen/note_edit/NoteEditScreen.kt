@@ -376,24 +376,24 @@ fun MainDropdownMenu(modifier: Modifier,
             DropdownMenuItem(
                 text = {
                     SText(
-                        text = stringResource(R.string.text_move_down)
-                    )
-                },
-                onClick = {
-                    expandedS.value = false
-                    onMoveDownClick()
-                }
-            )
-
-            DropdownMenuItem(
-                text = {
-                    SText(
                         text = stringResource(R.string.text_move_up)
                     )
                 },
                 onClick = {
                     expandedS.value = false
                     onMoveUpClick()
+                }
+            )
+
+            DropdownMenuItem(
+                text = {
+                    SText(
+                        text = stringResource(R.string.text_move_down)
+                    )
+                },
+                onClick = {
+                    expandedS.value = false
+                    onMoveDownClick()
                 }
             )
         }
