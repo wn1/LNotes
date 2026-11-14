@@ -27,7 +27,7 @@ You can:
 or
 
 - Use link for apk:
-  https://disk.yandex.ru/d/qUhN_b6PMDFxIA
+- https://disk.yandex.ru/d/rHEpAS2d3sIAiA
 
 Link for all versions: https://disk.yandex.ru/d/1Ecqgb1JqR2uPw
 
@@ -45,7 +45,7 @@ Support Android 6.0 (API level 23) and above
 
 
 ## Version 
-### 2.6.1
+### 2.7.0
 
 ## Background
 
