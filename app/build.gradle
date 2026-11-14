@@ -39,7 +39,12 @@ android {
     }
 
     buildTypes {
+        debug {
+            versionNameSuffix "-debug" // Добавит "-debug" к versionName для debug
+        }
+
         release {
+            versionNameSuffix "-release" // Добавит "-release" к versionName для release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
