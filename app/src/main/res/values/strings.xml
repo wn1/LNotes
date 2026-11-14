@@ -88,6 +88,7 @@
     <string name="add_note_button_description">Add note</string>
     <string name="cell_note_description">Note</string>
     <string name="notes_listview_description">Notes</string>
+    <string name="notes_listview_title">Notes</string>
     <string name="folder_listview_description">Notes folders</string>
     <string name="actionbar_home_folder_list_description">Folder list show</string>
     <string name="actionbar_home_back_description">Back</string>

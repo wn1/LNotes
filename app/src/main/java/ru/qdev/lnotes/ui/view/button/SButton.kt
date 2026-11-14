@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.style.TextAlign
 import ru.qdev.lnotes.ui.theme.dp1
 import ru.qdev.lnotes.ui.theme.dp10
 import ru.qdev.lnotes.ui.view.text.SText
@@ -38,12 +39,14 @@ fun MainButtonBorderStroke(contentColor: Color) =
 
 @Composable
 fun MainButtonContent(
-    text: String
+    text: String,
+    textAlign: TextAlign? = null
 ): @Composable RowScope.(Color) -> Unit {
     return {
         SText(
             text = text,
-            color = it
+            color = it,
+            textAlign = textAlign
         )
     }
 }

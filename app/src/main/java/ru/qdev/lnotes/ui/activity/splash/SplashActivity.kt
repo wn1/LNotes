@@ -8,7 +8,9 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,8 +18,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.lifecycleScope
@@ -30,11 +34,14 @@ import ru.qdev.lnotes.core.pref.NotesPreferenceHelper
 import ru.qdev.lnotes.ui.activity.backup.QDVBackupActivity
 import ru.qdev.lnotes.ui.activity.notes.QDVNotesHomeActivity
 import ru.qdev.lnotes.ui.screen.license.LicenseScreen
+import ru.qdev.lnotes.ui.theme.contentHPaddingDp
 import ru.qdev.lnotes.ui.theme.dp14
 import ru.qdev.lnotes.ui.view.button.MainButtonContent
 import ru.qdev.lnotes.ui.view.button.SButton
+import ru.qdev.lnotes.ui.view.button.SecondaryButtonColors
 import src.R
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 @AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
@@ -44,6 +51,7 @@ class SplashActivity : AppCompatActivity() {
     lateinit var preferenceHelper: NotesPreferenceHelper
 
     private val isLicenseAcceptedState = mutableStateOf(false)
+    private val timerState = mutableStateOf<Int?>(null)
 
     @ExperimentalMaterial3Api
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,7 +59,7 @@ class SplashActivity : AppCompatActivity() {
 
         setContent {
             AppTheme {
-                ActivityContent()
+                ActivityContent(timerState.value)
             }
         }
     }
@@ -72,8 +80,8 @@ class SplashActivity : AppCompatActivity() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun ActivityContent(){
-        if (isLicenseAcceptedState.value) {
+    private fun ActivityContent(timer: Int? = null){
+        if (isLicenseAcceptedState.value || LocalInspectionMode.current) {
             Box(modifier = Modifier.fillMaxSize()) {
                 Image(
                     modifier = Modifier.align(Alignment.Center),
@@ -81,17 +89,38 @@ class SplashActivity : AppCompatActivity() {
                     contentDescription = stringResource(R.string.app_name)
                 )
 
-                SButton(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .zIndex(10f)
-                        .padding(bottom = dp14)
-                        .navigationBarsPadding(),
-                    onClick = {
-                        startBackupActivity()
-                    },
-                    content = MainButtonContent(stringResource(R.string.action_backup_restore))
-                )
+                Column (Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(horizontal = contentHPaddingDp)
+                    .navigationBarsPadding()){
+                    SButton(
+                        modifier = Modifier
+                            .zIndex(10f)
+                            .padding(bottom = dp14).fillMaxWidth(),
+                        onClick = {
+                            startBackupActivity()
+                        },
+                        colors = SecondaryButtonColors(),
+                        content = MainButtonContent(
+                            text = stringResource(R.string.action_backup_restore),
+                            textAlign = TextAlign.Center
+                        )
+                    )
+
+                    SButton(
+                        modifier = Modifier
+                            .zIndex(10f)
+                            .padding(bottom = dp14).fillMaxWidth(),
+                        onClick = {
+                            startNotesActivity()
+                        },
+                        content = MainButtonContent(
+                            text = stringResource(R.string.notes_listview_title)
+                                    + if (timer != null) " (${timer})" else "",
+                            textAlign = TextAlign.Center
+                        )
+                    )
+                }
             }
         }
         else {
@@ -132,7 +161,10 @@ class SplashActivity : AppCompatActivity() {
     private fun startLaunchTimer() {
         launchTimerJob?.cancel()
         launchTimerJob = lifecycleScope.launch {
-            delay(3000)
+            for (i in 3 downTo 1) {
+                timerState.value = i
+                delay(1.seconds)
+            }
             startNotesActivity()
             finish()
         }
@@ -154,7 +186,7 @@ class SplashActivity : AppCompatActivity() {
     )
     private fun ActivityContentPreview() {
         AppTheme {
-            ActivityContent()
+            ActivityContent(3)
         }
     }
 }
