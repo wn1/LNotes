@@ -15,14 +15,11 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -61,8 +58,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.reply.ui.theme.AppTheme
 import kotlinx.coroutines.launch
@@ -84,6 +79,7 @@ import ru.qdev.lnotes.ui.view.text.SText
 import ru.qdev.lnotes.ui.view.text.STextField
 import ru.qdev.lnotes.utils.compose.toDp
 import ru.qdev.lnotes.utils.compose.tryRequestFocus
+import ru.qdev.lnotes.utils.live_data.LiveEvent
 import src.R
 
 @ExperimentalMaterial3Api
@@ -93,7 +89,8 @@ fun NoteEditScreen(viewModel: NoteEditScreenViewModel = hiltViewModel()) {
         ScreenContent(
             listener = viewModel,
             text = viewModel.textS.value,
-            checkedSwitchEnabled = viewModel.checkedSwitchEnabledS.value
+            checkedSwitchEnabled = viewModel.checkedSwitchEnabledS.value,
+            requestFocusEvent = viewModel.requestFocusEvent.value
         )
     }
 }
@@ -103,7 +100,8 @@ fun NoteEditScreen(viewModel: NoteEditScreenViewModel = hiltViewModel()) {
 @Composable
 private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
                           text: TextFieldValue,
-                          checkedSwitchEnabled: Boolean) {
+                          checkedSwitchEnabled: Boolean,
+                          requestFocusEvent: LiveEvent<Boolean>? = null) {
     val scope = rememberCoroutineScope()
     val focusRequester = remember { FocusRequester() }
     val scrollState = rememberScrollState()
@@ -111,45 +109,24 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
     val menuExpandedS = remember { mutableStateOf(false) }
 
     val screenH = remember { mutableFloatStateOf(0f) }
-    val imeHInDp = (screenH.floatValue * 0.5f).toDp()
+    val imeHInDp = (screenH.floatValue * 0.6f).toDp()
 
     val density = LocalDensity.current
+
+    requestFocusEvent?.getEventAndReset()?.let {
+        scope.launch {
+            focusRequester.tryRequestFocus()
+        }
+    }
 
     LaunchedEffect("focus")
     {
         focusRequester.tryRequestFocus()
     }
 
-//    val isScrolledFirst = remember { mutableStateOf(false) }
-//    val isKeyboardVisible = WindowInsets.isImeVisible
-    val kbHPx = WindowInsets.ime.getBottom(density).toFloat()
-    val kbH = kbHPx.toDp()
-//    val lastKbH = remember { mutableStateOf(0.dp) }
-//    val lastKbHPx = remember { mutableStateOf(0f) }
-//
-//    LaunchedEffect(isKeyboardVisible) {
-//        if (isKeyboardVisible) {
-//            // Клавиатура появилась
-//            delay(1000.milliseconds) // небольшая задержка для анимации
-//            lastKbH.value = kbH
-//            lastKbHPx.value = kbHPx
-//            scrollState.scrollBy(kbHPx)
-//        }
-//        else {
-////            delay(1000.milliseconds) // небольшая задержка для анимации
-//            scrollState.scrollBy(-lastKbHPx.value)
-//        }
-//    }
-//
-//    if (imeHInDp.value > 0 && !isScrolledFirst.value) {
-//        isScrolledFirst.value  = true
-//        scope.launch {
-//            scrollState.scrollTo(scrollState.maxValue)
-//            scrollState.scrollBy(imeHInDp.value)
-//        }
-//    }
-
-    Box() {
+    Box(modifier = Modifier.onGloballyPositioned {
+        screenH.floatValue = it.size.height.toFloat()
+    }) {
         Column(
             modifier = Modifier.fillMaxSize(),
 //        contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -185,13 +162,17 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
                         listener = listener,
                         expandedS = menuExpandedS,
                         onMoveDownClick = {
+                            listener?.onMoveDownClick()
                             scope.launch {
                                 scrollState.scrollTo(Int.MAX_VALUE)
+                                focusRequester.tryRequestFocus()
                             }
                         },
                         onMoveUpClick = {
+                            listener?.onMoveUpClick()
                             scope.launch {
                                 scrollState.scrollTo(0)
+                                focusRequester.tryRequestFocus()
                             }
                         }
                     )
@@ -255,9 +236,6 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.secondaryContainer)
                     .fillMaxSize()
-                    .onGloballyPositioned {
-                        screenH.floatValue = it.size.height.toFloat()
-                    }
             ) {
                 Column(modifier = Modifier.fillMaxSize()) {
                     Row(
@@ -319,16 +297,15 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
                                 .fillMaxSize()
                                 .focusRequester(focusRequester)
                                 .verticalScroll(scrollState)
-                                .imePadding()
-                                .padding(bottom = max(imeHInDp - kbH, 0.dp)),
+                                .padding(bottom = imeHInDp),
                             value = text,
                             onValueChange = {
                                 listener?.onTextChange(it)
                             },
                         )
-
-                        VSpacer(kbH)
                     }
+
+                    VSpacer(dp14)
                 }
             }
         }

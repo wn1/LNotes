@@ -45,6 +45,8 @@ interface NoteEditScreenViewModelListener {
     fun onInsertUncheckedCharClick()
     fun onSendNoteClick()
     fun onCheckedSwitchClick()
+    fun onMoveDownClick()
+    fun onMoveUpClick()
 }
 
 @HiltViewModel
@@ -65,7 +67,7 @@ class NoteEditScreenViewModel @Inject constructor(
 
     val textS = mutableStateOf(TextFieldValue())
     val checkedSwitchEnabledS = mutableStateOf(false)
-
+    val requestFocusEvent = mutableStateOf<LiveEvent<Boolean>?>(null)
     private var saveJ: Job? = null
 
     override fun provideContext(): Context {
@@ -105,11 +107,16 @@ class NoteEditScreenViewModel @Inject constructor(
         textS.value = TextFieldValue(
             text,
             selection = TextRange(
-                start = text.length,
-                end = text.length
+//                start = text.length,
+//                end = text.length
+                start = 0,
+                end = 0
             )
         )
         updateCheckedSwitch()
+//        if (text.isEmpty()) {
+//            requestFocusEvent.value = LiveEvent(true)
+//        }
     }
 
     override fun onTextChange(newText: TextFieldValue) {
@@ -431,6 +438,18 @@ class NoteEditScreenViewModel @Inject constructor(
         (getActivity() as? QDVNotesHomeActivity)?.sendText(
             textS.value.text
         )
+    }
+
+    override fun onMoveDownClick() {
+        Log.i(TAG, "onMoveDownClick")
+        val text = textS.value.text
+        textS.value = textS.value.copy(selection = TextRange(text.length, text.length))
+    }
+
+    override fun onMoveUpClick() {
+        Log.i(TAG, "onMoveDownClick")
+        val text = textS.value.text
+        textS.value = textS.value.copy(selection = TextRange(0, 0))
     }
 
     companion object {
