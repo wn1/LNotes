@@ -350,6 +350,8 @@ class NoteListScreenViewModel @Inject constructor(
                     delay(50.milliseconds)
                     goToIndexEvent.value = LiveEvent(gotoToIndex)
                 }
+
+                delay(100.milliseconds)
             }
         }
     }
