@@ -4,6 +4,7 @@ package ru.qdev.lnotes.ui.screen.note_edit
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -53,6 +54,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -60,6 +62,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.reply.ui.theme.AppTheme
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.qdev.lnotes.model.Folder
 import ru.qdev.lnotes.ui.screen.base.BaseScreen
@@ -81,6 +84,10 @@ import ru.qdev.lnotes.utils.compose.toDp
 import ru.qdev.lnotes.utils.compose.tryRequestFocus
 import ru.qdev.lnotes.utils.live_data.LiveEvent
 import src.R
+import kotlin.time.Duration.Companion.milliseconds
+
+
+private const val TAG = "NoteEditScreen"
 
 @ExperimentalMaterial3Api
 @Composable
@@ -105,6 +112,7 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
     val scope = rememberCoroutineScope()
     val focusRequester = remember { FocusRequester() }
     val scrollState = rememberScrollState()
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val menuExpandedS = remember { mutableStateOf(false) }
 
@@ -164,15 +172,31 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
                         onMoveDownClick = {
                             listener?.onMoveDownClick()
                             scope.launch {
-                                scrollState.scrollTo(Int.MAX_VALUE)
-                                focusRequester.tryRequestFocus()
+                                try {
+                                    keyboardController?.hide()
+                                    scrollState.scrollTo(Int.MAX_VALUE)
+                                    focusRequester.tryRequestFocus()
+                                    delay(400.milliseconds)
+                                    keyboardController?.show()
+                                }
+                                catch (ex: Throwable) {
+                                    Log.e(TAG, "onMoveDownClick ex: $ex", ex)
+                                }
                             }
                         },
                         onMoveUpClick = {
                             listener?.onMoveUpClick()
                             scope.launch {
-                                scrollState.scrollTo(0)
-                                focusRequester.tryRequestFocus()
+                                try {
+                                    keyboardController?.hide()
+                                    scrollState.scrollTo(0)
+                                    focusRequester.tryRequestFocus()
+                                    delay(400.milliseconds)
+                                    keyboardController?.show()
+                                }
+                                catch (ex: Throwable) {
+                                    Log.e(TAG, "onMoveUpClick ex: $ex", ex)
+                                }
                             }
                         }
                     )
