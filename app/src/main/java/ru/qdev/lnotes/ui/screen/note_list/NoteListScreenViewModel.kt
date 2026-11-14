@@ -95,6 +95,7 @@ class NoteListScreenViewModel @Inject constructor(
     val drawerHideEvent = mutableStateOf<LiveEvent<Boolean>?>(null)
     val folderLoadingS = mutableStateOf(false)
     val notesLoadingS = mutableStateOf(false)
+    val notesCursorLoadingS = mutableStateOf(true)
     val notesCountS = mutableStateOf(0L)
     val searchTextS = appValues.notesSearchText
     val notesCursorS = mutableStateOf<Cursor?>(null)
@@ -336,18 +337,19 @@ class NoteListScreenViewModel @Inject constructor(
 
         cursorUpdateJob?.cancel()
         cursorUpdateJob = viewModelScope.launch {
+            loading(notesCursorLoadingS) {
+                val cursor = getCursor()
+                notesCursorS.value = cursor
+                notesCountS.value = cursor.count.toLong()
 
-            val cursor = getCursor()
-            notesCursorS.value = cursor
-            notesCountS.value = cursor.count.toLong()
+                if (gotoFirst) {
+                    goToFirstEvent.value = LiveEvent(true)
+                }
 
-            if (gotoFirst){
-                goToFirstEvent.value = LiveEvent(true)
-            }
-
-            if (gotoToIndex != null) {
-                delay(50.milliseconds)
-                goToIndexEvent.value = LiveEvent(gotoToIndex)
+                if (gotoToIndex != null) {
+                    delay(50.milliseconds)
+                    goToIndexEvent.value = LiveEvent(gotoToIndex)
+                }
             }
         }
     }

@@ -131,7 +131,8 @@ fun NoteListScreen(viewModel: NoteListScreenViewModel = hiltViewModel()) {
             drawerHideEvent = viewModel.drawerHideEvent.value,
             searchText = viewModel.searchTextS.value,
             folderLoading = viewModel.folderLoadingS.value,
-            notesLoading = viewModel.notesLoadingS.value
+            notesLoading = viewModel.notesLoadingS.value,
+            notesCursorLoading = viewModel.notesCursorLoadingS.value
         )
 
         TipsSheet(viewModel.tipsSheetController)
@@ -156,7 +157,8 @@ private fun ScreenContent(
     drawerShowEvent: LiveEvent<Boolean>? = null,
     searchText: String,
     notesLoading: Boolean,
-    folderLoading: Boolean
+    folderLoading: Boolean,
+    notesCursorLoading: Boolean,
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -588,7 +590,7 @@ private fun ScreenContent(
                         VSpacer(dp8)
                     }
 
-                    if (notesCount == 0L) {
+                    if (notesCount == 0L && !notesCursorLoading) {
                         VSpacer(dp14)
                         SText(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -729,7 +731,7 @@ private fun ScreenContent(
                     }
                 }
 
-                if (notesLoading) {
+                if (notesLoading || notesCursorLoading) {
                     SCircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
             }
@@ -1057,7 +1059,8 @@ private fun ScreenContentPreview() {
             notesCount = notes.size.toLong(),
             searchText = "",
             folderLoading = true,
-            notesLoading = true
+            notesLoading = true,
+            notesCursorLoading = false
         )
     }
 }
@@ -1084,7 +1087,7 @@ private fun ScreenContentPreviewDrawer() {
             selectedFolder = folders.getOrNull(1),
             onFolderClick = {},
             onFolderLongClick = {},
-            folderLoading = true,
+            folderLoading = true
         )
     }
 }
@@ -1115,7 +1118,8 @@ private fun ScreenContentPreviewSearch() {
             notesCount = notes.size.toLong(),
             searchText = stringResource(R.string.finding_label),
             folderLoading = true,
-            notesLoading = true
+            notesLoading = true,
+            notesCursorLoading = false
         )
     }
 }
@@ -1146,7 +1150,40 @@ private fun ScreenContentPreviewDeleteConfirm() {
             notesCount = notes.size.toLong(),
             searchText = stringResource(R.string.finding_label),
             folderLoading = true,
-            notesLoading = true
+            notesLoading = true,
+            notesCursorLoading = false
+        )
+    }
+}
+
+@ExperimentalMaterial3Api
+@Composable
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "DefaultPreviewDark",
+    showBackground = true
+)
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    name = "DefaultPreviewLight",
+    showBackground = true
+)
+private fun ScreenContentPreviewLoading() {
+    val context = LocalContext.current
+    val folders = Folder.makeTestList(context)
+    val notes = listOf<NotesEntry>()
+    AppTheme {
+        ScreenContent(
+            listener = null,
+            viewType = NotesViewType.Notes,
+            selectedFolder = folders.getOrNull(1),
+            folderList = folders,
+            notesCursor = null,
+            notesCount = notes.size.toLong(),
+            searchText = stringResource(R.string.finding_label),
+            folderLoading = true,
+            notesLoading = true,
+            notesCursorLoading = true
         )
     }
 }
