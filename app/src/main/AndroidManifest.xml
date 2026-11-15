@@ -43,8 +43,7 @@
         <activity
             android:name="ru.qdev.lnotes.ui.activity.notes.QDVNotesHomeActivity"
             android:exported="false"
-            android:launchMode="singleTop"
-            android:theme="@style/QDVActivityTheme.Launcher">
+            android:launchMode="singleTop">
 
         </activity>
 
@@ -52,7 +51,8 @@
             android:name="ru.qdev.lnotes.ui.activity.backup.QDVBackupActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|screenLayout"
             android:exported="false"
-            android:label="@string/app_name" />
+            android:label="@string/app_name"
+            android:theme="@style/QDVActivityOldActionBarTheme"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

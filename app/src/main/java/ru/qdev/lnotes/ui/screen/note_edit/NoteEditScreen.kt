@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,12 +24,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -80,6 +80,7 @@ import ru.qdev.lnotes.ui.view.spacer.HSpacer
 import ru.qdev.lnotes.ui.view.spacer.VSpacer
 import ru.qdev.lnotes.ui.view.text.SText
 import ru.qdev.lnotes.ui.view.text.STextField
+import ru.qdev.lnotes.utils.compose.ComposeUtils.SetStatusBarsColors
 import ru.qdev.lnotes.utils.compose.toDp
 import ru.qdev.lnotes.utils.compose.tryRequestFocus
 import ru.qdev.lnotes.utils.live_data.LiveEvent
@@ -132,6 +133,9 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
         focusRequester.tryRequestFocus()
     }
 
+
+    SetStatusBarsColors(true)
+
     Box(modifier = Modifier.onGloballyPositioned {
         screenH.floatValue = it.size.height.toFloat()
     }) {
@@ -140,6 +144,10 @@ private fun ScreenContent(listener: NoteEditScreenViewModelListener?,
 //        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         ) {
             TopAppBar(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .statusBarsPadding(),
+                windowInsets = WindowInsets(0, 0, 0, 0),
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.primary,
@@ -352,7 +360,7 @@ fun MainDropdownMenu(modifier: Modifier,
     ) {
         IconButton(onClick = { expandedS.value = !expandedS.value }) {
             Icon(
-                Icons.Default.MoreVert,
+                painterResource(R.drawable.ic_more_vert_24),
                 contentDescription = stringResource(R.string.menu_cd),
                 tint = MaterialTheme.colorScheme.primary
             )

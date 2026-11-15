@@ -25,6 +25,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import ru.qdev.lnotes.utils.compose.ComposeUtils.SetStatusBarsColors
 
 // Material 3 color schemes
 private val DarkColorScheme = darkColorScheme(
@@ -74,6 +75,8 @@ fun AppTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
+
+    SetStatusBarsColors(darkTheme)
 
     MaterialTheme(
         colorScheme = colorScheme,

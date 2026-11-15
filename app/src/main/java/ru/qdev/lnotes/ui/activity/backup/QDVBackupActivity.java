@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -25,6 +26,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.scottyab.aescrypt.AESCrypt;
 
@@ -99,6 +102,33 @@ public class QDVBackupActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         dbManager.closeNotesDb();
+
+        try {
+            WindowInsetsControllerCompat insetsController = WindowCompat.getInsetsController(
+                    getWindow(),
+                    getWindow().getDecorView()
+            );
+            int currentNightMode = getResources().getConfiguration().uiMode
+                    & Configuration.UI_MODE_NIGHT_MASK;
+
+            boolean darkTheme = false;
+            switch (currentNightMode) {
+                case Configuration.UI_MODE_NIGHT_NO:
+                    // Текущая светлая тема (Light)
+                    break;
+                case Configuration.UI_MODE_NIGHT_YES:
+                    // Текущая тёмная тема (Dark)
+                    darkTheme = true;
+                    break;
+                case Configuration.UI_MODE_NIGHT_UNDEFINED:
+                    // Неизвестный режим (обычно можно считать светлой темой)
+                    break;
+            }
+
+            insetsController.setAppearanceLightStatusBars(!darkTheme);
+        } catch (Throwable e) {
+            Log.e("QDVBackupActivity", "Exception on WindowCompat.getInsetsController");
+        }
     }
 
     @Override
