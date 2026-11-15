@@ -58,7 +58,7 @@ class QDVNotesHomeActivity : ComponentActivity() {
     @ExperimentalMaterial3Api
     @UiThread
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.QDVActionBarTheme)
+        setTheme(R.style.QDVActivityTheme)
         super.onCreate(savedInstanceState)
 
         setContent {
